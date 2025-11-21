@@ -21,7 +21,10 @@
 
   let width, height;
   let animationId;
-  let currentTheme = 'cellular-automata'; // 'cellular-automata' or 'turbulence'
+  let currentTheme = 'cellular-automata'; // 'cellular-automata', 'turbulence', or 'differential-equation'
+  
+  // Color customization
+  let customColor = { light: 'rgba(45,45,45,0.8)', dark: 'rgba(201,169,97,0.8)' };
 
   // Cellular Automata State
   let grid;
@@ -30,7 +33,12 @@
 
   // Turbulence State
   let particles = [];
-  const particleCount = 500; // Increased from 100
+  const particleCount = 500;
+  
+  // Differential Equation State
+  let deParticles = [];
+  const deParticleCount = 300;
+  let time = 0;
 
   function resize() {
     width = window.innerWidth;
@@ -43,8 +51,10 @@
   function initTheme() {
     if (currentTheme === 'cellular-automata') {
       initCA();
-    } else {
+    } else if (currentTheme === 'turbulence') {
       initTurbulence();
+    } else {
+      initDifferentialEquation();
     }
   }
 
@@ -56,8 +66,8 @@
   }
 
   function drawCA() {
-    // Use more visible colors
-    ctx.fillStyle = document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+    const isDark = document.documentElement.classList.contains('dark');
+    ctx.fillStyle = isDark ? customColor.dark : customColor.light;
     ctx.clearRect(0, 0, width, height);
     
     let next = grid.map(arr => [...arr]);
@@ -147,19 +157,79 @@
       if(p.y > height) p.y = 0;
       
       // Draw particle with glow effect
-      ctx.fillStyle = isDark ? `rgba(201,169,97,${p.opacity})` : `rgba(45,45,45,${p.opacity})`;
+      const isDark = document.documentElement.classList.contains('dark');
+      ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fill();
     }
   }
+  
+  // --- Differential Equation (Lorenz Attractor) ---
+  function initDifferentialEquation() {
+    deParticles = [];
+    time = 0;
+    for(let i=0; i<deParticleCount; i++) {
+      deParticles.push({
+        x: (Math.random() - 0.5) * 20,
+        y: (Math.random() - 0.5) * 20,
+        z: Math.random() * 40,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.6 + 0.4,
+        trail: []
+      });
+    }
+  }
+  
+  function drawDifferentialEquation() {
+    const isDark = document.documentElement.classList.contains('dark');
+    ctx.fillStyle = isDark ? 'rgba(26,26,26,0.03)' : 'rgba(254,254,254,0.03)';
+    ctx.fillRect(0, 0, width, height);
+    
+    const dt = 0.005;
+    const sigma = 10;
+    const rho = 28;
+    const beta = 8/3;
+    
+    for(let p of deParticles) {
+      // Lorenz attractor equations
+      const dx = sigma * (p.y - p.x) * dt;
+      const dy = (p.x * (rho - p.z) - p.y) * dt;
+      const dz = (p.x * p.y - beta * p.z) * dt;
+      
+      p.x += dx;
+      p.y += dy;
+      p.z += dz;
+      
+      // Map to screen coordinates
+      const scale = 8;
+      const screenX = width / 2 + p.x * scale;
+      const screenY = height / 2 + p.y * scale;
+      
+      // Draw particle
+      ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
+      ctx.beginPath();
+      ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Reset if out of bounds
+      if (Math.abs(p.x) > 30 || Math.abs(p.y) > 30 || p.z > 60 || p.z < 0) {
+        p.x = (Math.random() - 0.5) * 20;
+        p.y = (Math.random() - 0.5) * 20;
+        p.z = Math.random() * 40;
+      }
+    }
+    
+    time += dt;
+  }
 
   function animate() {
     if (currentTheme === 'cellular-automata') {
-      // Slow down CA
       if (Date.now() % 100 < 20) drawCA(); 
-    } else {
+    } else if (currentTheme === 'turbulence') {
       drawTurbulence();
+    } else {
+      drawDifferentialEquation();
     }
     animationId = requestAnimationFrame(animate);
   }
@@ -172,5 +242,10 @@
   window.addEventListener('theme-change', (e) => {
     currentTheme = e.detail.theme;
     initTheme();
+  });
+  
+  // Listen for color change event
+  window.addEventListener('color-change', (e) => {
+    customColor = e.detail;
   });
 </script>

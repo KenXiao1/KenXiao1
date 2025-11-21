@@ -1,4 +1,6 @@
 ---
+import ColorPicker from './ColorPicker.astro';
+
 const links = [
   { href: '/about', label: 'About' },
   { href: '/blog', label: 'Blog' },
@@ -26,7 +28,11 @@ const links = [
       <select id="visual-theme-select" class="bg-transparent text-xs border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-gray-800 dark:text-gray-200 dark:bg-gray-900">
         <option value="cellular-automata">Cellular Automata</option>
         <option value="turbulence">Turbulence</option>
+        <option value="differential-equation">Equation</option>
       </select>
+
+      <!-- Color Picker -->
+      <ColorPicker />
 
       <!-- Dark Mode Toggle -->
       <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-800 dark:text-gray-200" aria-label="Toggle Dark Mode">
