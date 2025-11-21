@@ -29,6 +29,7 @@ const links = [
         <option value="cellular-automata">Cellular Automata</option>
         <option value="turbulence">Turbulence</option>
         <option value="differential-equation">Equation</option>
+        <option value="none">No Background</option>
       </select>
 
       <!-- Color Picker -->
@@ -64,7 +65,9 @@ const links = [
   if (savedTheme && visualSelect) {
     visualSelect.value = savedTheme;
     // Dispatch theme change event to apply saved theme
-    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: savedTheme } }));
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: savedTheme } }));
+    }, 100);
   }
   
   visualSelect?.addEventListener('change', (e) => {
@@ -73,9 +76,17 @@ const links = [
     // Save theme preference
     localStorage.setItem('visualTheme', theme);
     
-    // Open equation modal if equation theme is selected
-    if (theme === 'differential-equation') {
-      window.dispatchEvent(new Event('equation-modal-open'));
+    // Hide/show canvas based on theme
+    const canvas = document.getElementById('bg-canvas');
+    if (theme === 'none') {
+      if (canvas) canvas.style.display = 'none';
+    } else {
+      if (canvas) canvas.style.display = 'block';
+      
+      // Open equation modal if equation theme is selected
+      if (theme === 'differential-equation') {
+        window.dispatchEvent(new Event('equation-modal-open'));
+      }
     }
     
     window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));

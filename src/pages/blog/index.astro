@@ -6,55 +6,67 @@ const posts = (await getCollection('blog'))
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
 const categories = [...new Set(posts.map(post => post.data.category))];
 ---
 
-<BaseLayout title="Ken Xiao | Blog">
+<BaseLayout title="Blog | Ken Xiao">
   <div class="max-w-4xl mx-auto">
-    <div class="flex items-center justify-between mb-8">
-      <h1 class="text-4xl font-serif font-bold">Blog</h1>
-      
-      <div class="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
-        <a href="/blog" class="px-4 py-2 bg-white dark:bg-gray-800 shadow-sm rounded-md text-sm font-medium transition-all">Articles</a>
-        <a href="/blog/pdfs" class="px-4 py-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 rounded-md text-sm font-medium transition-all">PDF Library</a>
+    <div class="glass-card rounded-2xl px-8 py-12 mb-8">
+      <h1 class="text-5xl font-serif font-bold mb-4">Blog</h1>
+      <p class="text-gray-600 dark:text-gray-400">Thoughts on mathematics, AI, history, and technology.</p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="glass-card rounded-xl px-6 py-4 mb-8">
+      <div class="flex flex-wrap gap-2">
+        <button class="category-filter active px-4 py-2 rounded-full bg-accent text-white text-sm" data-category="all">All</button>
+        {categories.map(cat => (
+          <button class="category-filter px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-800 text-sm hover:bg-accent hover:text-white transition-colors" data-category={cat}>{cat}</button>
+        ))}
       </div>
     </div>
 
-    <div class="flex gap-4 mb-8 overflow-x-auto pb-2">
-      {categories.map(cat => (
-        <button class="px-3 py-1 text-xs font-mono border border-gray-300 dark:border-gray-700 rounded-full uppercase hover:border-accent hover:text-accent transition-colors">
-          {cat}
-        </button>
-      ))}
-    </div>
-
-    <div class="space-y-8">
+    <!-- Posts Grid -->
+    <div class="grid gap-6" id="posts-grid">
       {posts.map(post => (
-        <article class="flex flex-col md:flex-row gap-6 group">
-          <div class="md:w-1/4">
-            <div class="text-sm text-gray-500 font-mono mb-1">
-              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-            </div>
-            <div class="text-xs text-accent uppercase tracking-wider font-bold">
-              {post.data.category}
-            </div>
-          </div>
-          <div class="md:w-3/4">
-            <h2 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors">
-              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-              {post.data.description}
-            </p>
-            <div class="flex gap-2">
-              {post.data.tags?.map(tag => (
-                <span class="text-xs text-gray-500">#{tag}</span>
-              ))}
+        <a href={`/blog/${post.slug}`} class="post-item glass-card rounded-xl p-6 hover:shadow-xl transition-all group" data-category={post.data.category}>
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-grow">
+              <div class="text-xs text-accent uppercase tracking-wider font-mono mb-2">{post.data.category}</div>
+              <h2 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors">{post.data.title}</h2>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">{post.data.description}</p>
+              <div class="text-sm text-gray-500 font-mono">
+                {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </div>
             </div>
           </div>
-        </article>
+        </a>
       ))}
     </div>
   </div>
+
+  <script>
+    // Category filter functionality
+    const filterBtns = document.querySelectorAll('.category-filter');
+    const postItems = document.querySelectorAll('.post-item');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.dataset.category;
+        
+        // Update active state
+        filterBtns.forEach(b => b.classList.remove('active', 'bg-accent', 'text-white'));
+        btn.classList.add('active', 'bg-accent', 'text-white');
+        
+        // Filter posts
+        postItems.forEach(post => {
+          if (category === 'all' || post.dataset.category === category) {
+            post.style.display = '';
+          } else {
+            post.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
 </BaseLayout>
