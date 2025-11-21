@@ -51,9 +51,9 @@ const links = [
   });
 
   // Visual Theme Selector
-  const visualSelect = document.getElementById('visual-theme-select') as HTMLSelectElement;
+  const visualSelect = document.getElementById('visual-theme-select');
   visualSelect?.addEventListener('change', (e) => {
-    const theme = (e.target as HTMLSelectElement).value;
+    const theme = e.target.value;
     window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
   });
 </script>

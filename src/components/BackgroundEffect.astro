@@ -160,7 +160,7 @@
   animate();
 
   // Listen for theme change event
-  window.addEventListener('theme-change', (e: CustomEvent) => {
+  window.addEventListener('theme-change', (e) => {
     currentTheme = e.detail.theme;
     initTheme();
   });
