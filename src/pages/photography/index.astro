@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import { getCollection } from 'astro:content';
+
+const photos = (await getCollection('photos'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="Ken Xiao | Photography">
+  <div class="max-w-7xl mx-auto">
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl md:text-6xl font-serif font-bold mb-4">Visual Stories</h1>
+    </header>
+
+    {photos.length > 0 ? (
+      <PhotoGrid photos={photos} />
+    ) : (
+      <div class="text-center py-20 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">
+        <p class="text-gray-500 mb-4">Gallery is being curated.</p>
+        <p class="text-sm text-gray-400">Photos will appear here once uploaded to Cloudinary.</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>

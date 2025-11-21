@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Ken Xiao | About Me">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl md:text-5xl font-serif font-bold mb-8">About Me</h1>
+    
+    <div class="prose dark:prose-invert max-w-none">
+      <p class="text-xl leading-relaxed mb-8">
+        I'm <strong>Fucheng Xiao (Ken Xiao)</strong> from Shenzhen Senior High School International Division (SID). 
+        I am primarily applying to study in the United States, with interests in 
+        <span class="text-accent">mathematics, AI, WEB3, mathematical biology, and modern Chinese history</span>.
+      </p>
+
+      <hr class="my-10 border-gray-200 dark:border-gray-800" />
+
+      <h2 class="font-serif text-2xl font-bold mb-6">Achievements</h2>
+      
+      <div class="space-y-8">
+        <div class="relative pl-8 border-l-2 border-gray-200 dark:border-gray-800">
+          <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-accent"></div>
+          <h3 class="text-lg font-bold">Mathematics</h3>
+          <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+            <li>Scored in the top 5% in 2023 AMC 12</li>
+            <li>Received Honorable Mention Award in the 2023 HiMCM</li>
+          </ul>
+        </div>
+
+        <div class="relative pl-8 border-l-2 border-gray-200 dark:border-gray-800">
+          <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-accent"></div>
+          <h3 class="text-lg font-bold">Robotics (FRC Team Golem 6706)</h3>
+          <p class="text-sm text-gray-500 mb-2">Leader of the robotics team during 11th grade</p>
+          <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+            <li><strong>2024:</strong> Innovation in Control Award (Iowa Regional), 1st Prize in WRC (Beijing)</li>
+            <li><strong>2025:</strong> Quality Award (Shanghai Regional), Autonomous Award & Regional Finalists (Colorado Regional)</li>
+            <li>Qualified for FIRST Championship, Johnson Division</li>
+          </ul>
+          <div class="mt-2 text-sm">
+            <a href="https://golem6706-shenzhen.github.io/golem6706-shenzhen/" class="text-accent hover:underline">View Team Website</a>
+          </div>
+        </div>
+
+        <div class="relative pl-8 border-l-2 border-gray-200 dark:border-gray-800">
+          <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-accent"></div>
+          <h3 class="text-lg font-bold">Biology</h3>
+          <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+            <li>Gold Award of International Genetically Engineered Machine (iGEM) Competition</li>
+            <li>Carnegie Mellon University Computational Biology Pre-College</li>
+          </ul>
+          <div class="mt-2 text-sm">
+            <a href="https://2024.igem.wiki/hangzhou-biox/" class="text-accent hover:underline">View iGEM Project</a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-10 border-gray-200 dark:border-gray-800" />
+
+      <h2 class="font-serif text-2xl font-bold mb-6">Projects & Experience</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
+          <h3 class="font-bold mb-2">Momentum</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Independent Developer of a time-management and micro-habit training web app. Gained over 270 stars on GitHub.
+          </p>
+          <a href="https://github.com/KenXiao1/momentum" class="text-accent text-sm hover:underline">View on GitHub &rarr;</a>
+        </div>
+
+        <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
+          <h3 class="font-bold mb-2">Community Leadership</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Founder of school math club and school E-forum. Volunteer for "Heart of Gold" National Hospice Service Program.
+          </p>
+        </div>
+      </div>
+
+      <hr class="my-10 border-gray-200 dark:border-gray-800" />
+
+      <h2 class="font-serif text-2xl font-bold mb-6">Contact</h2>
+      <ul class="space-y-2">
+        <li><strong>Email:</strong> <a href="mailto:xiaofucheng1@gmail.com" class="hover:text-accent">xiaofucheng1@gmail.com</a></li>
+        <li><strong>Zhihu:</strong> <a href="https://www.zhihu.com/people/blues-68-53" class="hover:text-accent">Blues</a></li>
+        <li><strong>GitHub:</strong> <a href="https://github.com/KenXiao1" class="hover:text-accent">KenXiao1</a></li>
+        <li><strong>Linux.do:</strong> <a href="https://linux.do/u/kenx1/summary" class="hover:text-accent">kenx1</a></li>
+      </ul>
+
+    </div>
+  </div>
+</BaseLayout>

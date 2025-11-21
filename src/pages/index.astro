@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const photos = (await getCollection('photos'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout title="Ken Xiao | Home">
+  <section class="py-20 text-center">
+    <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
+      Ken Xiao
+    </h1>
+    <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+      Exploring Mathematics, AI, and History through code and lens.
+    </p>
+    <div class="mt-10 flex justify-center gap-4">
+      <a href="/about" class="px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium hover:opacity-90 transition-opacity">
+        About Me
+      </a>
+      <a href="/blog" class="px-6 py-3 border border-gray-300 dark:border-gray-700 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+        Read Blog
+      </a>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="flex justify-between items-end mb-8">
+      <h2 class="text-3xl font-serif font-bold">Latest Writing</h2>
+      <a href="/blog" class="text-accent hover:underline">View all &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {posts.map(post => (
+        <a href={`/blog/${post.slug}`} class="group block">
+          <article class="bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-xl p-6 h-full hover:border-accent transition-colors">
+            <div class="text-sm text-accent mb-2 uppercase tracking-wider font-mono">{post.data.category}</div>
+            <h3 class="text-xl font-bold mb-2 group-hover:text-accent transition-colors">{post.data.title}</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">{post.data.description}</p>
+            <div class="mt-4 text-xs text-gray-500 font-mono">
+              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+          </article>
+        </a>
+      ))}
+      {posts.length === 0 && (
+        <div class="col-span-3 text-center py-10 text-gray-500 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">
+          No posts yet. Check back soon!
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="flex justify-between items-end mb-8">
+      <h2 class="text-3xl font-serif font-bold">Recent Captures</h2>
+      <a href="/photography" class="text-accent hover:underline">View gallery &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Placeholder for photos until we have content */}
+      {photos.length > 0 ? photos.map(photo => (
+        <div class="aspect-[4/3] bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden">
+          {/* Cloudinary Image would go here */}
+          <div class="w-full h-full flex items-center justify-center text-gray-500">
+            {photo.data.title}
+          </div>
+        </div>
+      )) : (
+        [1, 2, 3].map(() => (
+          <div class="aspect-[4/3] bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-400">
+            Photo Placeholder
+          </div>
+        ))
+      )}
+    </div>
+  </section>
+</BaseLayout>

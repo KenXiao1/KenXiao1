@@ -1,0 +1,23 @@
+
+> ken-blog@0.0.1 build
+> astro build
+
+[2m20:04:49[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+[2m20:04:49[22m [34m[@astrojs/cloudflare][39m If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+[33m[1m20:04:49[22m [WARN] [adapter][39m Cloudflare does not support sharp at runtime. However, you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
+[2m20:04:50[22m [34m[content][39m Syncing content
+[2m20:04:50[22m [34m[content][39m Synced content
+[2m20:04:50[22m [34m[types][39m Generated [2m405ms[22m
+[2m20:04:50[22m [34m[build][39m output: [34m"static"[39m
+[2m20:04:50[22m [34m[build][39m mode: [34m"server"[39m
+[2m20:04:50[22m [34m[build][39m directory: [34mD:\kenxiao blog\ken-blog\dist\[39m
+[2m20:04:50[22m [34m[build][39m adapter: [32m@astrojs/cloudflare[39m
+[2m20:04:50[22m [34m[build][39m Collecting build info...
+[2m20:04:50[22m [34m[build][39m [32m✓ Completed in 481ms.[39m
+[2m20:04:50[22m [34m[build][39m Building server entrypoints...
+[31m[1m20:04:51[22m [ERROR] [vite][39m [31m✗[39m Build failed in 1.38s
+Could not resolve "../layouts/BaseLayout.astro" from "src/pages/blog/index.astro"
+file: D:/kenxiao blog/ken-blog/src/pages/blog/index.astro
+  [1mStack trace:[22m
+[2m    at getRollupError (file:///D:/kenxiao%20blog/ken-blog/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at ModuleLoader.handleInvalidResolvedId (file:///D:/kenxiao%20blog/ken-blog/node_modules/rollup/dist/es/shared/node-entry.js:21590:24)[22m

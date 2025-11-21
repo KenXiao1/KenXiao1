@@ -1,0 +1,109 @@
+---
+import { getCollection } from 'astro:content';
+
+const { photos } = Astro.props;
+---
+
+<div class="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+  {photos.map((photo, index) => (
+    <div class="break-inside-avoid group relative cursor-zoom-in" onclick={`openLightbox(${index})`}>
+      <div class="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+        {/* 
+          In a real implementation with Cloudinary, we would use the CldImage component or generate optimized URLs.
+          For now, we'll assume a placeholder or direct URL structure.
+          Since we haven't set up the Cloudinary SDK fully yet, I'll use a placeholder logic that would be replaced.
+        */}
+        <img 
+          src={`https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_800,c_limit/${photo.data.cloudinaryId}`} 
+          alt={photo.data.title}
+          class="w-full h-auto transform transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/60 to-transparent">
+          <h3 class="text-white font-bold text-sm">{photo.data.title}</h3>
+          <p class="text-white/80 text-xs">{photo.data.date.toLocaleDateString()}</p>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<!-- Lightbox Overlay -->
+<div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+  <button id="lightbox-close" class="absolute top-4 right-4 text-white/70 hover:text-white p-2">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+  </button>
+  
+  <button id="lightbox-prev" class="absolute left-4 text-white/70 hover:text-white p-2 hidden md:block">
+    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+  
+  <button id="lightbox-next" class="absolute right-4 text-white/70 hover:text-white p-2 hidden md:block">
+    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+  </button>
+
+  <div class="max-w-[90vw] max-h-[90vh]">
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain shadow-2xl" />
+    <div id="lightbox-caption" class="text-white text-center mt-4 font-serif text-lg"></div>
+  </div>
+</div>
+
+<script define:vars={{ photos }}>
+  let currentIndex = 0;
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  
+  window.openLightbox = (index) => {
+    currentIndex = index;
+    updateLightbox();
+    lightbox.classList.remove('hidden');
+    // Small delay to allow display:block to apply before opacity transition
+    setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+    document.body.style.overflow = 'hidden';
+  };
+
+  function closeLightbox() {
+    lightbox.classList.add('opacity-0');
+    setTimeout(() => {
+      lightbox.classList.add('hidden');
+      document.body.style.overflow = '';
+    }, 300);
+  }
+
+  function updateLightbox() {
+    const photo = photos[currentIndex];
+    // Load high-res image
+    const src = `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_1600,c_limit/${photo.data.cloudinaryId}`;
+    lightboxImg.src = src;
+    lightboxCaption.textContent = photo.data.title;
+  }
+
+  function nextPhoto() {
+    currentIndex = (currentIndex + 1) % photos.length;
+    updateLightbox();
+  }
+
+  function prevPhoto() {
+    currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+    updateLightbox();
+  }
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); nextPhoto(); });
+  document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); prevPhoto(); });
+  
+  // Close on background click
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.classList.contains('hidden')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') nextPhoto();
+    if (e.key === 'ArrowLeft') prevPhoto();
+  });
+</script>

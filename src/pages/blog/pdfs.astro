@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const pdfs = (await getCollection('pdfs'))
+  .sort((a, b) => b.data.uploadDate.valueOf() - a.data.uploadDate.valueOf());
+
+const categories = [...new Set(pdfs.map(pdf => pdf.data.category))];
+---
+
+<BaseLayout title="Ken Xiao | PDF Library">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-serif font-bold">PDF Library</h1>
+      
+      <div class="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
+        <a href="/blog" class="px-4 py-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 rounded-md text-sm font-medium transition-all">Articles</a>
+        <a href="/blog/pdfs" class="px-4 py-2 bg-white dark:bg-gray-800 shadow-sm rounded-md text-sm font-medium transition-all">PDF Library</a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {pdfs.map(pdf => (
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden hover:border-accent transition-colors group">
+          <div class="aspect-[3/4] bg-gray-100 dark:bg-gray-800 relative flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
+            {/* PDF Icon or Thumbnail */}
+            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            
+            <a href={`/pdfs/${pdf.data.filename}`} target="_blank" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity">
+              <span class="px-4 py-2 bg-white text-black rounded-full text-sm font-bold">Preview / Download</span>
+            </a>
+          </div>
+          <div class="p-4">
+            <div class="text-xs text-accent uppercase tracking-wider font-bold mb-1">{pdf.data.category}</div>
+            <h3 class="font-bold text-lg mb-2 line-clamp-1" title={pdf.data.title}>{pdf.data.title}</h3>
+            <p class="text-sm text-gray-500 line-clamp-2 mb-4">{pdf.data.description}</p>
+            <div class="text-xs text-gray-400 font-mono">
+              Uploaded: {pdf.data.uploadDate.toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

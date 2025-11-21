@@ -1,0 +1,58 @@
+/* Import fonts */
+@import '@fontsource/noto-serif-sc';
+@import '@fontsource/noto-sans-sc';
+@import '@fontsource/jetbrains-mono';
+
+/* Import KaTeX styles */
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #fefefe;
+  --color-text: #2d2d2d;
+  --color-accent: #c9a961;
+}
+
+.dark {
+  --color-bg: #1a1a1a;
+  --color-text: #f5e6d3;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Background Canvas Container */
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.15;
+  pointer-events: none;
+}
