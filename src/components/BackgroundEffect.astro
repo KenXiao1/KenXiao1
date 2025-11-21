@@ -30,7 +30,7 @@
 
   // Turbulence State
   let particles = [];
-  const particleCount = 100;
+  const particleCount = 500; // Increased from 100
 
   function resize() {
     width = window.innerWidth;
@@ -107,29 +107,35 @@
         y: Math.random() * height,
         vx: 0,
         vy: 0,
-        size: Math.random() * 2 + 1
+        size: Math.random() * 3 + 0.5, // Varied sizes
+        opacity: Math.random() * 0.5 + 0.5 // Varied opacity
       });
     }
   }
 
   function drawTurbulence() {
-    ctx.fillStyle = document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-    ctx.clearRect(0, 0, width, height); // Clear with transparency for trail effect? No, clean clear for now.
+    const isDark = document.documentElement.classList.contains('dark');
+    // Use semi-transparent fill for trail effect
+    ctx.fillStyle = isDark ? 'rgba(26,26,26,0.05)' : 'rgba(254,254,254,0.05)';
+    ctx.fillRect(0, 0, width, height);
     
     // Simple noise-like flow
-    const time = Date.now() * 0.0005;
+    const time = Date.now() * 0.0003;
     
-    ctx.beginPath();
     for(let p of particles) {
-      // Simple flow field logic (mocking Perlin noise with sine waves)
-      const angle = (Math.cos(p.x * 0.005 + time) + Math.sin(p.y * 0.005 + time)) * Math.PI;
+      // More complex flow field
+      const angle = (
+        Math.sin(p.x * 0.003 + time) + 
+        Math.cos(p.y * 0.003 + time) +
+        Math.sin((p.x + p.y) * 0.002 + time * 0.5)
+      ) * Math.PI;
       
-      p.vx += Math.cos(angle) * 0.1;
-      p.vy += Math.sin(angle) * 0.1;
+      p.vx += Math.cos(angle) * 0.15;
+      p.vy += Math.sin(angle) * 0.15;
       
       // Friction
-      p.vx *= 0.95;
-      p.vy *= 0.95;
+      p.vx *= 0.96;
+      p.vy *= 0.96;
       
       p.x += p.vx;
       p.y += p.vy;
@@ -140,10 +146,12 @@
       if(p.y < 0) p.y = height;
       if(p.y > height) p.y = 0;
       
-      ctx.moveTo(p.x, p.y);
+      // Draw particle with glow effect
+      ctx.fillStyle = isDark ? `rgba(201,169,97,${p.opacity})` : `rgba(45,45,45,${p.opacity})`;
+      ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
     }
-    ctx.fill();
   }
 
   function animate() {

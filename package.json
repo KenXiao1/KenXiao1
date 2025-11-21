@@ -26,6 +26,8 @@
     "react-dom": "^19.2.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "typescript": "^5.9.3"
+    "remark-wiki-link": "^2.0.1",
+    "typescript": "^5.9.3",
+    "unist-util-visit": "^5.0.0"
   }
 }

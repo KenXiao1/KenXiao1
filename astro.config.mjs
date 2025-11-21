@@ -9,6 +9,8 @@ import rehypeKatex from 'rehype-katex';
 // https://astro.build/config
 import cloudflare from '@astrojs/cloudflare';
 
+import { remarkObsidianImages } from './src/lib/remark-obsidian-images.mjs';
+
 export default defineConfig({
   integrations: [
     tailwind(),
@@ -17,8 +19,12 @@ export default defineConfig({
     mdx()
   ],
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex]
+    remarkPlugins: [remarkMath, remarkObsidianImages],
+    rehypePlugins: [rehypeKatex],
+    shikiConfig: {
+      theme: 'github-dark',
+      wrap: true
+    }
   },
   output: 'static',
   adapter: cloudflare()
