@@ -62,7 +62,7 @@ const templates = [
           </div>
         </div>
 
-        <div id="equation-preview" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[100px]">
+        <div id="equation-preview" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[120px]">
           <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
             Select a template to preview equations
           </div>
@@ -113,17 +113,43 @@ const templates = [
       templateBtns.forEach(b => b.classList.remove('bg-accent/10', 'border-accent'));
       btn.classList.add('bg-accent/10', 'border-accent');
       
-      // Show preview
-      preview.innerHTML = `
-        <div class="space-y-2">
-          <div class="font-semibold mb-3">${selectedTemplate.name}</div>
-          ${selectedTemplate.equations.map(eq => `
-            <div class="font-mono text-sm p-2 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
-              ${eq}
+      // Render equations with KaTeX
+      if (window.katex) {
+        try {
+          const equationsHTML = selectedTemplate.equations.map(eq => {
+            const rendered = window.katex.renderToString(eq, {
+              throwOnError: false,
+              displayMode: true
+            });
+            return `<div class="p-3 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600 mb-2">${rendered}</div>`;
+          }).join('');
+          
+          preview.innerHTML = `
+            <div class="space-y-2">
+              <div class="font-semibold mb-3 text-lg">${selectedTemplate.name}</div>
+              ${equationsHTML}
             </div>
-          `).join('')}
-        </div>
-      `;
+          `;
+        } catch (err) {
+          console.error('KaTeX render error:', err);
+          fallbackRender();
+        }
+      } else {
+        fallbackRender();
+      }
+      
+      function fallbackRender() {
+        preview.innerHTML = `
+          <div class="space-y-2">
+            <div class="font-semibold mb-3">${selectedTemplate.name}</div>
+            ${selectedTemplate.equations.map(eq => `
+              <div class="font-mono text-sm p-2 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
+                ${eq}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
       
       applyBtn.disabled = false;
     });
