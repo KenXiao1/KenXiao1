@@ -1,0 +1,75 @@
+
+> ken-blog@0.0.1 build
+> astro build
+
+[2m22:06:36[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+[2m22:06:36[22m [34m[@astrojs/cloudflare][39m If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+[33m[1m22:06:36[22m [WARN] [adapter][39m Cloudflare does not support sharp at runtime. However, you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
+[2m22:06:37[22m [34m[content][39m Syncing content
+[2m22:06:37[22m [34m[content][39m Synced content
+[2m22:06:37[22m [34m[types][39m Generated [2m455ms[22m
+[2m22:06:37[22m [34m[build][39m output: [34m"static"[39m
+[2m22:06:37[22m [34m[build][39m mode: [34m"server"[39m
+[2m22:06:37[22m [34m[build][39m directory: [34mD:\kenxiao blog\ken-blog\dist\[39m
+[2m22:06:37[22m [34m[build][39m adapter: [32m@astrojs/cloudflare[39m
+[2m22:06:37[22m [34m[build][39m Collecting build info...
+[2m22:06:37[22m [34m[build][39m [32m✓ Completed in 549ms.[39m
+[2m22:06:37[22m [34m[build][39m Building server entrypoints...
+[2m22:06:40[22m [34m[vite][39m [32m✓ built in 3.04s[39m
+[2m22:06:40[22m [34m[build][39m [32m✓ Completed in 3.09s.[39m
+
+[42m[30m building client (vite) [39m[49m
+[2m22:06:40[22m [34m[vite][39m transforming...
+[2m22:06:46[22m [34m[vite][39m [32m✓[39m 1453 modules transformed.
+[2m22:06:46[22m [34m[vite][39m rendering chunks...
+[2m22:06:48[22m [34m[vite][39m computing gzip size...
+[2m22:06:48[22m [34m[vite][39m [2mdist/[22m[36m_astro/index.C7xe7hQc.js           [39m[1m[2m   12.35 kB[22m[1m[22m[2m │ gzip:   4.45 kB[22m
+[2m22:06:48[22m [34m[vite][39m [2mdist/[22m[36m_astro/client.BWtGz07G.js          [39m[1m[2m  182.70 kB[22m[1m[22m[2m │ gzip:  57.59 kB[22m
+[2m22:06:48[22m [34m[vite][39m [2mdist/[22m[36m_astro/keystatic-page.tevllTbE.js  [39m[1m[33m2,739.61 kB[39m[22m[2m │ gzip: 854.06 kB[22m
+[33m[1m22:06:48[22m [WARN] [vite][39m [33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m22:06:48[22m [34m[vite][39m [32m✓ built in 7.98s[39m
+
+[42m[30m prerendering static routes [39m[49m
+[2m22:06:48[22m [32m▶[39m src/pages/about.astro
+[2m22:06:48[22m   [34m└─[39m [2m/about/index.html[22m [2m(+25ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/blog/pdfs.astro
+[2m22:06:48[22m   [34m└─[39m [2m/blog/pdfs/index.html[22m [2m(+20ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/blog/[slug].astro
+[2m22:06:48[22m   [34m├─[39m [2m/blog/models-of-magic-by-frater-ud-翻译-blues的文章/index.html[22m [2m(+7ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/applying-abstract-algebra-to-romanology-with-an-example-of-teacher-student-relationship/index.html[22m [2m(+5ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/乡愁我在懂得-blues的文章/index.html[22m [2m(+5ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/使用quick-latex和completr插件在obsidian中实现快速编辑数学公式-blues的文章/index.html[22m [2m(+5ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/冷门的历史知识有哪些-blues的回答/index.html[22m [2m(+4ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/how-to-improve-self-control-by-edmond-en/index.html[22m [2m(+5ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/华尔街商人政变白宫政变始末-blues的文章/index.html[22m [2m(+5ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/反反动主义faq--斯科特亚历山大-blues的文章/index.html[22m [2m(+4ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/sep翻译-物理学中的结构主义-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/momentum-readme/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/基于markdown的万用文档编辑/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/如何评价-google-发布的-nano-banana-模型-blues的回答/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/宮下文書-简介-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/德性伦理学-简介-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/所罗门遗训-简介-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/生物学领域真的存在天才吗-blues的回答/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/深圳高中生生存手册-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/饶蘑菇/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/马丁德尔里奥-简介-blues的文章/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m   [34m├─[39m [2m/blog/魔方/index.html[22m [2m(+4ms)[22m 
+[2m22:06:48[22m   [34m└─[39m [2m/blog/饶手测量/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/blog/index.astro
+[2m22:06:48[22m   [34m└─[39m [2m/blog/index.html[22m [2m(+6ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/photography/index.astro
+[2m22:06:48[22m   [34m└─[39m [2m/photography/index.html[22m [2m(+3ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/recommendations/index.astro
+[2m22:06:48[22m   [34m└─[39m [2m/recommendations/index.html[22m [2m(+2ms)[22m 
+[2m22:06:48[22m [32m▶[39m src/pages/index.astro
+[2m22:06:48[22m   [34m└─[39m [2m/index.html[22m [2m(+4ms)[22m 
+[2m22:06:48[22m [32m✓ Completed in 219ms.
+[39m
+[2m22:06:48[22m [34m[build][39m Rearranging server assets...
+[2m22:06:51[22m [34m[build][39m Server built in [1m14.77s[22m
+[2m22:06:51[22m [34m[build][39m [1mComplete![22m

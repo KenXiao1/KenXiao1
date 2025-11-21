@@ -14,19 +14,21 @@ const photos = (await getCollection('photos'))
 
 <BaseLayout title="Ken Xiao | Home">
   <section class="py-20 text-center">
-    <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
-      Ken Xiao
-    </h1>
-    <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
-      Exploring Mathematics, AI, and History through code and lens.
-    </p>
-    <div class="mt-10 flex justify-center gap-4">
-      <a href="/about" class="px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium hover:opacity-90 transition-opacity">
-        About Me
-      </a>
-      <a href="/blog" class="px-6 py-3 border border-gray-300 dark:border-gray-700 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-        Read Blog
-      </a>
+    <div class="glass-card max-w-3xl mx-auto px-8 py-12 rounded-2xl">
+      <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
+        Ken Xiao
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+        Exploring Mathematics, AI, and History through code and lens.
+      </p>
+      <div class="mt-10 flex justify-center gap-4">
+        <a href="/about" class="px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium hover:opacity-90 transition-opacity">
+          About Me
+        </a>
+        <a href="/blog" class="px-6 py-3 border border-gray-300 dark:border-gray-700 rounded-full font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          Read Blog
+        </a>
+      </div>
     </div>
   </section>
 
@@ -38,7 +40,7 @@ const photos = (await getCollection('photos'))
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {posts.map(post => (
         <a href={`/blog/${post.slug}`} class="group block">
-          <article class="bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-xl p-6 h-full hover:border-accent transition-colors">
+          <article class="glass-card rounded-xl p-6 h-full hover:border-accent transition-colors">
             <div class="text-sm text-accent mb-2 uppercase tracking-wider font-mono">{post.data.category}</div>
             <h3 class="text-xl font-bold mb-2 group-hover:text-accent transition-colors">{post.data.title}</h3>
             <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3">{post.data.description}</p>
