@@ -1,0 +1,147 @@
+---
+const templates = [
+  { 
+    name: 'Lorenz Attractor', 
+    equations: ['dx/dt = σ(y - x)', 'dy/dt = x(ρ - z) - y', 'dz/dt = xy - βz'],
+    params: { sigma: 10, rho: 28, beta: 8/3 }
+  },
+  { 
+    name: 'Van der Pol', 
+    equations: ['dx/dt = y', 'dy/dt = μ(1 - x²)y - x'],
+    params: { mu: 1 }
+  },
+  { 
+    name: 'Pendulum', 
+    equations: ['dθ/dt = ω', 'dω/dt = -(g/L)sin(θ)'],
+    params: { g: 9.8, L: 1 }
+  },
+];
+---
+
+<div 
+  id="equation-modal" 
+  class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+>
+  <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h2 class="text-2xl font-serif font-bold">Differential Equation</h2>
+      <button id="close-modal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="p-6">
+      <div class="mb-6">
+        <label class="block text-sm font-semibold mb-2">Choose a Template</label>
+        <div class="grid gap-2">
+          {templates.map((template, idx) => (
+            <button
+              class="template-btn text-left px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              data-template={idx}
+            >
+              <div class="font-semibold">{template.name}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                {template.equations.join(', ')}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+          <div class="flex gap-2">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div class="text-sm text-blue-800 dark:text-blue-300">
+              <strong>Current Mode:</strong> Template-based equations only. Custom equation input is planned for a future update.
+            </div>
+          </div>
+        </div>
+
+        <div id="equation-preview" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[100px]">
+          <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
+            Select a template to preview equations
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+      <button id="cancel-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+        Cancel
+      </button>
+      <button id="apply-btn" class="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        Apply Equation
+      </button>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ templates }}>
+  const modal = document.getElementById('equation-modal');
+  const closeBtn = document.getElementById('close-modal');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const applyBtn = document.getElementById('apply-btn');
+  const preview = document.getElementById('equation-preview');
+  const templateBtns = document.querySelectorAll('.template-btn');
+  
+  let selectedTemplate = null;
+
+  // Open modal when equation mode is selected
+  window.addEventListener('equation-modal-open', () => {
+    modal?.classList.remove('hidden');
+  });
+
+  closeBtn?.addEventListener('click', () => {
+    modal?.classList.add('hidden');
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    modal?.classList.add('hidden');
+  });
+
+  templateBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.template);
+      selectedTemplate = templates[idx];
+      
+      // Update UI
+      templateBtns.forEach(b => b.classList.remove('bg-accent/10', 'border-accent'));
+      btn.classList.add('bg-accent/10', 'border-accent');
+      
+      // Show preview
+      preview.innerHTML = `
+        <div class="space-y-2">
+          <div class="font-semibold mb-3">${selectedTemplate.name}</div>
+          ${selectedTemplate.equations.map(eq => `
+            <div class="font-mono text-sm p-2 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
+              ${eq}
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      applyBtn.disabled = false;
+    });
+  });
+
+  applyBtn?.addEventListener('click', () => {
+    if (selectedTemplate) {
+      window.dispatchEvent(new CustomEvent('equation-selected', { 
+        detail: selectedTemplate 
+      }));
+      modal?.classList.add('hidden');
+    }
+  });
+
+  // Close on outside click
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
+</script>

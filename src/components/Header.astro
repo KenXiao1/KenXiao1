@@ -60,6 +60,12 @@ const links = [
   const visualSelect = document.getElementById('visual-theme-select');
   visualSelect?.addEventListener('change', (e) => {
     const theme = e.target.value;
+    
+    // Open equation modal if equation theme is selected
+    if (theme === 'differential-equation') {
+      window.dispatchEvent(new Event('equation-modal-open'));
+    }
+    
     window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
   });
 </script>

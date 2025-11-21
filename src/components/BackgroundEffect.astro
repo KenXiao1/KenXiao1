@@ -34,11 +34,15 @@
   // Turbulence State
   let particles = [];
   const particleCount = 500;
+  let mouseX = width / 2;
+  let mouseY = height / 2;
+  let mouseInfluence = 0;
   
   // Differential Equation State
   let deParticles = [];
   const deParticleCount = 300;
   let time = 0;
+  let customEquation = null; // For user-defined equations
 
   function resize() {
     width = window.innerWidth;
@@ -140,8 +144,14 @@
         Math.sin((p.x + p.y) * 0.002 + time * 0.5)
       ) * Math.PI;
       
-      p.vx += Math.cos(angle) * 0.15;
-      p.vy += Math.sin(angle) * 0.15;
+      // Mouse attraction force
+      const dx = mouseX - p.x;
+      const dy = mouseY - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const mouseForce = mouseInfluence > 0 ? Math.min(200 / (dist + 1), 5) : 0;
+      
+      p.vx += Math.cos(angle) * 0.15 + (dx / dist) * mouseForce * 0.1;
+      p.vy += Math.sin(angle) * 0.15 + (dy / dist) * mouseForce * 0.1;
       
       // Friction
       p.vx *= 0.96;
@@ -237,6 +247,18 @@
   window.addEventListener('resize', resize);
   resize();
   animate();
+  
+  // Mouse tracking for turbulence
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    mouseInfluence = 1;
+  });
+  
+  // Decay mouse influence over time
+  setInterval(() => {
+    mouseInfluence *= 0.95;
+  }, 50);
 
   // Listen for theme change event
   window.addEventListener('theme-change', (e) => {

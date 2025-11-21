@@ -1,25 +1,25 @@
 ---
-import '../styles/global.css';
-import Header from '../components/Header.astro';
 import BackgroundEffect from '../components/BackgroundEffect.astro';
+import Header from '../components/Header.astro';
+import EquationModal from '../components/EquationModal.astro';
+import '../styles/global.css';
 
 interface Props {
-	title: string;
-  description?: string;
+  title?: string;
 }
 
-const { title, description = "Ken Xiao's Personal Blog" } = Astro.props;
+const { title = "Ken Xiao" } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Ken Xiao's Personal Blog" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
     <script is:inline>
       // Check for saved theme preference
       const theme = (() => {
@@ -37,15 +37,16 @@ const { title, description = "Ken Xiao's Personal Blog" } = Astro.props;
         document.documentElement.classList.remove('dark');
       }
     </script>
-	</head>
-	<body class="min-h-screen flex flex-col font-sans">
+  </head>
+  <body class="min-h-screen flex flex-col font-sans">
     <BackgroundEffect />
-		<Header />
+    <EquationModal />
+    <Header />
     <main class="flex-grow container mx-auto px-4 py-8">
-		  <slot />
+      <slot />
     </main>
     <footer class="py-6 text-center text-sm opacity-60">
       &copy; {new Date().getFullYear()} Ken Xiao. All rights reserved.
     </footer>
-	</body>
+  </body>
 </html>

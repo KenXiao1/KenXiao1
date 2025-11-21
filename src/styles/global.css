@@ -22,9 +22,20 @@
 }
 
 body {
-  background-color: var(--color-bg);
   color: var(--color-text);
+  background-color: var(--color-bg);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Global backdrop blur for readability over animated backgrounds */
+main {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dark main {
+  background: rgba(26, 26, 26, 0.85);
 }
 
 /* Custom scrollbar */
