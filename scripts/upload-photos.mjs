@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs/promises';
 import path from 'path';
+import 'dotenv/config';
 
 // Configure Cloudinary
 cloudinary.config({
