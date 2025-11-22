@@ -9,10 +9,64 @@
         data-reactions-enabled="1"
         data-emit-metadata="1"
         data-input-position="top"
-        data-theme="preferred_color_scheme"
+        data-theme="light"
         data-lang="zh-CN"
         data-loading="lazy"
         crossorigin="anonymous"
         async>
   </script>
 </section>
+
+<script>
+  // 获取当前主题
+  function getTheme() {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
+
+  // 设置 giscus 主题
+  function setGiscusTheme(theme) {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    
+    iframe.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme: theme } } },
+      'https://giscus.app'
+    );
+  }
+
+  // 初始化主题
+  const initialTheme = getTheme();
+  
+  // 等待 giscus iframe 加载完成后设置主题
+  const observer = new MutationObserver(() => {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (iframe) {
+      // iframe 加载完成后设置主题
+      iframe.addEventListener('load', () => {
+        setGiscusTheme(initialTheme);
+      });
+      observer.disconnect();
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // 监听主题切换
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle?.addEventListener('click', () => {
+    // 延迟一点以确保 localStorage 已更新
+    setTimeout(() => {
+      const newTheme = getTheme();
+      setGiscusTheme(newTheme);
+    }, 100);
+  });
+</script>
