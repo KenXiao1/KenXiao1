@@ -1,28 +1,11 @@
 ---
-const templates = [
-  { 
-    name: 'Lorenz Attractor', 
-    equations: ['dx/dt = σ(y - x)', 'dy/dt = x(ρ - z) - y', 'dz/dt = xy - βz'],
-    params: { sigma: 10, rho: 28, beta: 8/3 }
-  },
-  { 
-    name: 'Van der Pol', 
-    equations: ['dx/dt = y', 'dy/dt = μ(1 - x²)y - x'],
-    params: { mu: 1 }
-  },
-  { 
-    name: 'Pendulum', 
-    equations: ['dθ/dt = ω', 'dω/dt = -(g/L)sin(θ)'],
-    params: { g: 9.8, L: 1 }
-  },
-];
 ---
 
 <div 
   id="equation-modal" 
   class="hidden fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm"
 >
-  <div class="fixed right-0 top-0 h-full w-full md:w-[500px] bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto transform transition-transform">
+  <div class="fixed right-0 top-0 h-full w-full md:w-[500px] bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto transform transition-transform flex flex-col">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-900 z-10">
       <h2 class="text-2xl font-serif font-bold">Differential Equation</h2>
       <button id="close-modal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
@@ -32,142 +15,283 @@ const templates = [
       </button>
     </div>
 
-    <div class="p-6">
-      <div class="mb-6">
-        <label class="block text-sm font-semibold mb-2">Choose a Template</label>
-        <div class="grid gap-2">
-          {templates.map((template, idx) => (
-            <button
-              class="template-btn text-left px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              data-template={idx}
-            >
-              <div class="font-semibold">{template.name}</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                {template.equations.join(', ')}
-              </div>
-            </button>
-          ))}
+    <div class="p-6 flex-grow overflow-y-auto">
+      
+      <!-- Custom Equation Input Section -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold">Custom Equations</h3>
+          <button id="reset-lorenz-btn" class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-600 dark:text-gray-400 transition-colors">
+            Reset to Lorenz
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <!-- dx/dt -->
+          <div class="flex items-center gap-3">
+            <div class="w-16 text-right font-mono text-gray-500 dark:text-gray-400">dx/dt =</div>
+            <input 
+              type="text" 
+              id="dx-input" 
+              class="equation-input flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
+              placeholder="e.g. 10 * (y - x)"
+              value="10 * (y - x)"
+            />
+          </div>
+          
+          <!-- dy/dt -->
+          <div class="flex items-center gap-3">
+            <div class="w-16 text-right font-mono text-gray-500 dark:text-gray-400">dy/dt =</div>
+            <input 
+              type="text" 
+              id="dy-input" 
+              class="equation-input flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
+              placeholder="e.g. x * (28 - z) - y"
+              value="x * (28 - z) - y"
+            />
+          </div>
+          
+          <!-- dz/dt -->
+          <div class="flex items-center gap-3">
+            <div class="w-16 text-right font-mono text-gray-500 dark:text-gray-400">dz/dt =</div>
+            <input 
+              type="text" 
+              id="dz-input" 
+              class="equation-input flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-accent focus:border-transparent outline-none"
+              placeholder="e.g. x * y - (8/3) * z"
+              value="x * y - (8/3) * z"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-          <div class="flex gap-2">
-            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <div class="text-sm text-blue-800 dark:text-blue-300">
-              <strong>Current Mode:</strong> Template-based equations only. Custom equation input is planned for a future update.
-            </div>
-          </div>
+      <!-- Virtual Keyboard -->
+      <div class="mb-8">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Virtual Keyboard</label>
+        <div class="grid grid-cols-5 gap-2">
+          <!-- Variables -->
+          <button class="vk-btn bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-serif italic" data-val="x">x</button>
+          <button class="vk-btn bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-serif italic" data-val="y">y</button>
+          <button class="vk-btn bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-serif italic" data-val="z">z</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val="(">(</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val=")">)</button>
+          
+          <!-- Operators -->
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val="+">+</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val="-">-</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val="*">×</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val="/">/</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 font-mono" data-val=".">.</button>
+          
+          <!-- Numbers -->
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="7">7</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="8">8</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="9">9</button>
+          <button class="vk-btn bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs" data-val="sin(">sin</button>
+          <button class="vk-btn bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs" data-val="cos(">cos</button>
+          
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="4">4</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="5">5</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="6">6</button>
+          <button class="vk-btn bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs" data-val="abs(">abs</button>
+          <button class="vk-btn bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs" data-val="sqrt(">sqrt</button>
+          
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="1">1</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="2">2</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono" data-val="3">3</button>
+          <button class="vk-btn bg-gray-50 dark:bg-gray-800/50 font-mono col-span-2" data-val="0">0</button>
+          
+          <button class="vk-btn bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 col-span-2" id="backspace-btn">⌫ Backspace</button>
+          <button class="vk-btn bg-gray-100 dark:bg-gray-800 col-span-3" id="clear-input-btn">Clear Field</button>
         </div>
+      </div>
 
-        <div id="equation-preview" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[120px]">
-          <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
-            Select a template to preview equations
-          </div>
+      <!-- Preview -->
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Preview</label>
+        <div id="equation-preview" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[120px] flex flex-col justify-center items-center gap-2">
+          <!-- Preview content will be injected here -->
         </div>
       </div>
     </div>
 
-    <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+    <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-white dark:bg-gray-900 sticky bottom-0 z-10">
       <button id="cancel-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
         Cancel
       </button>
-      <button id="apply-btn" class="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+      <button id="apply-btn" class="px-4 py-2 bg-accent text-white rounded-lg hover:opacity-90 transition-opacity">
         Apply Equation
       </button>
     </div>
   </div>
 </div>
 
-<script define:vars={{ templates }}>
+<style>
+  .vk-btn {
+    @apply p-2 rounded border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm text-sm font-medium;
+  }
+</style>
+
+<script>
   const modal = document.getElementById('equation-modal');
   const closeBtn = document.getElementById('close-modal');
   const cancelBtn = document.getElementById('cancel-btn');
   const applyBtn = document.getElementById('apply-btn');
   const preview = document.getElementById('equation-preview');
-  const templateBtns = document.querySelectorAll('.template-btn');
+  const resetBtn = document.getElementById('reset-lorenz-btn');
   
-  let selectedTemplate = null;
+  const inputs = {
+    dx: document.getElementById('dx-input'),
+    dy: document.getElementById('dy-input'),
+    dz: document.getElementById('dz-input')
+  };
+  
+  let activeInput = inputs.dx; // Default active input
 
-  // Open modal when equation mode is selected
+  // Track active input
+  Object.values(inputs).forEach(input => {
+    input.addEventListener('focus', () => {
+      activeInput = input;
+    });
+    input.addEventListener('input', updatePreview);
+  });
+
+  // Open modal listener
   window.addEventListener('equation-modal-open', () => {
     modal?.classList.remove('hidden');
+    loadCurrentState();
+    updatePreview();
   });
 
-  closeBtn?.addEventListener('click', () => {
+  function closeModal() {
     modal?.classList.add('hidden');
-  });
+  }
 
-  cancelBtn?.addEventListener('click', () => {
-    modal?.classList.add('hidden');
-  });
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
 
-  templateBtns.forEach(btn => {
+  // Virtual Keyboard Logic
+  document.querySelectorAll('.vk-btn').forEach(btn => {
+    if (btn.id === 'backspace-btn' || btn.id === 'clear-input-btn') return;
+    
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.dataset.template);
-      selectedTemplate = templates[idx];
+      if (!activeInput) return;
       
-      // Update UI
-      templateBtns.forEach(b => b.classList.remove('bg-accent/10', 'border-accent'));
-      btn.classList.add('bg-accent/10', 'border-accent');
+      const val = btn.dataset.val;
+      const start = activeInput.selectionStart;
+      const end = activeInput.selectionEnd;
+      const text = activeInput.value;
       
-      // Render equations with KaTeX
-      if (window.katex) {
-        try {
-          const equationsHTML = selectedTemplate.equations.map(eq => {
-            const rendered = window.katex.renderToString(eq, {
-              throwOnError: false,
-              displayMode: true
-            });
-            return `<div class="p-3 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600 mb-2">${rendered}</div>`;
-          }).join('');
-          
-          preview.innerHTML = `
-            <div class="space-y-2">
-              <div class="font-semibold mb-3 text-lg">${selectedTemplate.name}</div>
-              ${equationsHTML}
-            </div>
-          `;
-        } catch (err) {
-          console.error('KaTeX render error:', err);
-          fallbackRender();
-        }
-      } else {
-        fallbackRender();
-      }
+      activeInput.value = text.substring(0, start) + val + text.substring(end);
+      activeInput.focus();
+      activeInput.setSelectionRange(start + val.length, start + val.length);
       
-      function fallbackRender() {
-        preview.innerHTML = `
-          <div class="space-y-2">
-            <div class="font-semibold mb-3">${selectedTemplate.name}</div>
-            ${selectedTemplate.equations.map(eq => `
-              <div class="font-mono text-sm p-2 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
-                ${eq}
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-      
-      applyBtn.disabled = false;
+      updatePreview();
     });
   });
 
-  applyBtn?.addEventListener('click', () => {
-    if (selectedTemplate) {
-      window.dispatchEvent(new CustomEvent('equation-selected', { 
-        detail: selectedTemplate 
-      }));
-      modal?.classList.add('hidden');
+  document.getElementById('backspace-btn')?.addEventListener('click', () => {
+    if (!activeInput) return;
+    
+    const start = activeInput.selectionStart;
+    const end = activeInput.selectionEnd;
+    const text = activeInput.value;
+    
+    if (start === end && start > 0) {
+      activeInput.value = text.substring(0, start - 1) + text.substring(end);
+      activeInput.focus();
+      activeInput.setSelectionRange(start - 1, start - 1);
+    } else if (start !== end) {
+      activeInput.value = text.substring(0, start) + text.substring(end);
+      activeInput.focus();
+      activeInput.setSelectionRange(start, start);
     }
+    updatePreview();
+  });
+
+  document.getElementById('clear-input-btn')?.addEventListener('click', () => {
+    if (!activeInput) return;
+    activeInput.value = '';
+    activeInput.focus();
+    updatePreview();
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    inputs.dx.value = '10 * (y - x)';
+    inputs.dy.value = 'x * (28 - z) - y';
+    inputs.dz.value = 'x * y - (8/3) * z';
+    updatePreview();
+  });
+
+  function loadCurrentState() {
+    const savedData = localStorage.getItem('customEquationData');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        inputs.dx.value = data.dx;
+        inputs.dy.value = data.dy;
+        inputs.dz.value = data.dz;
+      } catch (e) {
+        console.error('Error loading saved equations', e);
+      }
+    }
+  }
+
+  function updatePreview() {
+    if (!window.katex) return;
+    
+    const formatForKatex = (str) => {
+      // Simple heuristic to make JS math look like LaTeX
+      return str
+        .replace(/\*/g, '') // Remove multiplication asterisks for display
+        .replace(/\bPI\b/g, '\\pi')
+        .replace(/\bsqrt\b/g, '\\sqrt')
+        .replace(/\btheta\b/g, '\\theta')
+        .replace(/\bomega\b/g, '\\omega')
+        .replace(/\bsin\b/g, '\\sin')
+        .replace(/\bcos\b/g, '\\cos')
+        .replace(/\btan\b/g, '\\tan');
+    };
+
+    const dxTex = `\\frac{dx}{dt} = ${formatForKatex(inputs.dx.value)}`;
+    const dyTex = `\\frac{dy}{dt} = ${formatForKatex(inputs.dy.value)}`;
+    const dzTex = `\\frac{dz}{dt} = ${formatForKatex(inputs.dz.value)}`;
+
+    try {
+      const html = [dxTex, dyTex, dzTex].map(tex => 
+        window.katex.renderToString(tex, {
+          throwOnError: false,
+          displayMode: true
+        })
+      ).join('');
+      
+      preview.innerHTML = html;
+    } catch (err) {
+      preview.innerHTML = '<div class="text-red-500 text-sm">Error rendering equation</div>';
+    }
+  }
+
+  applyBtn?.addEventListener('click', () => {
+    const data = {
+      dx: inputs.dx.value,
+      dy: inputs.dy.value,
+      dz: inputs.dz.value
+    };
+    
+    window.dispatchEvent(new CustomEvent('equation-selected', { 
+      detail: { 
+        type: 'custom',
+        data: data
+      } 
+    }));
+    
+    closeModal();
   });
 
   // Close on outside click
   modal?.addEventListener('click', (e) => {
     if (e.target === modal) {
-      modal.classList.add('hidden');
+      closeModal();
     }
   });
 </script>

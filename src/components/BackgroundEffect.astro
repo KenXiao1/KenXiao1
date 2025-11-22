@@ -6,8 +6,13 @@
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.4; /* Increased opacity for visibility */
+    opacity: 0.4;
     pointer-events: none;
+    transition: transform 0.3s ease;
+  }
+  
+  #bg-canvas.right-positioned {
+    transform: translateX(35%);
   }
 </style>
 
@@ -42,7 +47,7 @@
   let deParticles = [];
   const deParticleCount = 300;
   let time = 0;
-  let customEquation = null; // For user-defined equations
+  let selectedEquationTemplate = null; // Current equation template (lorenz, vanderpol, pendulum)
 
   function resize() {
     width = window.innerWidth;
@@ -53,6 +58,9 @@
   }
 
   function initTheme() {
+    // Clear canvas on theme init to prevent ghosting
+    if (ctx) ctx.clearRect(0, 0, width, height);
+
     if (currentTheme === 'cellular-automata') {
       initCA();
     } else if (currentTheme === 'turbulence') {
@@ -175,10 +183,22 @@
     }
   }
   
-  // --- Differential Equation (Lorenz Attractor) ---
+  // --- Differential Equation (Customizable) ---
+  let customFunctions = null;
+
   function initDifferentialEquation() {
+    // Clear canvas immediately to remove "ghosts" of previous state
+    if (ctx) ctx.clearRect(0, 0, width, height);
+    
     deParticles = [];
     time = 0;
+    
+    // Default to Lorenz if no template selected or invalid
+    if (!selectedEquationTemplate || (selectedEquationTemplate !== 'lorenz' && selectedEquationTemplate !== 'custom')) {
+      selectedEquationTemplate = 'lorenz';
+    }
+
+    // Initialize particles (same for both modes for now, can be customized later)
     for(let i=0; i<deParticleCount; i++) {
       deParticles.push({
         x: (Math.random() - 0.5) * 20,
@@ -186,8 +206,47 @@
         z: Math.random() * 40,
         size: Math.random() * 2 + 1,
         opacity: Math.random() * 0.6 + 0.4,
-        trail: []
       });
+    }
+
+    if (selectedEquationTemplate === 'custom') {
+      try {
+        const savedCustom = JSON.parse(localStorage.getItem('customEquationData'));
+        if (savedCustom) {
+          // Create functions from strings
+          // Variables: x, y, z, t, sigma, rho, beta
+          // We allow standard Math functions
+          const createFunc = (str) => {
+            // Replace common math functions to be accessible directly if needed, 
+            // or just rely on Math.sin etc. 
+            // For better UX, we might want to allow 'sin(x)' instead of 'Math.sin(x)'
+            // But for safety and simplicity in this iteration, let's assume standard JS math or pre-process.
+            // Let's do a simple pre-process to allow sin, cos, etc.
+            let body = 'return ' + str
+              .replace(/\bsin\b/g, 'Math.sin')
+              .replace(/\bcos\b/g, 'Math.cos')
+              .replace(/\btan\b/g, 'Math.tan')
+              .replace(/\babs\b/g, 'Math.abs')
+              .replace(/\bsqrt\b/g, 'Math.sqrt')
+              .replace(/\bpow\b/g, 'Math.pow')
+              .replace(/\bPI\b/g, 'Math.PI');
+              
+            return new Function('x', 'y', 'z', 't', body);
+          };
+
+          customFunctions = {
+            dx: createFunc(savedCustom.dx),
+            dy: createFunc(savedCustom.dy),
+            dz: createFunc(savedCustom.dz)
+          };
+        } else {
+          // Fallback to Lorenz if custom data missing
+          selectedEquationTemplate = 'lorenz';
+        }
+      } catch (e) {
+        console.error('Error parsing custom equation:', e);
+        selectedEquationTemplate = 'lorenz';
+      }
     }
   }
   
@@ -197,36 +256,72 @@
     ctx.fillRect(0, 0, width, height);
     
     const dt = 0.005;
-    const sigma = 10;
-    const rho = 28;
-    const beta = 8/3;
     
-    for(let p of deParticles) {
-      // Lorenz attractor equations
-      const dx = sigma * (p.y - p.x) * dt;
-      const dy = (p.x * (rho - p.z) - p.y) * dt;
-      const dz = (p.x * p.y - beta * p.z) * dt;
+    if (selectedEquationTemplate === 'lorenz') {
+      // Lorenz Attractor
+      const sigma = 10;
+      const rho = 28;
+      const beta = 8/3;
       
-      p.x += dx;
-      p.y += dy;
-      p.z += dz;
-      
-      // Map to screen coordinates
-      const scale = 8;
-      const screenX = width / 2 + p.x * scale;
-      const screenY = height / 2 + p.y * scale;
-      
-      // Draw particle
-      ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
-      ctx.beginPath();
-      ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Reset if out of bounds
-      if (Math.abs(p.x) > 30 || Math.abs(p.y) > 30 || p.z > 60 || p.z < 0) {
-        p.x = (Math.random() - 0.5) * 20;
-        p.y = (Math.random() - 0.5) * 20;
-        p.z = Math.random() * 40;
+      for(let p of deParticles) {
+        const dx = sigma * (p.y - p.x) * dt;
+        const dy = (p.x * (rho - p.z) - p.y) * dt;
+        const dz = (p.x * p.y - beta * p.z) * dt;
+        
+        p.x += dx;
+        p.y += dy;
+        p.z += dz;
+        
+        const scale = 8;
+        const screenX = width / 2 + p.x * scale;
+        const screenY = height / 2 + p.y * scale;
+        
+        ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        if (Math.abs(p.x) > 30 || Math.abs(p.y) > 30 || p.z > 60 || p.z < 0) {
+          p.x = (Math.random() - 0.5) * 20;
+          p.y = (Math.random() - 0.5) * 20;
+          p.z = Math.random() * 40;
+        }
+      }
+    } else if (selectedEquationTemplate === 'custom' && customFunctions) {
+      // Custom Equation
+      for(let p of deParticles) {
+        try {
+          const dx = customFunctions.dx(p.x, p.y, p.z, time) * dt;
+          const dy = customFunctions.dy(p.x, p.y, p.z, time) * dt;
+          const dz = customFunctions.dz(p.x, p.y, p.z, time) * dt;
+          
+          p.x += dx;
+          p.y += dy;
+          p.z += dz;
+          
+          // Auto-scaling might be tricky for custom equations, sticking to Lorenz-ish scale for now
+          // or maybe slightly smaller scale to be safe
+          const scale = 8; 
+          const screenX = width / 2 + p.x * scale;
+          const screenY = height / 2 + p.y * scale;
+          
+          ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
+          ctx.beginPath();
+          ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Generic bounds check - if it explodes, reset
+          if (Math.abs(p.x) > 50 || Math.abs(p.y) > 50 || Math.abs(p.z) > 100 || isNaN(p.x)) {
+             p.x = (Math.random() - 0.5) * 20;
+             p.y = (Math.random() - 0.5) * 20;
+             p.z = Math.random() * 40;
+          }
+        } catch (e) {
+          // If equation fails at runtime, stop drawing to prevent console spam
+          selectedEquationTemplate = 'lorenz'; 
+          initDifferentialEquation();
+          break;
+        }
       }
     }
     
@@ -270,4 +365,50 @@
   window.addEventListener('color-change', (e) => {
     customColor = e.detail;
   });
+  
+  // Listen for equation selection event
+  window.addEventListener('equation-selected', (e) => {
+    const detail = e.detail;
+    
+    if (detail.type === 'custom') {
+      selectedEquationTemplate = 'custom';
+      localStorage.setItem('selectedEquation', 'custom');
+      localStorage.setItem('customEquationData', JSON.stringify(detail.data));
+    } else {
+      selectedEquationTemplate = 'lorenz';
+      localStorage.setItem('selectedEquation', 'lorenz');
+    }
+    
+    // Re-initialize the differential equation with new template
+    if (currentTheme === 'differential-equation') {
+      initDifferentialEquation();
+    }
+  });
+  
+  // Load saved equation template on page load
+  const savedEquation = localStorage.getItem('selectedEquation');
+  if (savedEquation) {
+    selectedEquationTemplate = savedEquation;
+  }
+  
+  // Apply positioning based on current page
+  function updateCanvasPosition() {
+    const isHomepage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+    
+    if (!isHomepage && currentTheme === 'differential-equation') {
+      canvas.classList.add('right-positioned');
+    } else {
+      canvas.classList.remove('right-positioned');
+    }
+  }
+  
+  // Update position on load and when theme changes
+  updateCanvasPosition();
+  window.addEventListener('theme-change', updateCanvasPosition);
+  
+  // Also listen for page navigation (for SPAs)
+  if (document.addEventListener) {
+    document.addEventListener('astro:page-load', updateCanvasPosition);
+  }
+
 </script>

@@ -23,3 +23,29 @@ const photos = (await getCollection('photos'))
     )}
   </div>
 </BaseLayout>
+
+<script>
+  // Set default background to 'none' for photography page if no preference exists
+  const savedTheme = localStorage.getItem('visualTheme');
+  
+  if (!savedTheme) {
+    // Only set default if user hasn't made a choice yet
+    localStorage.setItem('visualTheme', 'none');
+    
+    // Update the select dropdown if it exists
+    const visualSelect = document.getElementById('visual-theme-select');
+    if (visualSelect) {
+      visualSelect.value = 'none';
+    }
+    
+    // Hide the canvas
+    const canvas = document.getElementById('bg-canvas');
+    if (canvas) {
+      canvas.style.display = 'none';
+    }
+    
+    // Dispatch theme change event
+    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: 'none' } }));
+  }
+</script>
+
