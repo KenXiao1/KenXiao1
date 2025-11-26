@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+  coverImage: string;
+  count: number;
+  href: string;
+}
+
+const { title, coverImage, count, href } = Astro.props;
+---
+
+<a href={href} class="group block relative overflow-hidden rounded-xl aspect-[4/3] cursor-pointer">
+  <div class="absolute inset-0 bg-gray-200 dark:bg-gray-800 transition-colors">
+    {/* 
+      Using the same Cloudinary logic as PhotoGrid for consistency.
+      If coverImage is a full URL, use it directly. Otherwise treat as Cloudinary ID.
+    */}
+    <img 
+      src={coverImage.startsWith('http') ? coverImage : `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_800,c_limit/${coverImage}`} 
+      alt={title}
+      class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300"></div>
+    
+    <div class="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+      <h3 class="text-2xl font-serif font-bold mb-1">{title}</h3>
+      <p class="text-sm opacity-80 font-sans">{count} photos</p>
+    </div>
+  </div>
+</a>

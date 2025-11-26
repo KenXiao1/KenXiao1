@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  return [
+    { params: { album: 'stickers-on-desks' } },
+    { params: { album: 'others' } },
+  ];
+}
+
+const { album } = Astro.params;
+const allPhotos = (await getCollection('photos'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+let photos = [];
+let title = '';
+
+if (album === 'stickers-on-desks') {
+  photos = allPhotos.filter(p => p.data.album === 'stickers-on-desks');
+  title = 'Stickers on Desks';
+} else {
+  // others
+  photos = allPhotos.filter(p => p.data.album === 'others' || !p.data.album);
+  title = 'Others';
+}
+
+// Group by subfolder for 'others' album
+// Assuming cloudinaryId format: folder/subfolder/filename
+// We want to group by 'subfolder' if it exists after the base path.
+// Adjust base path logic as needed.
+const groupedPhotos: Record<string, typeof photos> = {};
+const rootPhotos: typeof photos = [];
+
+if (album === 'others') {
+    photos.forEach(photo => {
+        const parts = photo.data.cloudinaryId.split('/');
+        // Example: ken-blog/photography/subfolder/image
+        // If parts.length > 3, we assume there's a subfolder
+        // This is a heuristic. Adjust based on actual Cloudinary structure.
+        // Let's assume 'ken-blog/photography' is the base.
+        // So index 0=ken-blog, 1=photography.
+        // If there is a subfolder, it would be at index 2.
+        
+        // Check if we have enough parts for a subfolder
+        if (parts.length > 3) {
+            const subfolder = parts[2]; // e.g. 'trip2023'
+            if (!groupedPhotos[subfolder]) {
+                groupedPhotos[subfolder] = [];
+            }
+            groupedPhotos[subfolder].push(photo);
+        } else {
+            rootPhotos.push(photo);
+        }
+    });
+} else {
+    rootPhotos.push(...photos);
+}
+
+const subfolders = Object.keys(groupedPhotos).sort();
+---
+
+<BaseLayout title={`Ken Xiao | ${title}`}>
+  <div class="max-w-7xl mx-auto">
+    <header class="mb-12">
+      <a href="/photography" class="text-sm text-gray-500 hover:text-black dark:hover:text-white transition-colors mb-4 inline-block">← Back to Albums</a>
+      <h1 class="text-4xl md:text-6xl font-serif font-bold mb-4">{title}</h1>
+    </header>
+
+    {photos.length > 0 ? (
+      <div class="space-y-12">
+        {/* Subfolders Sections */}
+        {subfolders.map(folder => (
+            <section>
+                <h2 class="text-2xl font-bold mb-6 capitalize border-b pb-2 border-gray-200 dark:border-gray-800">{folder}</h2>
+                <PhotoGrid photos={groupedPhotos[folder]} />
+            </section>
+        ))}
+
+        {/* Root Photos */}
+        {rootPhotos.length > 0 && (
+            <section>
+                {subfolders.length > 0 && <h2 class="text-2xl font-bold mb-6 border-b pb-2 border-gray-200 dark:border-gray-800">General</h2>}
+                <PhotoGrid photos={rootPhotos} />
+            </section>
+        )}
+      </div>
+    ) : (
+      <div class="text-center py-20 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">
+        <p class="text-gray-500 mb-4">No photos in this album yet.</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>

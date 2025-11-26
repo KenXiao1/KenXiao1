@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PhotoGrid from '../../components/PhotoGrid.astro';
+import AlbumCard from '../../components/AlbumCard.astro';
 import { getCollection } from 'astro:content';
 
 const photos = (await getCollection('photos'))
@@ -13,14 +13,23 @@ const photos = (await getCollection('photos'))
       <h1 class="text-4xl md:text-6xl font-serif font-bold mb-4">Visual Stories</h1>
     </header>
 
-    {photos.length > 0 ? (
-      <PhotoGrid photos={photos} />
-    ) : (
-      <div class="text-center py-20 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">
-        <p class="text-gray-500 mb-4">Gallery is being curated.</p>
-        <p class="text-sm text-gray-400">Photos will appear here once uploaded to Cloudinary.</p>
-      </div>
-    )}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Stickers on Desks Album */}
+      <AlbumCard
+        title="Stickers on Desks"
+        coverImage={photos.find(p => p.data.album === 'stickers-on-desks')?.data.cloudinaryId || photos[0]?.data.cloudinaryId}
+        count={photos.filter(p => p.data.album === 'stickers-on-desks').length}
+        href="/photography/stickers-on-desks"
+      />
+
+      {/* Others Album */}
+      <AlbumCard
+        title="Others"
+        coverImage={photos.find(p => p.data.album === 'others')?.data.cloudinaryId || photos[1]?.data.cloudinaryId}
+        count={photos.filter(p => p.data.album === 'others' || !p.data.album).length}
+        href="/photography/others"
+      />
+    </div>
   </div>
 </BaseLayout>
 

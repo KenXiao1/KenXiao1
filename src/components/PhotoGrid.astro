@@ -8,15 +8,14 @@ const { photos } = Astro.props;
   {photos.map((photo, index) => (
     <div class="break-inside-avoid group relative cursor-zoom-in" onclick={`openLightbox(${index})`}>
       <div class="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-        {/* 
-          In a real implementation with Cloudinary, we would use the CldImage component or generate optimized URLs.
-          For now, we'll assume a placeholder or direct URL structure.
-          Since we haven't set up the Cloudinary SDK fully yet, I'll use a placeholder logic that would be replaced.
-        */}
         <img 
-          src={`https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_800,c_limit/${photo.data.cloudinaryId}`} 
+          src={(() => {
+            const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
+            const transforms = 'w_800,f_auto,q_auto';
+            return `${webpSeProxy}/image/upload/${transforms}/${photo.data.cloudinaryId}`;
+          })()}
           alt={photo.data.title}
-          class="w-full h-auto transform transition-transform duration-500 group-hover:scale-105"
+          class="max-w-full h-auto mx-auto transform transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
@@ -55,11 +54,17 @@ const { photos } = Astro.props;
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxCaption = document.getElementById('lightbox-caption');
   
+  // Helper function to build image URL
+  function buildImageUrl(cloudinaryId, width) {
+    const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
+    const transforms = `w_${width},f_auto,q_auto`;
+    return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
+  }
+  
   window.openLightbox = (index) => {
     currentIndex = index;
     updateLightbox();
     lightbox.classList.remove('hidden');
-    // Small delay to allow display:block to apply before opacity transition
     setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
     document.body.style.overflow = 'hidden';
   };
@@ -74,9 +79,7 @@ const { photos } = Astro.props;
 
   function updateLightbox() {
     const photo = photos[currentIndex];
-    // Load high-res image
-    const src = `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_1600,c_limit/${photo.data.cloudinaryId}`;
-    lightboxImg.src = src;
+    lightboxImg.src = buildImageUrl(photo.data.cloudinaryId, 1600);
     lightboxCaption.textContent = photo.data.title;
   }
 
@@ -94,12 +97,10 @@ const { photos } = Astro.props;
   document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); nextPhoto(); });
   document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); prevPhoto(); });
   
-  // Close on background click
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
-  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (lightbox.classList.contains('hidden')) return;
     if (e.key === 'Escape') closeLightbox();

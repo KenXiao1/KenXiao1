@@ -22,6 +22,7 @@ const photos = defineCollection({
         location: z.string().optional(),
         camera: z.string().optional(),
         tags: z.array(z.string()).optional(),
+        album: z.enum(['stickers-on-desks', 'others']).default('others'),
     }),
 });
 
