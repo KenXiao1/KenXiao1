@@ -64,15 +64,26 @@ const photos = (await getCollection('photos'))
       <a href="/photography" class="text-accent hover:underline">View gallery &rarr;</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Placeholder for photos until we have content */}
-      {photos.length > 0 ? photos.map(photo => (
-        <div class="aspect-[4/3] bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden">
-          {/* Cloudinary Image would go here */}
-          <div class="w-full h-full flex items-center justify-center text-gray-500">
-            {photo.data.title}
-          </div>
-        </div>
-      )) : (
+      {photos.length > 0 ? photos.map(photo => {
+        const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
+        const transforms = 'w_800,f_auto,q_auto';
+        const imageUrl = `${webpSeProxy}/image/upload/${transforms}/${photo.data.cloudinaryId}`;
+
+        return (
+          <a href="/photography" class="group block aspect-[4/3] rounded-lg overflow-hidden relative">
+            <img
+              src={imageUrl}
+              alt={photo.data.title}
+              class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/60 to-transparent">
+              <p class="text-white text-sm font-medium">{photo.data.title}</p>
+            </div>
+          </a>
+        );
+      }) : (
         [1, 2, 3].map(() => (
           <div class="aspect-[4/3] bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-400">
             Photo Placeholder

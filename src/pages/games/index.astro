@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Ken Xiao | Games">
+  <section class="py-20 text-center">
+    <div class="glass-card max-w-3xl mx-auto px-8 py-12 rounded-2xl">
+      <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
+        Arcade
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+        A collection of offline browser games, recreated.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 max-w-5xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <a href="/games/dino" class="group block">
+        <article class="glass-card rounded-xl p-8 h-full hover:border-accent transition-colors flex flex-col items-center text-center">
+          <div class="text-6xl mb-4">🦖</div>
+          <h2 class="text-3xl font-bold mb-2 group-hover:text-accent transition-colors">Dino Run</h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            The classic Chrome offline dinosaur game. Jump over cacti and avoid extinction!
+          </p>
+          <div class="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium group-hover:opacity-80 transition-opacity">
+            Play Now
+          </div>
+        </article>
+      </a>
+
+      <a href="/games/surf" class="group block">
+        <article class="glass-card rounded-xl p-8 h-full hover:border-accent transition-colors flex flex-col items-center text-center">
+          <div class="text-6xl mb-4">🏄</div>
+          <h2 class="text-3xl font-bold mb-2 group-hover:text-accent transition-colors">Edge Surf</h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            A simplified version of the Edge surf game. Dodge obstacles and ride the waves!
+          </p>
+          <div class="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium group-hover:opacity-80 transition-opacity">
+            Play Now
+          </div>
+        </article>
+      </a>
+
+    </div>
+  </section>
+</BaseLayout>

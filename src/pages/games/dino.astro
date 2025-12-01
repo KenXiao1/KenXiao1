@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DinoGame from '../../components/games/DinoGame.jsx';
+---
+
+<BaseLayout title="Ken Xiao | Dino Run">
+  <section class="py-12 text-center">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="mb-8">
+        <h1 class="text-4xl font-serif font-bold mb-2">Dino Run</h1>
+        <p class="text-gray-600 dark:text-gray-400">Press Space or Arrow Up to Jump</p>
+      </div>
+      
+      <div class="flex justify-center">
+        <DinoGame client:load />
+      </div>
+
+      <div class="mt-8">
+        <a href="/games" class="text-accent hover:underline">&larr; Back to Arcade</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

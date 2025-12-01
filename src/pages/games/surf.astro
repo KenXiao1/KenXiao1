@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Ken Xiao | Edge Surf">
+  <section class="py-12 text-center">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="mb-8">
+        <h1 class="text-4xl font-serif font-bold mb-2">Edge Surf</h1>
+        <p class="text-gray-600 dark:text-gray-400">The classic Edge Surf game, enhanced!</p>
+      </div>
+      
+      <div class="flex justify-center w-full">
+        <iframe 
+          src="/games/edge-surf/index.html" 
+          class="w-full h-[800px] border-4 border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl"
+          title="Edge Surf Game"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="mt-8">
+        <a href="/games" class="text-accent hover:underline">&larr; Back to Arcade</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
