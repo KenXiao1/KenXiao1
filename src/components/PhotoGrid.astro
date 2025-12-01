@@ -7,9 +7,9 @@ const { photos } = Astro.props;
 
 <div class="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
   {photos.map((photo, index) => (
-    <div class="break-inside-avoid group relative cursor-zoom-in" onclick={`openLightbox(${index})`}>
+    <div class="break-inside-avoid group relative cursor-zoom-in" data-index={index}>
       <div class="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-        <img 
+        <img
           src={(() => {
             const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
             const transforms = 'w_800,f_auto,q_auto';
@@ -30,35 +30,31 @@ const { photos } = Astro.props;
 </div>
 
 <!-- Lightbox Overlay -->
-<div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
-  <button id="lightbox-close" class="absolute top-4 right-4 text-white/70 hover:text-white p-2">
+<div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden items-center justify-center opacity-0 transition-opacity duration-300">
+  <button id="lightbox-close" class="absolute top-4 right-4 text-white/70 hover:text-white p-2 z-10">
     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
   </button>
-  
-  <button id="lightbox-prev" class="absolute left-4 text-white/70 hover:text-white p-2 hidden md:block">
+
+  <button id="lightbox-prev" class="absolute left-4 text-white/70 hover:text-white p-2 hidden md:block z-10">
     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
   </button>
-  
-  <button id="lightbox-next" class="absolute right-4 text-white/70 hover:text-white p-2 hidden md:block">
+
+  <button id="lightbox-next" class="absolute right-4 text-white/70 hover:text-white p-2 hidden md:block z-10">
     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
   </button>
 
   <div class="max-w-[90vw] max-h-[90vh] flex flex-col items-center">
-    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[80vh] object-contain shadow-2xl" />
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[75vh] object-contain shadow-2xl rounded-lg" />
     <div class="mt-4 flex flex-col items-center gap-3">
       <div id="lightbox-caption" class="text-white text-center font-serif text-lg"></div>
-      <div id="lightbox-like-button"></div>
+      <div id="lightbox-like-button" class="min-h-[40px]"></div>
     </div>
   </div>
 </div>
 
-<script is:inline>
-  // Store like buttons as hidden elements to clone
-  window.photoLikeButtons = {};
-</script>
-
-{photos.map((photo) => (
-  <div id={`like-btn-${photo.id}`} style="display: none;">
+<!-- Pre-render all like buttons (hidden) -->
+{photos.map((photo, index) => (
+  <div id={`like-btn-${index}`} style="display: none;">
     <LikeButton
       client:load
       contentType="photo"
@@ -72,26 +68,37 @@ const { photos } = Astro.props;
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxCaption = document.getElementById('lightbox-caption');
-  
+  const likeButtonContainer = document.getElementById('lightbox-like-button');
+
   // Helper function to build image URL
   function buildImageUrl(cloudinaryId, width) {
     const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
     const transforms = `w_${width},f_auto,q_auto`;
     return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
   }
-  
-  window.openLightbox = (index) => {
+
+  // Setup click handlers on images
+  document.querySelectorAll('[data-index]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const index = parseInt(el.getAttribute('data-index'));
+      openLightbox(index);
+    });
+  });
+
+  function openLightbox(index) {
     currentIndex = index;
     updateLightbox();
+    lightbox.style.display = 'flex';
     lightbox.classList.remove('hidden');
     setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
     document.body.style.overflow = 'hidden';
-  };
+  }
 
   function closeLightbox() {
     lightbox.classList.add('opacity-0');
     setTimeout(() => {
       lightbox.classList.add('hidden');
+      lightbox.style.display = 'none';
       document.body.style.overflow = '';
     }, 300);
   }
@@ -101,15 +108,13 @@ const { photos } = Astro.props;
     lightboxImg.src = buildImageUrl(photo.data.cloudinaryId, 1600);
     lightboxCaption.textContent = photo.data.title;
 
-    // Update like button
-    const likeButtonContainer = document.getElementById('lightbox-like-button');
-    const likeBtn = document.getElementById(`like-btn-${photo.id}`);
-    if (likeBtn && likeButtonContainer) {
-      // Clone and show the like button
-      likeButtonContainer.innerHTML = '';
-      const clonedBtn = likeBtn.cloneNode(true);
-      clonedBtn.style.display = 'block';
-      likeButtonContainer.appendChild(clonedBtn);
+    // Show the like button for current photo
+    likeButtonContainer.innerHTML = '';
+    const likeBtn = document.getElementById(`like-btn-${currentIndex}`);
+    if (likeBtn) {
+      const clone = likeBtn.cloneNode(true);
+      clone.style.display = 'block';
+      likeButtonContainer.appendChild(clone);
     }
   }
 
@@ -126,7 +131,7 @@ const { photos } = Astro.props;
   document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
   document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); nextPhoto(); });
   document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); prevPhoto(); });
-  
+
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });

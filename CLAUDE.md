@@ -12,14 +12,15 @@ npm run preview  # Preview production build locally
 
 ## Tech Stack
 
-- **Framework**: Astro 5.x with static output, deployed to Cloudflare Pages and Netlify
+- **Framework**: Astro 5.x with static output, deployed to Netlify (primary) and Cloudflare Pages (secondary)
+- **Deployment Priority**: Netlify is the primary deployment target. Focus on Netlify compatibility. Cloudflare Pages is a backup and may not have all features working.
 - **Styling**: Tailwind CSS with `@tailwindcss/typography` plugin
-- **CMS**: Keystatic (local storage mode) - access at `/keystatic`
+- **CMS**: Keystatic (local storage mode) - access at `/keystatic`. **DO NOT remove or modify Keystatic integration.**
 - **React**: Used for interactive components (React 19)
 - **Math**: KaTeX for LaTeX rendering via `remark-math` and `rehype-katex`
 - **Images**: Cloudinary for photo storage
-- **Database**: Supabase for likes functionality
-- **API**: Netlify Functions and Cloudflare Pages Functions for serverless endpoints
+- **Database**: Supabase for likes functionality (Netlify only)
+- **API**: Netlify Functions for serverless endpoints
 
 ## Architecture
 
