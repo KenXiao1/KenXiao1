@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import LikeButton from './LikeButton.tsx';
 
 const { photos } = Astro.props;
 ---
@@ -42,11 +43,29 @@ const { photos } = Astro.props;
     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
   </button>
 
-  <div class="max-w-[90vw] max-h-[90vh]">
-    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain shadow-2xl" />
-    <div id="lightbox-caption" class="text-white text-center mt-4 font-serif text-lg"></div>
+  <div class="max-w-[90vw] max-h-[90vh] flex flex-col items-center">
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[80vh] object-contain shadow-2xl" />
+    <div class="mt-4 flex flex-col items-center gap-3">
+      <div id="lightbox-caption" class="text-white text-center font-serif text-lg"></div>
+      <div id="lightbox-like-button"></div>
+    </div>
   </div>
 </div>
+
+<script is:inline>
+  // Store like buttons as hidden elements to clone
+  window.photoLikeButtons = {};
+</script>
+
+{photos.map((photo) => (
+  <div id={`like-btn-${photo.id}`} style="display: none;">
+    <LikeButton
+      client:load
+      contentType="photo"
+      contentId={photo.id}
+    />
+  </div>
+))}
 
 <script define:vars={{ photos }}>
   let currentIndex = 0;
@@ -81,6 +100,17 @@ const { photos } = Astro.props;
     const photo = photos[currentIndex];
     lightboxImg.src = buildImageUrl(photo.data.cloudinaryId, 1600);
     lightboxCaption.textContent = photo.data.title;
+
+    // Update like button
+    const likeButtonContainer = document.getElementById('lightbox-like-button');
+    const likeBtn = document.getElementById(`like-btn-${photo.id}`);
+    if (likeBtn && likeButtonContainer) {
+      // Clone and show the like button
+      likeButtonContainer.innerHTML = '';
+      const clonedBtn = likeBtn.cloneNode(true);
+      clonedBtn.style.display = 'block';
+      likeButtonContainer.appendChild(clonedBtn);
+    }
   }
 
   function nextPhoto() {

@@ -12,12 +12,14 @@ npm run preview  # Preview production build locally
 
 ## Tech Stack
 
-- **Framework**: Astro 5.x with static output, deployed to Cloudflare Pages
+- **Framework**: Astro 5.x with static output, deployed to Cloudflare Pages and Netlify
 - **Styling**: Tailwind CSS with `@tailwindcss/typography` plugin
 - **CMS**: Keystatic (local storage mode) - access at `/keystatic`
 - **React**: Used for interactive components (React 19)
 - **Math**: KaTeX for LaTeX rendering via `remark-math` and `rehype-katex`
 - **Images**: Cloudinary for photo storage
+- **Database**: Supabase for likes functionality
+- **API**: Netlify Functions and Cloudflare Pages Functions for serverless endpoints
 
 ## Architecture
 
@@ -30,8 +32,10 @@ Defined in `src/content/config.ts` using Astro's content collections:
 
 ### Key Custom Code
 - `src/lib/remark-obsidian-images.mjs`: Remark plugin that converts Obsidian-style `![[image.png]]` syntax to standard markdown images pointing to `/images/posts/`
+- `src/lib/supabase.ts`: Supabase client configuration and helper functions for likes functionality
 - `src/components/BackgroundEffect.astro`: Interactive Cellular Automata and Turbulence visual effects
 - `src/components/EquationModal.astro`: Modal for rendering LaTeX equations
+- `src/components/LikeButton.tsx`: React component for like button with localStorage tracking
 
 ### Layout System
 - `src/layouts/BaseLayout.astro`: Main layout with dark mode support, header, footer, and code block copy buttons
@@ -44,10 +48,27 @@ Configuration in `keystatic.config.tsx` mirrors the content collections. Blog po
 
 Required in `.env`:
 ```
+# Cloudinary
 PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+PUBLIC_WEBP_SE_PROXY=your_webp_proxy_url
+
+# Supabase
+PUBLIC_SUPABASE_URL=your_supabase_url
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+## API Endpoints
+
+### Likes API
+- **GET** `/api/likes?contentType={blog|photo}&contentId={id}` - Get likes count
+- **POST** `/api/likes?contentType={blog|photo}&contentId={id}` - Increment likes
+
+Implementation:
+- Netlify: `netlify/functions/likes.js`
+- Cloudflare Pages: `functions/api/likes.js`
+- Both platforms share the same Supabase backend
 
 ## Scripts (`scripts/`)
 

@@ -19,6 +19,7 @@
     "@fontsource/noto-serif-sc": "^5.2.8",
     "@keystatic/astro": "^5.0.6",
     "@keystatic/core": "^0.5.48",
+    "@supabase/supabase-js": "^2.86.0",
     "@tailwindcss/typography": "^0.5.19",
     "astro": "^5.16.0",
     "cloudinary": "^2.8.0",

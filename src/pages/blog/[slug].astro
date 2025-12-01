@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Comments from '../../components/Comments.astro';
+import LikeButton from '../../components/LikeButton.tsx';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -31,6 +32,10 @@ const { Content } = await post.render();
 
     <div class="prose dark:prose-invert max-w-none prose-headings:font-serif prose-a:text-accent hover:prose-a:text-accent/80">
       <Content />
+    </div>
+
+    <div class="mt-8 flex justify-center">
+      <LikeButton client:load contentType="blog" contentId={post.slug} />
     </div>
 
     <hr class="my-12 border-gray-200 dark:border-gray-800" />
