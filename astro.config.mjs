@@ -5,6 +5,7 @@ import mdx from '@astrojs/mdx';
 import keystatic from '@keystatic/astro';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import netlify from '@astrojs/netlify';
 
 import { remarkObsidianImages } from './src/lib/remark-obsidian-images.mjs';
 
@@ -23,5 +24,6 @@ export default defineConfig({
       wrap: true
     }
   },
-  output: 'static'
+  output: 'static',
+  adapter: netlify()
 });
