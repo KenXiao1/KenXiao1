@@ -63,7 +63,7 @@ const { photos } = Astro.props;
   </div>
 ))}
 
-<script define:vars={{ photos }}>
+<script define:vars={{ photos, webpSeProxy: import.meta.env.PUBLIC_WEBP_SE_PROXY }}>
   let currentIndex = 0;
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
@@ -72,7 +72,6 @@ const { photos } = Astro.props;
 
   // Helper function to build image URL
   function buildImageUrl(cloudinaryId, width) {
-    const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
     const transforms = `w_${width},f_auto,q_auto`;
     return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
   }
