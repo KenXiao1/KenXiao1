@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoGrid from '../../components/PhotoGrid.astro';
+import PhotoLightbox from '../../components/PhotoLightbox.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -92,4 +93,7 @@ const subfolders = Object.keys(groupedPhotos).sort();
       </div>
     )}
   </div>
+
+  <!-- Global Lightbox -->
+  <PhotoLightbox webpSeProxy={import.meta.env.PUBLIC_WEBP_SE_PROXY} />
 </BaseLayout>

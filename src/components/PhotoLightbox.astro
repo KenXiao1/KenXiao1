@@ -1,0 +1,222 @@
+---
+const { webpSeProxy } = Astro.props;
+---
+
+<!-- Lightbox Overlay -->
+<div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden items-center justify-center opacity-0 transition-opacity duration-300">
+  <button id="lightbox-close" class="absolute top-4 right-4 text-white/70 hover:text-white p-2 z-10" aria-label="Close">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+  </button>
+
+  <!-- Navigation buttons - visible on all screen sizes -->
+  <button id="lightbox-prev" class="absolute left-2 md:left-4 text-white/70 hover:text-white p-2 z-10 touch-manipulation" aria-label="Previous photo">
+    <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+
+  <button id="lightbox-next" class="absolute right-2 md:right-4 text-white/70 hover:text-white p-2 z-10 touch-manipulation" aria-label="Next photo">
+    <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+  </button>
+
+  <!-- Image container with swipe support -->
+  <div id="lightbox-content" class="max-w-[90vw] max-h-[90vh] flex flex-col items-center touch-pan-y">
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[70vh] md:max-h-[75vh] object-contain shadow-2xl rounded-lg transition-opacity duration-200 select-none" draggable="false" />
+    <div class="mt-4 flex flex-col items-center gap-3">
+      <div id="lightbox-caption" class="text-white text-center font-serif text-base md:text-lg px-4"></div>
+      <div id="lightbox-counter" class="text-white/60 text-sm"></div>
+      <div id="lightbox-like-button" class="min-h-[40px]"></div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ webpSeProxy }}>
+  // Global photo manager
+  window.photoLightbox = (function() {
+    let allPhotos = [];
+    let currentIndex = 0;
+    const imageCache = new Map();
+
+    // Touch handling
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    const SWIPE_THRESHOLD = 50;
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    const likeButtonContainer = document.getElementById('lightbox-like-button');
+    const lightboxContent = document.getElementById('lightbox-content');
+
+    function buildImageUrl(cloudinaryId, width) {
+      const transforms = `w_${width},f_auto,q_auto`;
+      return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
+    }
+
+    function preloadImage(index) {
+      if (index < 0 || index >= allPhotos.length) return;
+      const photo = allPhotos[index];
+      const url = buildImageUrl(photo.cloudinaryId, 1600);
+
+      if (!imageCache.has(url)) {
+        const img = new Image();
+        img.src = url;
+        imageCache.set(url, img);
+      }
+    }
+
+    function preloadAdjacent(index) {
+      preloadImage((index + 1) % allPhotos.length);
+      preloadImage((index - 1 + allPhotos.length) % allPhotos.length);
+    }
+
+    function open(photoId) {
+      // Collect all photos from DOM
+      collectPhotos();
+
+      // Find index of clicked photo
+      const index = allPhotos.findIndex(p => p.id === photoId);
+      if (index === -1) return;
+
+      currentIndex = index;
+      update();
+
+      lightbox.style.display = 'flex';
+      lightbox.classList.remove('hidden');
+      setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      lightbox.classList.add('opacity-0');
+      setTimeout(() => {
+        lightbox.classList.add('hidden');
+        lightbox.style.display = 'none';
+        document.body.style.overflow = '';
+      }, 300);
+    }
+
+    function update() {
+      const photo = allPhotos[currentIndex];
+      const newSrc = buildImageUrl(photo.cloudinaryId, 1600);
+
+      // Loading state
+      lightboxImg.style.opacity = '0.5';
+
+      const cachedImg = imageCache.get(newSrc);
+      if (cachedImg && cachedImg.complete) {
+        lightboxImg.src = newSrc;
+        lightboxImg.style.opacity = '1';
+      } else {
+        lightboxImg.onload = () => {
+          lightboxImg.style.opacity = '1';
+        };
+        lightboxImg.src = newSrc;
+      }
+
+      lightboxCaption.textContent = photo.title;
+      lightboxCounter.textContent = `${currentIndex + 1} / ${allPhotos.length}`;
+
+      // Show like button
+      likeButtonContainer.innerHTML = '';
+      const likeBtn = document.getElementById(`like-btn-${photo.id}`);
+      if (likeBtn) {
+        const clone = likeBtn.cloneNode(true);
+        clone.style.display = 'block';
+        likeButtonContainer.appendChild(clone);
+      }
+
+      preloadAdjacent(currentIndex);
+    }
+
+    function next() {
+      currentIndex = (currentIndex + 1) % allPhotos.length;
+      update();
+    }
+
+    function prev() {
+      currentIndex = (currentIndex - 1 + allPhotos.length) % allPhotos.length;
+      update();
+    }
+
+    function collectPhotos() {
+      allPhotos = [];
+      document.querySelectorAll('.photo-item').forEach(el => {
+        allPhotos.push({
+          id: el.dataset.photoId,
+          cloudinaryId: el.dataset.cloudinaryId,
+          title: el.dataset.title,
+          date: el.dataset.date
+        });
+      });
+    }
+
+    // Touch event handlers
+    function handleTouchStart(e) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }
+
+    function handleTouchMove(e) {
+      touchEndX = e.touches[0].clientX;
+      touchEndY = e.touches[0].clientY;
+    }
+
+    function handleTouchEnd(e) {
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      // Only trigger swipe if horizontal movement is greater than vertical
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        if (deltaX > 0) {
+          prev(); // Swipe right = previous
+        } else {
+          next(); // Swipe left = next
+        }
+      }
+
+      // Reset
+      touchStartX = 0;
+      touchStartY = 0;
+      touchEndX = 0;
+      touchEndY = 0;
+    }
+
+    // Event listeners
+    document.getElementById('lightbox-close').addEventListener('click', close);
+    document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); next(); });
+    document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) close();
+    });
+
+    // Touch events for swipe
+    lightboxContent.addEventListener('touchstart', handleTouchStart, { passive: true });
+    lightboxContent.addEventListener('touchmove', handleTouchMove, { passive: true });
+    lightboxContent.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('hidden')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+    });
+
+    // Setup click handlers for all photo items
+    function setupClickHandlers() {
+      document.querySelectorAll('.photo-item').forEach(el => {
+        el.addEventListener('click', () => {
+          open(el.dataset.photoId);
+        });
+      });
+    }
+
+    // Initialize on page load
+    setupClickHandlers();
+
+    return { open, close, next, prev };
+  })();
+</script>
