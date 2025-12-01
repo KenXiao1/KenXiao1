@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Use environment variables
 const supabaseUrl = 'https://quqdyktxflwyyycltckz.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1cWR5a3R4Zmx3eXl5Y2x0Y2t6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM0MDksImV4cCI6MjA4MDE0OTQwOX0.0sGBQP69qdq6HAkMtK0cXrSy0240zHF9XxsRhy0IoMo';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase credentials');
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

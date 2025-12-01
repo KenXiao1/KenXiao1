@@ -6,9 +6,6 @@ import keystatic from '@keystatic/astro';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-// https://astro.build/config
-import cloudflare from '@astrojs/cloudflare';
-
 import { remarkObsidianImages } from './src/lib/remark-obsidian-images.mjs';
 
 export default defineConfig({
@@ -26,6 +23,5 @@ export default defineConfig({
       wrap: true
     }
   },
-  output: 'static',
-  adapter: cloudflare()
+  output: 'static'
 });
