@@ -15,8 +15,8 @@ const { title, coverImage, count, href } = Astro.props;
       Using the same Cloudinary logic as PhotoGrid for consistency.
       If coverImage is a full URL, use it directly. Otherwise treat as Cloudinary ID.
     */}
-    <img 
-      src={coverImage.startsWith('http') ? coverImage : `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo'}/image/upload/w_800,c_limit/${coverImage}`} 
+    <img
+      src={coverImage.startsWith('http') ? coverImage : `${import.meta.env.PUBLIC_WEBP_SE_PROXY}/image/upload/w_800,f_auto,q_auto/${coverImage}`}
       alt={title}
       class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
       loading="lazy"
