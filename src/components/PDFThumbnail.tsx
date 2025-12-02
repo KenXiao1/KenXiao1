@@ -50,11 +50,15 @@ export default function PDFThumbnail({ filename, title }: PDFThumbnailProps) {
         // Dynamically import pdf.js only on client side
         const pdfjsLib = await import('pdfjs-dist');
 
-        // Configure worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+        // Disable worker - run on main thread (fine for thumbnail generation)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
-        // Load PDF document
-        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        // Load PDF document with worker disabled
+        const loadingTask = pdfjsLib.getDocument({
+          url: pdfUrl,
+          disableAutoFetch: true,
+          disableStream: true,
+        });
         const pdf = await loadingTask.promise;
 
         // Get first page
