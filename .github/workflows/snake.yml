@@ -6,6 +6,13 @@ on:
     - cron: "0 0 * * *"
   # 允许手动运行 (Allows manual run)
   workflow_dispatch:
+  # 推送时触发
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -25,7 +32,7 @@ jobs:
             dist/github-contribution-grid-snake-dark.svg?palette=github-dark
 
       - name: Push to GitHub
-        uses: crazy-max/ghaction-github-pages@v3.1.0
+        uses: crazy-max/ghaction-github-pages@v4
         with:
           # 将生成的图片推送到 output 分支
           target_branch: output
