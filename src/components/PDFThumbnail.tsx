@@ -50,9 +50,8 @@ export default function PDFThumbnail({ filename, title }: PDFThumbnailProps) {
         // Dynamically import pdf.js only on client side
         const pdfjsLib = await import('pdfjs-dist');
 
-        // Set worker source to CDN - required for PDF.js 5.x
-        const version = pdfjsLib.version;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+        // Set worker source to local file - required for PDF.js 5.x
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.mjs';
 
         // Load PDF document
         const loadingTask = pdfjsLib.getDocument({
