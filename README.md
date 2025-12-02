@@ -75,7 +75,7 @@
 <div align="center">
   <table>
     <tr>
-      <td width="50%">
+      <td width="50%" valign="top">
         <h3 align="center">Momentum</h3>
         <div align="center">
           <a href="https://github.com/KenXiao1/momentum" target="_blank">
@@ -88,9 +88,7 @@
           <p>🔗 <a href="https://momentumctdp.netlify.app/">Live Demo</a> | 📖 <a href="https://github.com/KenXiao1/intro-momentum">Introduction</a></p>
         </div>
       </td>
-    </tr>
-    <tr>
-      <td width="50%">
+      <td width="50%" valign="top">
         <h3 align="center">Vieta Theorem - Manim</h3>
         <div align="center">
           <a href="https://github.com/KenXiao1/VietaTheorem-Manim" target="_blank">
@@ -118,14 +116,14 @@
 <h2 align="center">📊 GitHub Statistics</h2>
 
 <div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true" width="49%" alt="GitHub Stats"/>
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7" width="49%" alt="Top Languages"/>
+  <img src="https://github-readme-stats.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true&cache_seconds=86400" width="49%" alt="GitHub Stats"/>
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&cache_seconds=86400" width="49%" alt="Top Languages"/>
 </div>
 
 <br>
 
 <div align="center">
-  <img src="https://streak-stats.demolab.com?user=KenXiao1&theme=tokyonight&background=1A1B27&hide_border=true&date_format=M%20j%5B%2C%20Y%5D" width="98%" alt="GitHub Streak" />
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=KenXiao1&theme=tokyonight&hide_border=true&background=1A1B27" width="98%" alt="GitHub Streak" />
 </div>
 
 <br>
