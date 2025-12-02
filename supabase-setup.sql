@@ -1,7 +1,7 @@
--- Create likes table for blog posts and photos
+-- Create likes table for blog posts, photos, and PDFs
 CREATE TABLE IF NOT EXISTS likes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  content_type TEXT NOT NULL CHECK (content_type IN ('blog', 'photo')),
+  content_type TEXT NOT NULL CHECK (content_type IN ('blog', 'photo', 'pdf')),
   content_id TEXT NOT NULL,
   count INTEGER DEFAULT 0 NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL,
