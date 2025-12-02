@@ -116,8 +116,12 @@
 <h2 align="center">📊 GitHub Statistics</h2>
 
 <div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true&cache_seconds=86400" width="49%" alt="GitHub Stats"/>
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&cache_seconds=86400" width="49%" alt="Top Languages"/>
+  <a href="https://github.com/anuraghazra/github-readme-stats">
+    <img height=200 src="https://github-readme-stats.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true" alt="GitHub Stats"/>
+  </a>
+  <a href="https://github.com/anuraghazra/github-readme-stats">
+    <img height=200 src="https://github-readme-stats.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&langs_count=8&card_width=320" alt="Top Languages"/>
+  </a>
 </div>
 
 <br>
