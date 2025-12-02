@@ -1,8 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure pdf.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 interface PDFThumbnailProps {
   filename: string;
@@ -42,14 +38,21 @@ export default function PDFThumbnail({ filename, title }: PDFThumbnailProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Load PDF and render thumbnail
+  // Load PDF and render thumbnail - only on client side
   useEffect(() => {
     if (!isVisible || thumbnailUrl || isLoading || hasError) return;
+    if (typeof window === 'undefined') return; // Skip on server
 
     const generateThumbnail = async () => {
       setIsLoading(true);
 
       try {
+        // Dynamically import pdf.js only on client side
+        const pdfjsLib = await import('pdfjs-dist');
+
+        // Configure worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
         // Load PDF document
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
         const pdf = await loadingTask.promise;
