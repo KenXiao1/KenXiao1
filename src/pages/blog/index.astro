@@ -12,7 +12,14 @@ const categories = [...new Set(posts.map(post => post.data.category))];
 <BaseLayout title="Blog | Ken Xiao">
   <div class="max-w-4xl mx-auto">
     <div class="glass-card rounded-2xl px-8 py-12 mb-8">
-      <h1 class="text-5xl font-serif font-bold mb-4">Blog</h1>
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-5xl font-serif font-bold">Blog</h1>
+
+        <div class="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
+          <a href="/blog" class="px-4 py-2 bg-white dark:bg-gray-800 shadow-sm rounded-md text-sm font-medium transition-all">Articles</a>
+          <a href="/blog/pdfs" class="px-4 py-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 rounded-md text-sm font-medium transition-all">PDF Library</a>
+        </div>
+      </div>
       <p class="text-gray-600 dark:text-gray-400">Thoughts on mathematics, AI, history, and technology.</p>
     </div>
 
