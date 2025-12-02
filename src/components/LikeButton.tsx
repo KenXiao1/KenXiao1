@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 interface LikeButtonProps {
-  contentType: 'blog' | 'photo';
+  contentType: 'blog' | 'photo' | 'pdf';
   contentId: string;
   className?: string;
 }

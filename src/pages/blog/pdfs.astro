@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import PDFThumbnail from '../../components/PDFThumbnail';
+import LikeButton from '../../components/LikeButton';
 
 const pdfs = (await getCollection('pdfs'))
   .sort((a, b) => b.data.uploadDate.valueOf() - a.data.uploadDate.valueOf());
@@ -22,20 +24,22 @@ const categories = [...new Set(pdfs.map(pdf => pdf.data.category))];
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {pdfs.map(pdf => (
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden hover:border-accent transition-colors group">
-          <div class="aspect-[3/4] bg-gray-100 dark:bg-gray-800 relative flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
-            {/* PDF Icon or Thumbnail */}
-            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            
-            <a href={`/pdfs/${pdf.data.filename}`} target="_blank" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity">
-              <span class="px-4 py-2 bg-white text-black rounded-full text-sm font-bold">Preview / Download</span>
-            </a>
-          </div>
+          <PDFThumbnail filename={pdf.data.filename} title={pdf.data.title} client:load />
+
           <div class="p-4">
             <div class="text-xs text-accent uppercase tracking-wider font-bold mb-1">{pdf.data.category}</div>
             <h3 class="font-bold text-lg mb-2 line-clamp-1" title={pdf.data.title}>{pdf.data.title}</h3>
             <p class="text-sm text-gray-500 line-clamp-2 mb-4">{pdf.data.description}</p>
-            <div class="text-xs text-gray-400 font-mono">
-              Uploaded: {pdf.data.uploadDate.toLocaleDateString()}
+
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-gray-400 font-mono">
+                {pdf.data.uploadDate.toLocaleDateString()}
+              </div>
+              <LikeButton
+                contentType="pdf"
+                contentId={pdf.id}
+                client:load
+              />
             </div>
           </div>
         </div>

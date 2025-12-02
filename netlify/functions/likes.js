@@ -38,11 +38,11 @@ exports.handler = async (event, context) => {
       };
     }
 
-    if (contentType !== 'blog' && contentType !== 'photo') {
+    if (contentType !== 'blog' && contentType !== 'photo' && contentType !== 'pdf') {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Invalid contentType. Must be "blog" or "photo"' }),
+        body: JSON.stringify({ error: 'Invalid contentType. Must be "blog", "photo", or "pdf"' }),
       };
     }
 
