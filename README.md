@@ -42,12 +42,6 @@
   - Complete *Introduction to Linear Algebra* & *Artin Algebra*
 - 平安喜乐 (Peace and Joy)
 
-    </td>
-    <td valign="top" width="45%">
-      <div align="center">
-        <img src="https://media.giphy.com/media/g1vrHolI9iMAaDQLw5/giphy.gif" width="280" alt="AI Animation">
-      </div>
-    </td>
   </tr>
 </table>
 
@@ -94,18 +88,6 @@
           <p>🔗 <a href="https://momentumctdp.netlify.app/">Live Demo</a> | 📖 <a href="https://github.com/KenXiao1/intro-momentum">Introduction</a></p>
         </div>
       </td>
-      <td width="50%">
-        <h3 align="center">PillPal</h3>
-        <div align="center">
-          <a href="https://github.com/KenXiao1/PillPal" target="_blank">
-            <img src="https://github-readme-stats.vercel.app/api/pin/?username=KenXiao1&repo=PillPal&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="PillPal"/>
-          </a>
-          <br>
-          <img src="https://img.shields.io/github/stars/KenXiao1/PillPal?style=social" alt="stars">
-          <img src="https://img.shields.io/github/forks/KenXiao1/PillPal?style=social" alt="forks">
-          <p><strong>Smart medication management system</strong></p>
-        </div>
-      </td>
     </tr>
     <tr>
       <td width="50%">
@@ -118,15 +100,6 @@
           <img src="https://img.shields.io/github/stars/KenXiao1/VietaTheorem-Manim?style=social" alt="stars">
           <p><strong>Manim visualization for Vieta's Theorem</strong></p>
           <p>Mathematical animation for any polynomial order</p>
-        </div>
-      </td>
-      <td width="50%">
-        <h3 align="center">MyGo</h3>
-        <div align="center">
-          <a href="https://github.com/KenXiao1/mygo" target="_blank">
-            <img src="https://github-readme-stats.vercel.app/api/pin/?username=KenXiao1&repo=mygo&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="mygo"/>
-          </a>
-          <p><strong>Go tools for computational biology</strong></p>
         </div>
       </td>
     </tr>
