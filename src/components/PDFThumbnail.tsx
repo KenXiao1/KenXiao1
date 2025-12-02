@@ -1,28 +1,38 @@
 import { useState, useEffect, useRef } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure pdf.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 interface PDFThumbnailProps {
   filename: string;
   title: string;
 }
 
+// Global cache to store generated thumbnails
+const thumbnailCache = new Map<string, string>();
+
 export default function PDFThumbnail({ filename, title }: PDFThumbnailProps) {
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(() => {
+    // Check cache first
+    return thumbnailCache.get(filename) || null;
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [showFallback, setShowFallback] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const pdfUrl = `/pdfs/${encodeURIComponent(filename)}`;
 
-  // Use Intersection Observer to lazy load iframes only when visible
+  // Intersection Observer for lazy loading
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.disconnect();
-          }
-        });
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
       },
-      { rootMargin: '100px', threshold: 0.1 }
+      { rootMargin: '200px', threshold: 0.1 }
     );
 
     if (containerRef.current) {
@@ -32,43 +42,98 @@ export default function PDFThumbnail({ filename, title }: PDFThumbnailProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Fallback timer - show icon if iframe doesn't load in time
+  // Load PDF and render thumbnail
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || thumbnailUrl || isLoading || hasError) return;
 
-    const timer = setTimeout(() => {
-      setShowFallback(true);
-    }, 5000);
+    const generateThumbnail = async () => {
+      setIsLoading(true);
 
-    return () => clearTimeout(timer);
-  }, [isVisible]);
+      try {
+        // Load PDF document
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        const pdf = await loadingTask.promise;
+
+        // Get first page
+        const page = await pdf.getPage(1);
+
+        // Calculate scale to fit in thumbnail container
+        const containerWidth = 300;
+        const viewport = page.getViewport({ scale: 1 });
+        const scale = containerWidth / viewport.width;
+        const scaledViewport = page.getViewport({ scale });
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Could not get canvas context');
+
+        canvas.width = scaledViewport.width;
+        canvas.height = scaledViewport.height;
+
+        // Render page to canvas
+        await page.render({
+          canvasContext: context,
+          viewport: scaledViewport,
+        }).promise;
+
+        // Convert to data URL
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Cache the thumbnail
+        thumbnailCache.set(filename, dataUrl);
+        setThumbnailUrl(dataUrl);
+
+        // Clean up
+        pdf.destroy();
+      } catch (error) {
+        console.error('Error generating PDF thumbnail:', error);
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    generateThumbnail();
+  }, [isVisible, thumbnailUrl, isLoading, hasError, pdfUrl, filename]);
 
   return (
     <div
       ref={containerRef}
-      className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 relative overflow-hidden group-hover:from-gray-200 group-hover:to-gray-300 dark:group-hover:from-gray-700 dark:group-hover:to-gray-800 transition-all duration-300"
+      className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 relative overflow-hidden"
     >
-      {isVisible && !showFallback && (
-        <iframe
-          src={`${pdfUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-          className="w-full h-full pointer-events-none scale-[1.02] origin-top opacity-90"
-          title={`Preview of ${title}`}
-          onError={() => setShowFallback(true)}
+      {/* Thumbnail image */}
+      {thumbnailUrl && (
+        <img
+          src={thumbnailUrl}
+          alt={`Preview of ${title}`}
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
       )}
 
-      {(!isVisible || showFallback) && (
-        <div className="flex items-center justify-center h-full">
+      {/* Loading/Fallback state */}
+      {!thumbnailUrl && (
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <svg className="w-20 h-20 text-gray-400 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6"></path>
-            </svg>
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">PDF</p>
+            {isLoading ? (
+              <>
+                <div className="w-12 h-12 border-4 border-gray-300 dark:border-gray-600 border-t-accent rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Loading...</p>
+              </>
+            ) : (
+              <>
+                <svg className="w-20 h-20 text-gray-400 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6"></path>
+                </svg>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">PDF</p>
+              </>
+            )}
           </div>
         </div>
       )}
 
+      {/* Hover overlay */}
       <a
         href={pdfUrl}
         target="_blank"

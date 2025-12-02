@@ -26,6 +26,7 @@
     "cloudinary": "^2.8.0",
     "dotenv": "^17.2.3",
     "katex": "^0.16.25",
+    "pdfjs-dist": "^5.4.449",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "rehype-katex": "^7.0.1",
