@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 
+interface FileWithContent {
+  name: string;
+  originalName: string;
+  content: string;
+}
+
 interface NovelReaderProps {
   folder: string;
-  files: Array<{ name: string; originalName: string }>;
+  files: FileWithContent[];
 }
 
 type ThemeColor = 'white' | 'sepia' | 'night' | 'green';
@@ -16,40 +22,10 @@ const themeColors: Record<ThemeColor, { bg: string; text: string; name: string }
 
 export default function NovelReader({ folder, files }: NovelReaderProps) {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
-  const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(true);
   const [showToc, setShowToc] = useState(false);
   const [fontSize, setFontSize] = useState(18);
   const [theme, setTheme] = useState<ThemeColor>('sepia');
   const [lineHeight, setLineHeight] = useState(1.8);
-
-  // 加载文件内容
-  useEffect(() => {
-    if (files.length === 0) return;
-
-    const loadFile = async () => {
-      setLoading(true);
-      try {
-        const file = files[currentFileIndex];
-        const response = await fetch(
-          `/api/read-file?folder=${encodeURIComponent(folder)}&file=${encodeURIComponent(file.originalName)}`
-        );
-        const data = await response.json();
-
-        if (data.error) {
-          setContent(`加载失败: ${data.error}`);
-        } else {
-          setContent(data.content);
-        }
-      } catch (error) {
-        setContent(`加载失败: ${error}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFile();
-  }, [currentFileIndex, folder, files]);
 
   // 从 localStorage 加载设置
   useEffect(() => {
@@ -206,62 +182,53 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
 
       {/* 主内容区域 */}
       <div className={`max-w-3xl mx-auto px-6 py-12 ${showToc ? 'ml-80' : ''} transition-all duration-300`}>
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">加载中...</p>
-          </div>
-        ) : (
-          <>
-            <h1 className="text-3xl font-bold mb-8 text-center">{currentFile?.name}</h1>
-            <div
-              className="prose prose-lg max-w-none"
-              style={{
-                fontSize: `${fontSize}px`,
-                lineHeight: lineHeight
-              }}
-            >
-              {content.split('\n').map((paragraph, index) => (
-                paragraph.trim() ? (
-                  <p key={index} className="mb-4 text-justify indent-8">
-                    {paragraph.trim()}
-                  </p>
-                ) : (
-                  <div key={index} className="h-4" />
-                )
-              ))}
-            </div>
+        <h1 className="text-3xl font-bold mb-8 text-center">{currentFile?.name}</h1>
+        <div
+          className="prose prose-lg max-w-none"
+          style={{
+            fontSize: `${fontSize}px`,
+            lineHeight: lineHeight
+          }}
+        >
+          {currentFile?.content.split('\n').map((paragraph, index) => (
+            paragraph.trim() ? (
+              <p key={index} className="mb-4 text-justify indent-8">
+                {paragraph.trim()}
+              </p>
+            ) : (
+              <div key={index} className="h-4" />
+            )
+          ))}
+        </div>
 
-            {/* 底部导航 */}
-            <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={handlePrevious}
-                disabled={currentFileIndex === 0}
-                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  currentFileIndex === 0
-                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
-                }`}
-              >
-                ← 上一篇
-              </button>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {currentFileIndex + 1} / {files.length}
-              </span>
-              <button
-                onClick={handleNext}
-                disabled={currentFileIndex === files.length - 1}
-                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  currentFileIndex === files.length - 1
-                    ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
-                }`}
-              >
-                下一篇 →
-              </button>
-            </div>
-          </>
-        )}
+        {/* 底部导航 */}
+        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={handlePrevious}
+            disabled={currentFileIndex === 0}
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              currentFileIndex === 0
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+            }`}
+          >
+            ← 上一篇
+          </button>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {currentFileIndex + 1} / {files.length}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentFileIndex === files.length - 1}
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              currentFileIndex === files.length - 1
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+            }`}
+          >
+            下一篇 →
+          </button>
+        </div>
       </div>
 
       {/* 键盘提示 */}

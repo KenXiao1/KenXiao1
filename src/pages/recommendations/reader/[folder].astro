@@ -11,10 +11,29 @@ export async function getStaticPaths() {
   // 只为文件夹类型的 literature 项目生成路径
   const folderItems = readingListData.literature.filter((item: any) => item.type === 'folder');
 
-  return folderItems.map((item: any) => ({
-    params: { folder: item.originalName },
-    props: { folderData: item }
-  }));
+  const basePath = path.resolve(process.cwd(), '../recommend - some are read some are not - more like a reading list/literature');
+
+  return folderItems.map((item: any) => {
+    // 读取文件夹中所有 txt 文件的内容
+    const filesWithContent = item.files.map((file: any) => {
+      const filePath = path.join(basePath, item.originalName, file.originalName);
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return {
+        ...file,
+        content
+      };
+    });
+
+    return {
+      params: { folder: item.originalName },
+      props: {
+        folderData: {
+          ...item,
+          files: filesWithContent
+        }
+      }
+    };
+  });
 }
 
 const { folder } = Astro.params;
