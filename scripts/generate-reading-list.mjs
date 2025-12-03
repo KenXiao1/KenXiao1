@@ -36,17 +36,22 @@ function getFiles(category) {
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
-      // 如果是文件夹（如徐訏小说选txt），返回一个特殊对象
+      // 如果是文件夹（如徐訏小说选txt），读取所有 txt 文件内容
+      const txtFiles = fs.readdirSync(fullPath).filter(f => f.endsWith('.txt'));
+
       return {
         name: cleanFileName(item),
         type: 'folder',
         originalName: item,
-        files: fs.readdirSync(fullPath)
-          .filter(f => f.endsWith('.txt'))
-          .map(f => ({
+        files: txtFiles.map(f => {
+          const txtPath = path.join(fullPath, f);
+          const content = fs.readFileSync(txtPath, 'utf-8');
+          return {
             name: cleanFileName(f),
-            originalName: f
-          }))
+            originalName: f,
+            content: content
+          };
+        })
       };
     } else {
       // 普通文件
@@ -74,6 +79,14 @@ function generateReadingList() {
   console.log(`   Output: ${outputPath}`);
   console.log(`   - History: ${readingList.history.length} items`);
   console.log(`   - Literature: ${readingList.literature.length} items`);
+
+  // 计算文学类中有内容的文件数量
+  const literatureWithContent = readingList.literature.filter(item => item.type === 'folder');
+  if (literatureWithContent.length > 0) {
+    const totalFiles = literatureWithContent.reduce((acc, item) => acc + item.files.length, 0);
+    console.log(`     (including ${totalFiles} txt files with content)`);
+  }
+
   console.log(`   - Other: ${readingList.other.length} items`);
 }
 
