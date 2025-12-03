@@ -34,5 +34,8 @@
     "remark-wiki-link": "^2.0.1",
     "typescript": "^5.9.3",
     "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "iconv-lite": "^0.7.0"
   }
 }

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import iconv from 'iconv-lite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +20,25 @@ function cleanFileName(fileName) {
   name = name.trim();
 
   return name;
+}
+
+function readFileWithEncoding(filePath) {
+  // 读取文件为 Buffer
+  const buffer = fs.readFileSync(filePath);
+
+  // 尝试检测编码：先尝试 UTF-8，如果失败则使用 GBK
+  try {
+    const utf8Content = buffer.toString('utf-8');
+    // 检查是否有乱码（通过检测常见的乱码字符）
+    if (utf8Content.includes('�') || /[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(utf8Content)) {
+      // 可能是 GBK 编码，使用 iconv-lite 转换
+      return iconv.decode(buffer, 'gbk');
+    }
+    return utf8Content;
+  } catch (e) {
+    // 如果 UTF-8 解码失败，使用 GBK
+    return iconv.decode(buffer, 'gbk');
+  }
 }
 
 function getFiles(category) {
@@ -45,7 +65,7 @@ function getFiles(category) {
         originalName: item,
         files: txtFiles.map(f => {
           const txtPath = path.join(fullPath, f);
-          const content = fs.readFileSync(txtPath, 'utf-8');
+          const content = readFileWithEncoding(txtPath);
           return {
             name: cleanFileName(f),
             originalName: f,
@@ -73,7 +93,7 @@ function generateReadingList() {
 
   // 保存到 public 目录
   const outputPath = path.resolve(__dirname, '../public/reading-list.json');
-  fs.writeFileSync(outputPath, JSON.stringify(readingList, null, 2));
+  fs.writeFileSync(outputPath, JSON.stringify(readingList, null, 2), 'utf-8');
 
   console.log('✅ Reading list generated successfully!');
   console.log(`   Output: ${outputPath}`);

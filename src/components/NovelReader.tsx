@@ -13,11 +13,56 @@ interface NovelReaderProps {
 
 type ThemeColor = 'white' | 'sepia' | 'night' | 'green';
 
-const themeColors: Record<ThemeColor, { bg: string; text: string; name: string }> = {
-  white: { bg: 'bg-white', text: 'text-gray-900', name: '默认' },
-  sepia: { bg: 'bg-amber-50', text: 'text-gray-800', name: '护眼' },
-  night: { bg: 'bg-gray-900', text: 'text-gray-100', name: '夜间' },
-  green: { bg: 'bg-green-50', text: 'text-gray-800', name: '绿色' }
+const themeColors: Record<ThemeColor, {
+  bg: string;
+  text: string;
+  name: string;
+  toolbarBg: string;
+  buttonBg: string;
+  buttonHover: string;
+  border: string;
+  secondaryText: string;
+}> = {
+  white: {
+    bg: 'bg-white',
+    text: 'text-gray-900',
+    name: '默认',
+    toolbarBg: 'bg-white/95',
+    buttonBg: 'bg-gray-100',
+    buttonHover: 'hover:bg-gray-200',
+    border: 'border-gray-200',
+    secondaryText: 'text-gray-500'
+  },
+  sepia: {
+    bg: 'bg-amber-50',
+    text: 'text-gray-800',
+    name: '护眼',
+    toolbarBg: 'bg-amber-50/95',
+    buttonBg: 'bg-amber-100',
+    buttonHover: 'hover:bg-amber-200',
+    border: 'border-amber-200',
+    secondaryText: 'text-amber-700'
+  },
+  night: {
+    bg: 'bg-[#1a1a2e]',
+    text: 'text-gray-200',
+    name: '夜间',
+    toolbarBg: 'bg-[#16213e]/95',
+    buttonBg: 'bg-[#0f3460]',
+    buttonHover: 'hover:bg-[#1a4a7a]',
+    border: 'border-[#0f3460]',
+    secondaryText: 'text-gray-400'
+  },
+  green: {
+    bg: 'bg-[#c8e6c9]',
+    text: 'text-gray-800',
+    name: '绿色',
+    toolbarBg: 'bg-[#c8e6c9]/95',
+    buttonBg: 'bg-[#a5d6a7]',
+    buttonHover: 'hover:bg-[#81c784]',
+    border: 'border-[#81c784]',
+    secondaryText: 'text-green-700'
+  }
 };
 
 export default function NovelReader({ folder, files }: NovelReaderProps) {
@@ -59,88 +104,95 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'ArrowLeft') handlePrevious();
-    if (e.key === 'ArrowRight') handleNext();
-  };
-
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') handlePrevious();
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'Escape') setShowToc(false);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentFileIndex, files.length]);
 
   const currentFile = files[currentFileIndex];
-  const themeClass = themeColors[theme];
+  const t = themeColors[theme];
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${themeClass.bg} ${themeClass.text}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${t.bg} ${t.text}`}>
       {/* 顶部工具栏 */}
-      <div className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 shadow-sm">
+      <div className={`sticky top-0 z-50 ${t.toolbarBg} backdrop-blur-md border-b ${t.border} shadow-sm`}>
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            {/* 标题和目录按钮 */}
+            {/* 左侧：目录和返回 */}
             <div className="flex items-center gap-3">
+              <a
+                href="/recommendations"
+                className={`px-3 py-1.5 text-sm font-medium ${t.buttonBg} ${t.buttonHover} rounded-lg transition-colors`}
+              >
+                ← 返回
+              </a>
               <button
                 onClick={() => setShowToc(!showToc)}
-                className="px-3 py-1.5 text-sm font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                className={`px-3 py-1.5 text-sm font-medium ${t.buttonBg} ${t.buttonHover} rounded-lg transition-colors`}
               >
                 {showToc ? '关闭目录' : '目录'}
               </button>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              <h2 className="text-base font-bold hidden sm:block truncate max-w-[200px]">
                 {currentFile?.name}
               </h2>
             </div>
 
-            {/* 控制按钮组 */}
+            {/* 右侧：控制按钮组 */}
             <div className="flex items-center gap-2 flex-wrap">
               {/* 字体大小 */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded">
+              <div className={`flex items-center gap-1 px-2 py-1 ${t.buttonBg} rounded-lg`}>
                 <button
                   onClick={() => setFontSize(Math.max(12, fontSize - 2))}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-bold"
+                  className={`w-7 h-7 flex items-center justify-center rounded ${t.buttonHover} font-bold text-sm`}
                 >
                   A-
                 </button>
-                <span className="text-xs text-gray-500 dark:text-gray-400 min-w-[3rem] text-center">
+                <span className={`text-xs ${t.secondaryText} min-w-[2.5rem] text-center`}>
                   {fontSize}px
                 </span>
                 <button
                   onClick={() => setFontSize(Math.min(32, fontSize + 2))}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-bold"
+                  className={`w-7 h-7 flex items-center justify-center rounded ${t.buttonHover} font-bold text-sm`}
                 >
                   A+
                 </button>
               </div>
 
               {/* 行高 */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded">
+              <div className={`flex items-center gap-1 px-2 py-1 ${t.buttonBg} rounded-lg hidden sm:flex`}>
                 <button
                   onClick={() => setLineHeight(Math.max(1.2, lineHeight - 0.2))}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm"
+                  className={`px-2 py-1 text-xs rounded ${t.buttonHover}`}
                 >
-                  行高-
+                  行-
                 </button>
-                <span className="text-xs text-gray-500 dark:text-gray-400 min-w-[2.5rem] text-center">
+                <span className={`text-xs ${t.secondaryText} min-w-[1.5rem] text-center`}>
                   {lineHeight.toFixed(1)}
                 </span>
                 <button
                   onClick={() => setLineHeight(Math.min(2.5, lineHeight + 0.2))}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm"
+                  className={`px-2 py-1 text-xs rounded ${t.buttonHover}`}
                 >
-                  行高+
+                  行+
                 </button>
               </div>
 
               {/* 主题切换 */}
-              <div className="flex gap-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-800 rounded">
+              <div className={`flex gap-1 p-1 ${t.buttonBg} rounded-lg`}>
                 {Object.entries(themeColors).map(([key, value]) => (
                   <button
                     key={key}
                     onClick={() => setTheme(key as ThemeColor)}
-                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                    className={`px-2 py-1 text-xs rounded-md transition-all ${
                       theme === key
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        ? 'bg-purple-600 text-white shadow-md scale-105'
+                        : `${t.buttonHover} ${t.text}`
                     }`}
                   >
                     {value.name}
@@ -152,38 +204,55 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
         </div>
       </div>
 
-      {/* 目录侧边栏 */}
+      {/* 目录侧边栏 - 遮罩 */}
       {showToc && (
-        <div className="fixed inset-y-0 left-0 z-40 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-lg overflow-y-auto">
-          <div className="p-6">
-            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">目录</h3>
-            <div className="space-y-1">
-              {files.map((file, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setCurrentFileIndex(index);
-                    setShowToc(false);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`w-full text-left px-4 py-2 rounded transition-colors ${
-                    index === currentFileIndex
-                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {file.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <div
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setShowToc(false)}
+        />
       )}
 
+      {/* 目录侧边栏 */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-80 ${t.bg} border-r ${t.border} shadow-2xl overflow-y-auto transform transition-transform duration-300 ${showToc ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold">目录</h3>
+            <button
+              onClick={() => setShowToc(false)}
+              className={`w-8 h-8 flex items-center justify-center rounded-full ${t.buttonBg} ${t.buttonHover}`}
+            >
+              ✕
+            </button>
+          </div>
+          <div className="space-y-1">
+            {files.map((file, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setCurrentFileIndex(index);
+                  setShowToc(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  index === currentFileIndex
+                    ? 'bg-purple-600 text-white font-medium shadow-md'
+                    : `${t.buttonHover} ${t.text}`
+                }`}
+              >
+                <span className={`text-xs ${index === currentFileIndex ? 'text-purple-200' : t.secondaryText} mr-2`}>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {file.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* 主内容区域 */}
-      <div className={`max-w-3xl mx-auto px-6 py-12 ${showToc ? 'ml-80' : ''} transition-all duration-300`}>
-        <h1 className="text-3xl font-bold mb-8 text-center">{currentFile?.name}</h1>
-        <div
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center">{currentFile?.name}</h1>
+        <article
           className="prose prose-lg max-w-none"
           style={{
             fontSize: `${fontSize}px`,
@@ -192,38 +261,40 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
         >
           {currentFile?.content.split('\n').map((paragraph, index) => (
             paragraph.trim() ? (
-              <p key={index} className="mb-4 text-justify indent-8">
+              <p key={index} className="mb-4 text-justify" style={{ textIndent: '2em' }}>
                 {paragraph.trim()}
               </p>
             ) : (
               <div key={index} className="h-4" />
             )
           ))}
-        </div>
+        </article>
 
         {/* 底部导航 */}
-        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className={`flex justify-between items-center mt-16 pt-8 border-t ${t.border}`}>
           <button
             onClick={handlePrevious}
             disabled={currentFileIndex === 0}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
               currentFileIndex === 0
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+                ? `${t.buttonBg} opacity-50 cursor-not-allowed`
+                : `${t.buttonBg} ${t.buttonHover} shadow-md hover:shadow-lg`
             }`}
           >
             ← 上一篇
           </button>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {currentFileIndex + 1} / {files.length}
-          </span>
+          <div className="text-center">
+            <span className={`text-sm ${t.secondaryText}`}>
+              {currentFileIndex + 1} / {files.length}
+            </span>
+          </div>
           <button
             onClick={handleNext}
             disabled={currentFileIndex === files.length - 1}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
               currentFileIndex === files.length - 1
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50'
+                ? `${t.buttonBg} opacity-50 cursor-not-allowed`
+                : `${t.buttonBg} ${t.buttonHover} shadow-md hover:shadow-lg`
             }`}
           >
             下一篇 →
@@ -232,8 +303,8 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
       </div>
 
       {/* 键盘提示 */}
-      <div className="fixed bottom-4 right-4 bg-gray-800/90 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm">
-        使用 ← → 键翻页
+      <div className={`fixed bottom-4 right-4 ${theme === 'night' ? 'bg-[#0f3460]' : 'bg-gray-800'} text-white text-xs px-3 py-2 rounded-lg shadow-lg opacity-75`}>
+        ← → 翻页 | ESC 关闭目录
       </div>
     </div>
   );
