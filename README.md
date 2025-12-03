@@ -1,24 +1,21 @@
-<!-- Dynamic Header -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=10,25,40&height=280&section=header&text=Ken%20Xiao&desc=AI%20Enthusiast%20%7C%20Developer%20%7C%20Student%20Forever&animation=fadeIn&fontColor=fff&fontSize=80&fontAlignY=32&descSize=18&descAlignY=52" alt="header">
+<!-- 顶部动态 Banner -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=10,25,40&height=300&section=header&text=Ken%20Xiao&desc=AI%20Enthusiast%20%7C%20Developer%20%7C%20Student%20Forever&animation=fadeIn&fontColor=fff&fontSize=90&fontAlignY=30&descSize=20&descAlignY=50" alt="header">
 
+<!-- 个性化介绍 (已修复) -->
 <div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=28&duration=4000&pause=1000&color=36BCF7&center=true&vCenter=true&multiline=true&random=false&width=600&height=120&lines=喵;Miāo~;Meow" alt="Typing SVG" />
+  
+  <br>
+  
+  <!-- 社交徽章 -->
+  <div>
+    <a href="https://github.com/KenXiao1"><img src="https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
+    <a href="mailto:kenx@andrew.cmu.edu"><img src="https://img.shields.io/badge/-Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"></a>
+    <!-- <a href="#"><img src="https://img.shields.io/badge/Website-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="MyWebsite"></a> -->
+  </div>
 
-  <!-- Typing Animation -->
-  <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=24&duration=3000&pause=1000&color=36BCF7&center=true&vCenter=true&multiline=true&random=false&width=600&height=100&lines=喵;Miāo~;Meow" alt="Typing SVG" />
-  </a>
-
-  <br><br>
-
-  <!-- Social Badges -->
-  <a href="https://github.com/KenXiao1"><img src="https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
-  <a href="mailto:xiaofucheng1@gmail.com"><img src="https://img.shields.io/badge/-Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"></a>
-
-  <br><br>
-
-  <!-- Profile Views -->
+  <!-- 访问统计 -->
   <img src="https://komarev.com/ghpvc/?username=KenXiao1&style=for-the-badge&color=007ACC&label=PROFILE+VIEWS" alt="profile views">
-
 </div>
 
 ---
