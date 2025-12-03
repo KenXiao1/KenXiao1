@@ -36,14 +36,9 @@ const DinoGame = () => {
         const DINO_WIDTH = 40;
         const DINO_HEIGHT = 44;
         const DINO_DUCK_HEIGHT = 26; // Shorter when ducking
-        const OBSTACLE_WIDTH = 25;
-        const OBSTACLE_HEIGHT = 40;
         const PTERODACTYL_WIDTH = 42;
         const PTERODACTYL_HEIGHT = 30;
         const BASE_GAME_SPEED = 5 * gameSpeed;
-
-        // Minimum gap between obstacles (in pixels) - ensures player can react
-        const MIN_OBSTACLE_GAP = 300 / gameSpeed;
 
         // Game state
         let dino = {
@@ -61,7 +56,7 @@ const DinoGame = () => {
         let currentGameSpeed = BASE_GAME_SPEED;
         let currentScore = 0;
         let gameRunning = true;
-        let lastObstacleX = canvas.width + 200; // Track last obstacle position
+        let nextSpawnFrame = 60; // First obstacle spawns after ~1 second
 
         gameStateRef.current = { gameRunning };
 
@@ -125,7 +120,7 @@ const DinoGame = () => {
             currentGameSpeed = BASE_GAME_SPEED;
             currentScore = 0;
             gameRunning = true;
-            lastObstacleX = canvas.width + 200;
+            nextSpawnFrame = 60;
             gameStateRef.current = { gameRunning };
             setIsGameOver(false);
             setScore(0);
@@ -136,19 +131,16 @@ const DinoGame = () => {
         window.addEventListener('keyup', handleKeyUp);
 
         const spawnObstacle = () => {
-            // Check if we can spawn a new obstacle
-            // Ensure minimum gap from last obstacle
-            const minX = lastObstacleX + MIN_OBSTACLE_GAP;
-
-            if (minX > canvas.width) {
-                return; // Not enough space yet
-            }
-
-            // Random chance to spawn
-            const spawnChance = 0.02; // 2% chance per frame when conditions are met
-            if (Math.random() > spawnChance) {
+            // Only spawn at scheduled frame
+            if (frameCount < nextSpawnFrame) {
                 return;
             }
+
+            // Schedule next obstacle with random gap
+            // Min gap ensures player has time to react (based on speed)
+            const minGapFrames = Math.floor(80 / gameSpeed);
+            const maxGapFrames = Math.floor(180 / gameSpeed);
+            nextSpawnFrame = frameCount + minGapFrames + Math.floor(Math.random() * (maxGapFrames - minGapFrames));
 
             // Decide obstacle type
             // Pterodactyls appear after score reaches 200
@@ -172,7 +164,6 @@ const DinoGame = () => {
                     type: 'pterodactyl',
                     wingUp: true,
                 });
-                lastObstacleX = canvas.width;
             } else {
                 // Ground cactus - varying sizes
                 const variations = [
@@ -190,7 +181,6 @@ const DinoGame = () => {
                     height: variation.height,
                     type: 'cactus',
                 });
-                lastObstacleX = canvas.width;
             }
         };
 
@@ -222,11 +212,6 @@ const DinoGame = () => {
                 // Animate pterodactyl wings
                 if (obs.type === 'pterodactyl' && frameCount % 10 === 0) {
                     obs.wingUp = !obs.wingUp;
-                }
-
-                // Update last obstacle position tracking
-                if (obs.x + obs.width > lastObstacleX - MIN_OBSTACLE_GAP) {
-                    lastObstacleX = obs.x + obs.width;
                 }
 
                 // Collision detection with forgiving hitbox
