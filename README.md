@@ -36,7 +36,7 @@
 - Quant trading (especially in Polymarket & crypto)
 - Develop and open source an LLM application for writing fiction
 - Expand [Momentum CTDP](https://momentumctdp.netlify.app/) project
-- Build my personal blog platform
+- [Build my personal blog platform](https://kenxiao.netlify.app/)
 - Prepare for the next stage of life
 - Read more papers and books in computational biology and math
   - Complete *Introduction to Linear Algebra* & *Artin Algebra*
