@@ -31,7 +31,7 @@
 - Quant (especially in Polymarket & crypto)
 - Develop and open source a LLM application for writing fictions.
 - Develop https://momentumctdp.netlify.app/
-- Personal blog
+- [Personal blog](https://kenxiao.netlify.app/)
 - Get prepared for my next stage of life
 - read more papers and books in computational biology and math (complete *Introduction to Linear Algebra* & *Artin Algebra*)
 - 平安喜乐
@@ -86,7 +86,7 @@
           <a href="https://github.com/KenXiao1/momentum" target="_blank">
             <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="momentum"/>
           </a>
-          <p><strong>⭐ 295</strong> | <strong>🍴 34</strong><br>A self-control training tool based on CTDP theory</p>
+          <p></strong><br>A self-control training tool based on CTDP theory</p>
           <p><a href="https://momentumctdp.netlify.app/" target="_blank">🔗 Live Demo</a> | <a href="https://kenxiao1.github.io/blog/momentum-introduction/" target="_blank">📖 Introduction</a></p>
         </div>
       </td>
@@ -96,7 +96,7 @@
           <a href="https://github.com/KenXiao1/VietaTheorem-Manim" target="_blank">
             <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=VietaTheorem-Manim&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="VietaTheorem-Manim"/>
           </a>
-          <p><strong>⭐ 6</strong><br>Manim script and video for Vieta Theorem that applies to any order</p>
+          <p></strong><br>Manim script and video for Vieta Theorem that applies to any order</p>
         </div>
       </td>
     </tr>
