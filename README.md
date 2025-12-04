@@ -18,33 +18,28 @@
   <img src="https://komarev.com/ghpvc/?username=KenXiao1&style=for-the-badge&color=007ACC&label=PROFILE+VIEWS" alt="profile views">
 </div>
 
----
-
-<!-- About Me Section -->
+<!-- 关于我 -->
 <h2 align="center">
-  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28px"/> About Me
+  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="30px"/> About Me
 </h2>
-
+      
 <table align="center">
   <tr>
-    <td valign="top" width="55%">
+    <td valign="top" width="60%">
 
 ### 🚀 My Goals for 2025
-- Quant trading (especially in Polymarket & crypto)
-- Develop and open source an LLM application for writing fiction
-- Expand [Momentum CTDP](https://momentumctdp.netlify.app/) project
-- [Build my personal blog platform](https://kenxiao.netlify.app/)
-- Prepare for the next stage of life
-- Read more papers and books in computational biology and math
-  - Complete *Introduction to Linear Algebra* & *Artin Algebra*
-- 平安喜乐 (Peace and Joy)
-
+- Quant (especially in Polymarket & crypto)
+- Develop and open source a LLM application for writing fictions.
+- Develop https://momentumctdp.netlify.app/
+- Personal blog
+- Get prepared for my next stage of life
+- read more papers and books in computational biology and math (complete *Introduction to Linear Algebra* & *Artin Algebra*)
+- 平安喜乐
+      
   </tr>
 </table>
 
----
-
-<!-- Tech Stack -->
+<!-- 技术栈 (已修复) -->
 <h2 align="center">🛠️ Tech Stack</h2>
 
 <table align="center">
@@ -59,15 +54,28 @@
     </td>
     <td align="center" width="33%">
       <strong>Backend & Tools</strong><br><br>
-      <img src="https://skillicons.dev/icons?i=nodejs,fastapi,postgres,docker,git&perline=5" alt="Backend" />
+      <img src="https://skillicons.dev/icons?i=nodejs,fastapi,postgres,docker,git&perline=5" alt="Backend & Tools" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <strong>AI & ML</strong><br><br>
+      <img src="https://skillicons.dev/icons?i=pytorch,gcp&perline=3" alt="AI & ML" />
+    </td>
+    <td align="center">
+      <strong>Cloud & Deployment</strong><br><br>
+      <img src="https://skillicons.dev/icons?i=cloudflare,netlify,vercel&perline=3" alt="Cloud & Deployment" />
+    </td>
+    <td align="center">
+      <strong>Tools & Productivity</strong><br><br>
+      <img src="https://skillicons.dev/icons?i=obsidian,latex,wsl&perline=3" alt="Tools & Productivity" />
     </td>
   </tr>
 </table>
 
----
 
-<!-- Featured Projects -->
-<h2 align="center">🌟 Featured Projects</h2>
+<!-- 精选项目 -->
+<h2 align="center">🏆 Featured Projects</h2>
 
 <div align="center">
   <table>
@@ -76,13 +84,10 @@
         <h3 align="center">Momentum</h3>
         <div align="center">
           <a href="https://github.com/KenXiao1/momentum" target="_blank">
-            <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="Momentum"/>
+            <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="momentum"/>
           </a>
-          <br>
-          <img src="https://img.shields.io/github/stars/KenXiao1/momentum?style=social" alt="stars">
-          <img src="https://img.shields.io/github/forks/KenXiao1/momentum?style=social" alt="forks">
-          <p><strong>A self-control training tool based on CTDP theory</strong></p>
-          <p>🔗 <a href="https://momentumctdp.netlify.app/">Live Demo</a> | 📖 <a href="https://github.com/KenXiao1/intro-momentum">Introduction</a></p>
+          <p><strong>⭐ 295</strong> | <strong>🍴 34</strong><br>A self-control training tool based on CTDP theory</p>
+          <p><a href="https://momentumctdp.netlify.app/" target="_blank">🔗 Live Demo</a> | <a href="https://kenxiao1.github.io/blog/momentum-introduction/" target="_blank">📖 Introduction</a></p>
         </div>
       </td>
       <td width="50%" valign="top">
@@ -91,43 +96,34 @@
           <a href="https://github.com/KenXiao1/VietaTheorem-Manim" target="_blank">
             <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=VietaTheorem-Manim&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="VietaTheorem-Manim"/>
           </a>
-          <br>
-          <img src="https://img.shields.io/github/stars/KenXiao1/VietaTheorem-Manim?style=social" alt="stars">
-          <p><strong>Manim visualization for Vieta's Theorem</strong></p>
-          <p>Mathematical animation for any polynomial order</p>
+          <p><strong>⭐ 6</strong><br>Manim script and video for Vieta Theorem that applies to any order</p>
         </div>
       </td>
     </tr>
   </table>
 
-  <br>
+  <a href="https://github.com/KenXiao1?tab=repositories" target="_blank"><img alt="All Repositories" title="All Repositories" src="https://img.shields.io/badge/-View%20All%20Repos-007ACC?style=for-the-badge&logo=github&logoColor=white"/></a>
+</div> 
 
-  <a href="https://github.com/KenXiao1?tab=repositories" target="_blank">
-    <img alt="All Repositories" title="All Repositories" src="https://img.shields.io/badge/-View%20All%20Repositories-007ACC?style=for-the-badge&logo=github&logoColor=white"/>
-  </a>
-</div>
-
----
-
-<!-- GitHub Statistics -->
+<!-- GitHub 统计数据 -->
 <h2 align="center">📊 GitHub Statistics</h2>
 
 <div align="center">
-  <img height=200 align="center" src="https://kenxiao1-stat.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true" alt="GitHub Stats" />
-  <img height=200 align="center" src="https://kenxiao1-stat.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&langs_count=8&card_width=320" alt="Top Languages" />
+  <img src="https://kenxiao1-stat.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_title=true&hide_border=true&bg_color=1A1B27&title_color=36BCF7" width="45%" alt="top languages"/>
+  <img src="https://kenxiao1-stat.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7" width="48%" alt="GitHub Stats"/>
 </div>
-
-<br>
 
 <div align="center">
-  <img src="https://kenxiao1-stat.vercel.app/?user=KenXiao1&theme=tokyonight&hide_border=true&background=1A1B27" width="98%" alt="GitHub Streak" />
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=KenXiao1&theme=tokyonight&background=1A1B27&hide_border=true" width="93%" alt="GitHub Streak" />
 </div>
 
-<br>
+<br/>
 
 <div align="center">
-  <img src="https://kenxiao1-stat.vercel.app/graph?username=KenXiao1&custom_title=Ken's%20Contribution%20Graph&bg_color=1A1B27&color=FFFFFF&line=36BCF7&point=FFFFFF&hide_border=true&area=true" width="98%" alt="Activity Graph"/>
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=KenXiao1&custom_title=Ken's%20Contribution%20Graph&bg_color=1A1B27&color=FFFFFF&line=36BCF7&point=FFFFFF&hide_border=true" width="94%" alt="activity graph"/>
 </div>
+
+<br/>
 
 <!-- GitHub Snake Animation -->
 <div align="center">
