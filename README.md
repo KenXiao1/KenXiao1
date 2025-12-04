@@ -54,7 +54,7 @@
     </td>
     <td align="center" width="33%">
       <strong>Backend & Tools</strong><br><br>
-      <img src="https://skillicons.dev/icons?i=nodejs,fastapi,postgres,docker,git&perline=5" alt="Backend & Tools" />
+      <img src="https://skillicons.dev/icons?i=nodejs,supabase,postgres,docker,git&perline=5" alt="Backend & Tools" />
     </td>
   </tr>
   <tr>
@@ -68,7 +68,7 @@
     </td>
     <td align="center">
       <strong>Tools & Productivity</strong><br><br>
-      <img src="https://skillicons.dev/icons?i=obsidian,latex,wsl&perline=3" alt="Tools & Productivity" />
+      <img src="https://skillicons.dev/icons?i=obsidian,latex,vscode" alt="Tools & Productivity" />
     </td>
   </tr>
 </table>
