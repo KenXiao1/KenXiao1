@@ -76,7 +76,7 @@
         <h3 align="center">Momentum</h3>
         <div align="center">
           <a href="https://github.com/KenXiao1/momentum" target="_blank">
-            <img src="https://github-readme-stats.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="Momentum"/>
+            <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="Momentum"/>
           </a>
           <br>
           <img src="https://img.shields.io/github/stars/KenXiao1/momentum?style=social" alt="stars">
@@ -89,7 +89,7 @@
         <h3 align="center">Vieta Theorem - Manim</h3>
         <div align="center">
           <a href="https://github.com/KenXiao1/VietaTheorem-Manim" target="_blank">
-            <img src="https://github-readme-stats.vercel.app/api/pin/?username=KenXiao1&repo=VietaTheorem-Manim&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="VietaTheorem-Manim"/>
+            <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=VietaTheorem-Manim&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="VietaTheorem-Manim"/>
           </a>
           <br>
           <img src="https://img.shields.io/github/stars/KenXiao1/VietaTheorem-Manim?style=social" alt="stars">
@@ -113,23 +113,21 @@
 <h2 align="center">📊 GitHub Statistics</h2>
 
 <div align="center">
-  <img height=200 align="center" src="https://github-readme-stats.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true" alt="GitHub Stats" />
-  <img height=200 align="center" src="https://github-readme-stats.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&langs_count=8&card_width=320" alt="Top Languages" />
+  <img height=200 align="center" src="https://kenxiao1-stat.vercel.app/api?username=KenXiao1&show_icons=true&theme=tokyonight&hide_border=true&bg_color=1A1B27&icon_color=36BCF7&title_color=36BCF7&count_private=true" alt="GitHub Stats" />
+  <img height=200 align="center" src="https://kenxiao1-stat.vercel.app/api/top-langs/?username=KenXiao1&layout=compact&theme=tokyonight&hide_border=true&bg_color=1A1B27&title_color=36BCF7&langs_count=8&card_width=320" alt="Top Languages" />
 </div>
 
 <br>
 
 <div align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=KenXiao1&theme=tokyonight&hide_border=true&background=1A1B27" width="98%" alt="GitHub Streak" />
+  <img src="https://kenxiao1-stat.vercel.app/?user=KenXiao1&theme=tokyonight&hide_border=true&background=1A1B27" width="98%" alt="GitHub Streak" />
 </div>
 
 <br>
 
 <div align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=KenXiao1&custom_title=Ken's%20Contribution%20Graph&bg_color=1A1B27&color=FFFFFF&line=36BCF7&point=FFFFFF&hide_border=true&area=true" width="98%" alt="Activity Graph"/>
+  <img src="https://kenxiao1-stat.vercel.app/graph?username=KenXiao1&custom_title=Ken's%20Contribution%20Graph&bg_color=1A1B27&color=FFFFFF&line=36BCF7&point=FFFFFF&hide_border=true&area=true" width="98%" alt="Activity Graph"/>
 </div>
-
----
 
 <!-- GitHub Snake Animation -->
 <div align="center">
@@ -139,8 +137,6 @@
     <img alt="Snake animation" src="https://raw.githubusercontent.com/KenXiao1/KenXiao1/output/github-contribution-grid-snake-dark.svg">
   </picture>
 </div>
-
----
 
 <!-- Footer -->
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=10,25,40&height=120&section=footer&text=Thanks%20for%20visiting!&animation=fadeIn&fontColor=fff&fontSize=28&fontAlignY=75" alt="footer">
