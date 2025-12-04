@@ -10824,12 +10824,12 @@
                 a.createElement(L.$m, {
                   id: "lava",
                   value: "lava",
-                  displayString: "Lava",
+                  displayString: Z.pz.getString("lavaTheme"),
                 }),
                 a.createElement(L.$m, {
                   id: "cyberpunk",
                   value: "cyberpunk",
-                  displayString: "Cyberpunk",
+                  displayString: Z.pz.getString("cyberpunkTheme"),
                 })
               )
             );

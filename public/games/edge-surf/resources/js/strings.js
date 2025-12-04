@@ -68,6 +68,8 @@ loadTimeData.data = {
   shareLink: "edge://surf",
   shareLinkCopied: "Copied!",
   skiTheme: "Let's ski",
+  lavaTheme: "Lava Surf",
+  cyberpunkTheme: "Cyberpunk City",
   specialThanks: "Special thanks:",
   surfTheme: "Let's surf",
   textdirection: "ltr",

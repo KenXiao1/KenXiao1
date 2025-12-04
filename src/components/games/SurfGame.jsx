@@ -15,7 +15,8 @@ const SurfGame = () => {
     const assets = useRef({
         surf: { surfer: null, obstacle: null, bg: null },
         lava: { surfer: null, obstacle: null, bg: null },
-        cyberpunk: { surfer: null, obstacle: null, bg: null }
+        cyberpunk: { surfer: null, obstacle: null, bg: null },
+        ski: { surfer: null, obstacle: null, bg: null }
     });
 
     // Game state ref to ensure cleanup has access to latest state
@@ -38,7 +39,7 @@ const SurfGame = () => {
                 });
             };
 
-            const themes = ['surf', 'lava', 'cyberpunk'];
+            const themes = ['surf', 'lava', 'cyberpunk', 'ski'];
             const promises = [];
 
             themes.forEach(t => {
@@ -269,7 +270,7 @@ const SurfGame = () => {
                 ctx.restore();
             } else {
                 // Fallback colors
-                ctx.fillStyle = theme === 'lava' ? '#330000' : (theme === 'cyberpunk' ? '#000033' : '#b2ebf2');
+                ctx.fillStyle = theme === 'lava' ? '#330000' : (theme === 'cyberpunk' ? '#000033' : (theme === 'ski' ? '#e0f7fa' : '#b2ebf2'));
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
@@ -289,7 +290,7 @@ const SurfGame = () => {
                     // Ideally we'd have sprite logic, but for placeholders/simple port, this is okay.
                     ctx.drawImage(currentAssets.obstacle, obs.x, obs.y, obs.width, obs.height);
                 } else {
-                    ctx.fillStyle = theme === 'lava' ? '#ff0000' : '#795548';
+                    ctx.fillStyle = theme === 'lava' ? '#ff0000' : (theme === 'ski' ? '#4fc3f7' : '#795548');
                     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
                 }
             });
@@ -358,6 +359,7 @@ const SurfGame = () => {
                     <option value="surf">Surf</option>
                     <option value="lava">Lava</option>
                     <option value="cyberpunk">Cyberpunk</option>
+                    <option value="ski">Ski</option>
                 </select>
                 <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded font-mono">
                     Ammo: {ammo}
@@ -378,7 +380,7 @@ const SurfGame = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: theme === 'lava' ? '#330000' : (theme === 'cyberpunk' ? '#000033' : '#b2ebf2')
+                    background: theme === 'lava' ? '#330000' : (theme === 'cyberpunk' ? '#000033' : (theme === 'ski' ? '#e0f7fa' : '#b2ebf2'))
                 } : {}}>
                 {!assetsLoaded && <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500">Loading assets...</div>}
                 <canvas
@@ -387,7 +389,8 @@ const SurfGame = () => {
                     height={600}
                     className={`border-4 rounded-xl shadow-2xl ${theme === 'lava' ? 'border-red-600 bg-red-900' :
                         theme === 'cyberpunk' ? 'border-purple-500 bg-gray-900' :
-                            'border-blue-400 bg-blue-200'
+                            theme === 'ski' ? 'border-cyan-300 bg-cyan-100' :
+                                'border-blue-400 bg-blue-200'
                         }`}
                     style={{ imageRendering: 'pixelated' }}
                 />
