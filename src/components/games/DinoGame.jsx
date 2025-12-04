@@ -8,14 +8,15 @@ const DinoGame = () => {
     const [isStarted, setIsStarted] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [isNight, setIsNight] = useState(false);
+    const [theme, setTheme] = useState('dino'); // 'dino' or 'minecraft'
     const gameStateRef = useRef(null);
 
     // Difficulty settings
     const [difficulty, setDifficulty] = useState({
-        initialSpeed: 5,        // Starting game speed (3-8)
-        acceleration: 0.3,      // Speed increase per interval (0.1-0.6)
-        obstacleFrequency: 1,   // Obstacle spawn rate multiplier (0.5-2)
-        pterodactylScore: 200,  // Score when pterodactyls appear (100-500)
+        initialSpeed: 5,
+        acceleration: 0.3,
+        obstacleFrequency: 1,
+        pterodactylScore: 200,
     });
 
     // Preset difficulties
@@ -40,6 +41,7 @@ const DinoGame = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         let animationFrameId;
+        const currentTheme = theme;
 
         // Game constants
         const GRAVITY = 0.6;
@@ -50,7 +52,7 @@ const DinoGame = () => {
         const DINO_DUCK_HEIGHT = 30;
         const PTERODACTYL_WIDTH = 46;
         const PTERODACTYL_HEIGHT = 40;
-        const DAY_NIGHT_CYCLE = 500; // Score interval for day/night switch
+        const DAY_NIGHT_CYCLE = 500;
 
         // Game state
         let dino = {
@@ -73,7 +75,7 @@ const DinoGame = () => {
         let gameRunning = true;
         let nextSpawnFrame = 60;
         let nightMode = false;
-        let transitionProgress = 0; // 0 = day, 1 = night
+        let transitionProgress = currentTheme === 'minecraft' ? 1 : 0;
         let lastCycleScore = 0;
 
         // Initialize clouds
@@ -107,14 +109,12 @@ const DinoGame = () => {
                 return;
             }
 
-            // Jump
             if ((e.code === 'Space' || e.code === 'ArrowUp') && dino.grounded && !dino.ducking) {
                 e.preventDefault();
                 dino.dy = JUMP_FORCE;
                 dino.grounded = false;
             }
 
-            // Duck
             if (e.code === 'ArrowDown') {
                 e.preventDefault();
                 if (!dino.ducking) {
@@ -157,13 +157,13 @@ const DinoGame = () => {
             currentScore = 0;
             gameRunning = true;
             nextSpawnFrame = 60;
-            nightMode = false;
-            transitionProgress = 0;
+            nightMode = currentTheme === 'minecraft';
+            transitionProgress = currentTheme === 'minecraft' ? 1 : 0;
             lastCycleScore = 0;
             gameStateRef.current = { gameRunning };
             setIsGameOver(false);
             setScore(0);
-            setIsNight(false);
+            setIsNight(currentTheme === 'minecraft');
             loop();
         };
 
@@ -173,7 +173,6 @@ const DinoGame = () => {
         const spawnObstacle = () => {
             if (frameCount < nextSpawnFrame) return;
 
-            // Day is easier - longer gaps between obstacles
             const dayMultiplier = nightMode ? 1 : 1.3;
             const freqMultiplier = difficulty.obstacleFrequency;
 
@@ -181,12 +180,11 @@ const DinoGame = () => {
             const maxGapFrames = Math.floor((180 * dayMultiplier) / freqMultiplier);
             nextSpawnFrame = frameCount + minGapFrames + Math.floor(Math.random() * (maxGapFrames - minGapFrames));
 
-            const canSpawnPterodactyl = currentScore > difficulty.pterodactylScore;
-            // Night has more pterodactyls
-            const pterodactylChance = nightMode ? 0.4 : 0.25;
-            const spawnPterodactyl = canSpawnPterodactyl && Math.random() < pterodactylChance;
+            const canSpawnFlying = currentScore > difficulty.pterodactylScore;
+            const flyingChance = nightMode ? 0.4 : 0.25;
+            const spawnFlying = canSpawnFlying && Math.random() < flyingChance;
 
-            if (spawnPterodactyl) {
+            if (spawnFlying) {
                 const heights = [
                     canvas.height - GROUND_HEIGHT - 75,
                     canvas.height - GROUND_HEIGHT - 55,
@@ -197,26 +195,24 @@ const DinoGame = () => {
                     y: heights[Math.floor(Math.random() * 3)],
                     width: PTERODACTYL_WIDTH,
                     height: PTERODACTYL_HEIGHT,
-                    type: 'pterodactyl',
+                    type: 'flying',
                     wingUp: true,
                 });
             } else {
-                // Cactus variations - night has larger cacti
                 const variations = nightMode ? [
                     { width: 25, height: 50 },
                     { width: 30, height: 55 },
                     { width: 50, height: 45 },
-                    { width: 17, height: 35, count: 3 }, // Triple small
+                    { width: 17, height: 35, count: 3 },
                 ] : [
                     { width: 17, height: 35 },
                     { width: 25, height: 45 },
                     { width: 34, height: 50 },
-                    { width: 17, height: 35, count: 2 }, // Double small
+                    { width: 17, height: 35, count: 2 },
                 ];
                 const variation = variations[Math.floor(Math.random() * variations.length)];
 
                 if (variation.count) {
-                    // Multiple cacti group
                     const spacing = variation.width + 3;
                     for (let i = 0; i < variation.count; i++) {
                         obstacles.push({
@@ -224,7 +220,7 @@ const DinoGame = () => {
                             y: canvas.height - GROUND_HEIGHT - variation.height,
                             width: variation.width,
                             height: variation.height,
-                            type: 'cactus',
+                            type: 'ground',
                         });
                     }
                 } else {
@@ -233,7 +229,7 @@ const DinoGame = () => {
                         y: canvas.height - GROUND_HEIGHT - variation.height,
                         width: variation.width,
                         height: variation.height,
-                        type: 'cactus',
+                        type: 'ground',
                     });
                 }
             }
@@ -242,7 +238,6 @@ const DinoGame = () => {
         const update = () => {
             if (!gameRunning) return;
 
-            // Dino physics
             dino.dy += GRAVITY;
             dino.y += dino.dy;
 
@@ -255,27 +250,26 @@ const DinoGame = () => {
                 dino.grounded = false;
             }
 
-            // Leg animation
             if (dino.grounded && !dino.ducking) {
                 dino.legFrame = Math.floor(frameCount / 5) % 2;
             }
 
-            // Day/Night cycle
-            const cycleNumber = Math.floor(currentScore / DAY_NIGHT_CYCLE);
-            if (cycleNumber > lastCycleScore / DAY_NIGHT_CYCLE) {
-                lastCycleScore = cycleNumber * DAY_NIGHT_CYCLE;
-                nightMode = !nightMode;
-                setIsNight(nightMode);
+            // Day/Night cycle (only for dino theme)
+            if (currentTheme === 'dino') {
+                const cycleNumber = Math.floor(currentScore / DAY_NIGHT_CYCLE);
+                if (cycleNumber > lastCycleScore / DAY_NIGHT_CYCLE) {
+                    lastCycleScore = cycleNumber * DAY_NIGHT_CYCLE;
+                    nightMode = !nightMode;
+                    setIsNight(nightMode);
+                }
+
+                if (nightMode && transitionProgress < 1) {
+                    transitionProgress = Math.min(1, transitionProgress + 0.02);
+                } else if (!nightMode && transitionProgress > 0) {
+                    transitionProgress = Math.max(0, transitionProgress - 0.02);
+                }
             }
 
-            // Smooth transition
-            if (nightMode && transitionProgress < 1) {
-                transitionProgress = Math.min(1, transitionProgress + 0.02);
-            } else if (!nightMode && transitionProgress > 0) {
-                transitionProgress = Math.max(0, transitionProgress - 0.02);
-            }
-
-            // Update clouds
             clouds.forEach(cloud => {
                 cloud.x -= cloud.speed * (currentGameSpeed / 5);
                 if (cloud.x + cloud.width < 0) {
@@ -284,23 +278,20 @@ const DinoGame = () => {
                 }
             });
 
-            // Update stars twinkle
             stars.forEach(star => {
                 star.twinkle += 0.1;
             });
 
             spawnObstacle();
 
-            // Update obstacles
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 let obs = obstacles[i];
                 obs.x -= currentGameSpeed;
 
-                if (obs.type === 'pterodactyl' && frameCount % 8 === 0) {
+                if (obs.type === 'flying' && frameCount % 8 === 0) {
                     obs.wingUp = !obs.wingUp;
                 }
 
-                // Collision
                 const hitBoxPadding = 8;
                 const dinoLeft = dino.x + hitBoxPadding;
                 const dinoRight = dino.x + dino.width - hitBoxPadding;
@@ -328,14 +319,15 @@ const DinoGame = () => {
             currentScore += 0.15;
             setScore(Math.floor(currentScore));
 
-            // Speed increase with configurable acceleration
             if (frameCount % 500 === 0 && currentGameSpeed < difficulty.initialSpeed * 2.5) {
                 currentGameSpeed += difficulty.acceleration;
             }
         };
 
-        const draw = () => {
-            // Background color transition
+        // ==================== DRAW FUNCTIONS ====================
+
+        const drawDinoTheme = () => {
+            // Background
             const dayBg = { r: 247, g: 247, b: 247 };
             const nightBg = { r: 13, g: 13, b: 21 };
             const bgR = Math.round(dayBg.r + (nightBg.r - dayBg.r) * transitionProgress);
@@ -344,7 +336,7 @@ const DinoGame = () => {
             ctx.fillStyle = `rgb(${bgR}, ${bgG}, ${bgB})`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw stars (night only)
+            // Stars (night)
             if (transitionProgress > 0) {
                 ctx.fillStyle = `rgba(255, 255, 255, ${transitionProgress})`;
                 stars.forEach(star => {
@@ -359,7 +351,6 @@ const DinoGame = () => {
                 ctx.beginPath();
                 ctx.arc(650, 60, 25, 0, Math.PI * 2);
                 ctx.fill();
-                // Moon crater
                 ctx.fillStyle = `rgba(200, 200, 190, ${transitionProgress * 0.5})`;
                 ctx.beginPath();
                 ctx.arc(645, 55, 5, 0, Math.PI * 2);
@@ -369,13 +360,12 @@ const DinoGame = () => {
                 ctx.fill();
             }
 
-            // Draw clouds
+            // Clouds
             const cloudAlpha = 1 - transitionProgress * 0.7;
             ctx.fillStyle = transitionProgress > 0.5
                 ? `rgba(60, 60, 80, ${cloudAlpha})`
                 : `rgba(200, 200, 200, ${cloudAlpha})`;
             clouds.forEach(cloud => {
-                // Cloud shape
                 ctx.beginPath();
                 ctx.arc(cloud.x, cloud.y, cloud.width * 0.3, 0, Math.PI * 2);
                 ctx.arc(cloud.x + cloud.width * 0.25, cloud.y - 5, cloud.width * 0.25, 0, Math.PI * 2);
@@ -388,7 +378,6 @@ const DinoGame = () => {
             ctx.fillStyle = groundColor;
             ctx.fillRect(0, canvas.height - GROUND_HEIGHT, canvas.width, 2);
 
-            // Ground texture (dotted line)
             const groundOffset = (frameCount * currentGameSpeed) % 20;
             ctx.fillStyle = transitionProgress > 0.5 ? 'rgba(0, 255, 204, 0.3)' : 'rgba(83, 83, 83, 0.5)';
             for (let i = -groundOffset; i < canvas.width; i += 20) {
@@ -398,18 +387,15 @@ const DinoGame = () => {
                 ctx.fillRect(i, canvas.height - GROUND_HEIGHT + 20, 5, 2);
             }
 
-            // Draw Dino (T-Rex pixel style)
+            // T-Rex
             const dinoColor = transitionProgress > 0.5 ? '#4ade80' : '#535353';
             ctx.fillStyle = dinoColor;
 
             if (dino.ducking) {
-                // Ducking dino - stretched horizontally
-                ctx.fillRect(dino.x, dino.y + 5, 44, 20); // Body
-                ctx.fillRect(dino.x + 35, dino.y, 15, 15); // Head
-                // Eye
+                ctx.fillRect(dino.x, dino.y + 5, 44, 20);
+                ctx.fillRect(dino.x + 35, dino.y, 15, 15);
                 ctx.fillStyle = transitionProgress > 0.5 ? '#000' : '#fff';
                 ctx.fillRect(dino.x + 42, dino.y + 3, 4, 4);
-                // Legs
                 ctx.fillStyle = dinoColor;
                 if (dino.legFrame === 0) {
                     ctx.fillRect(dino.x + 5, dino.y + 22, 6, 8);
@@ -419,22 +405,14 @@ const DinoGame = () => {
                     ctx.fillRect(dino.x + 20, dino.y + 22, 6, 8);
                 }
             } else {
-                // Standing dino
-                // Head
                 ctx.fillRect(dino.x + 18, dino.y, 26, 22);
-                // Eye
                 ctx.fillStyle = transitionProgress > 0.5 ? '#000' : '#fff';
                 ctx.fillRect(dino.x + 34, dino.y + 4, 6, 6);
-                // Body
                 ctx.fillStyle = dinoColor;
                 ctx.fillRect(dino.x + 4, dino.y + 18, 32, 20);
-                // Tail
                 ctx.fillRect(dino.x, dino.y + 20, 10, 12);
-                // Arms
                 ctx.fillRect(dino.x + 28, dino.y + 25, 8, 5);
-                // Legs (animated)
                 if (!dino.grounded) {
-                    // Jumping - legs together
                     ctx.fillRect(dino.x + 8, dino.y + 36, 8, 11);
                     ctx.fillRect(dino.x + 20, dino.y + 36, 8, 11);
                 } else if (dino.legFrame === 0) {
@@ -446,20 +424,16 @@ const DinoGame = () => {
                 }
             }
 
-            // Draw obstacles
+            // Obstacles
             obstacles.forEach(obs => {
-                if (obs.type === 'pterodactyl') {
-                    // Pterodactyl - more detailed pixel art
+                if (obs.type === 'flying') {
+                    // Pterodactyl
                     const birdColor = transitionProgress > 0.5 ? '#a855f7' : '#535353';
                     ctx.fillStyle = birdColor;
-                    // Body
                     ctx.fillRect(obs.x + 8, obs.y + 18, 30, 10);
-                    // Head
                     ctx.fillRect(obs.x + 32, obs.y + 14, 14, 14);
-                    // Beak
                     ctx.fillStyle = transitionProgress > 0.5 ? '#fbbf24' : '#888';
                     ctx.fillRect(obs.x + 40, obs.y + 18, 8, 5);
-                    // Wings
                     ctx.fillStyle = birdColor;
                     if (obs.wingUp) {
                         ctx.fillRect(obs.x + 10, obs.y, 24, 18);
@@ -467,25 +441,19 @@ const DinoGame = () => {
                     } else {
                         ctx.fillRect(obs.x + 10, obs.y + 28, 24, 14);
                     }
-                    // Eye
-                    ctx.fillStyle = transitionProgress > 0.5 ? '#fff' : '#fff';
+                    ctx.fillStyle = '#fff';
                     ctx.fillRect(obs.x + 36, obs.y + 17, 5, 5);
                 } else {
                     // Cactus
                     const cactusColor = transitionProgress > 0.5 ? '#22c55e' : '#535353';
                     ctx.fillStyle = cactusColor;
-                    // Main stem
                     ctx.fillRect(obs.x + obs.width * 0.3, obs.y, obs.width * 0.4, obs.height);
-                    // Arms
                     if (obs.height > 40) {
-                        // Left arm
                         ctx.fillRect(obs.x, obs.y + obs.height * 0.3, obs.width * 0.35, obs.height * 0.15);
                         ctx.fillRect(obs.x, obs.y + obs.height * 0.15, obs.width * 0.15, obs.height * 0.3);
-                        // Right arm
                         ctx.fillRect(obs.x + obs.width * 0.65, obs.y + obs.height * 0.5, obs.width * 0.35, obs.height * 0.12);
                         ctx.fillRect(obs.x + obs.width * 0.85, obs.y + obs.height * 0.35, obs.width * 0.15, obs.height * 0.27);
                     }
-                    // Spikes (small dots)
                     ctx.fillStyle = transitionProgress > 0.5 ? '#15803d' : '#333';
                     for (let i = 0; i < 4; i++) {
                         ctx.fillRect(obs.x + obs.width * 0.25, obs.y + 5 + i * 12, 2, 2);
@@ -499,6 +467,140 @@ const DinoGame = () => {
             ctx.font = '10px monospace';
             ctx.textAlign = 'left';
             ctx.fillText(transitionProgress > 0.5 ? 'NIGHT' : 'DAY', 10, 20);
+        };
+
+        const drawMinecraftTheme = () => {
+            // Cyberpunk dark background
+            ctx.fillStyle = '#0d0d15';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Stars
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            stars.forEach(star => {
+                const twinkleSize = star.size * (0.5 + 0.5 * Math.sin(star.twinkle));
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, twinkleSize, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Cyberpunk grid ground
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < GROUND_HEIGHT; i += 10) {
+                let y = canvas.height - GROUND_HEIGHT + i;
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+
+            const gridOffset = (frameCount * currentGameSpeed) % 40;
+            for (let i = 0; i < canvas.width + 40; i += 40) {
+                let x = i - gridOffset;
+                ctx.moveTo(x, canvas.height - GROUND_HEIGHT);
+                ctx.lineTo(x - 20, canvas.height);
+            }
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.fillStyle = '#00ffcc';
+            ctx.fillRect(0, canvas.height - GROUND_HEIGHT, canvas.width, 2);
+
+            // Creeper
+            ctx.fillStyle = '#4ade80';
+            const creeperW = 40;
+            const creeperH = dino.ducking ? 26 : 44;
+            ctx.fillRect(dino.x, dino.y, creeperW, creeperH);
+
+            // Creeper face
+            ctx.fillStyle = '#000';
+            if (dino.ducking) {
+                // Squished face
+                ctx.fillRect(dino.x + 6, dino.y + 4, 6, 6);
+                ctx.fillRect(dino.x + 28, dino.y + 4, 6, 6);
+                ctx.fillRect(dino.x + 16, dino.y + 12, 8, 10);
+            } else {
+                // Normal face
+                ctx.fillRect(dino.x + 8, dino.y + 8, 8, 8);
+                ctx.fillRect(dino.x + 24, dino.y + 8, 8, 8);
+                ctx.fillRect(dino.x + 16, dino.y + 20, 8, 12);
+                ctx.fillRect(dino.x + 12, dino.y + 26, 4, 6);
+                ctx.fillRect(dino.x + 24, dino.y + 26, 4, 6);
+            }
+
+            // Obstacles
+            obstacles.forEach(obs => {
+                if (obs.type === 'flying') {
+                    // Ghast (flying white block)
+                    ctx.fillStyle = '#e5e5e5';
+                    ctx.fillRect(obs.x + 5, obs.y + 5, 36, 30);
+
+                    // Ghast face
+                    ctx.fillStyle = '#333';
+                    // Closed/open eyes based on wing animation
+                    if (obs.wingUp) {
+                        ctx.fillRect(obs.x + 12, obs.y + 12, 6, 8);
+                        ctx.fillRect(obs.x + 28, obs.y + 12, 6, 8);
+                    } else {
+                        ctx.fillRect(obs.x + 12, obs.y + 14, 6, 4);
+                        ctx.fillRect(obs.x + 28, obs.y + 14, 6, 4);
+                    }
+                    // Mouth
+                    ctx.fillRect(obs.x + 18, obs.y + 24, 10, 6);
+
+                    // Tentacles
+                    ctx.fillStyle = '#ccc';
+                    const tentacleOffset = obs.wingUp ? 0 : 3;
+                    ctx.fillRect(obs.x + 8, obs.y + 35, 4, 8 + tentacleOffset);
+                    ctx.fillRect(obs.x + 18, obs.y + 35, 4, 10 + tentacleOffset);
+                    ctx.fillRect(obs.x + 28, obs.y + 35, 4, 6 + tentacleOffset);
+                    ctx.fillRect(obs.x + 38, obs.y + 35, 4, 9 + tentacleOffset);
+                } else {
+                    // TNT block
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+
+                    // White band
+                    ctx.fillStyle = '#fff';
+                    const bandY = obs.y + obs.height * 0.3;
+                    const bandHeight = obs.height * 0.35;
+                    ctx.fillRect(obs.x, bandY, obs.width, bandHeight);
+
+                    // TNT text
+                    ctx.fillStyle = '#000';
+                    ctx.font = `bold ${Math.min(12, obs.width / 2.5)}px monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('TNT', obs.x + obs.width / 2, bandY + bandHeight * 0.75);
+
+                    // Top/bottom dark bands
+                    ctx.fillStyle = '#991b1b';
+                    ctx.fillRect(obs.x, obs.y, obs.width, 4);
+                    ctx.fillRect(obs.x, obs.y + obs.height - 4, obs.width, 4);
+                }
+            });
+
+            // Ducking indicator
+            if (dino.ducking) {
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('DUCK!', dino.x + 20, dino.y - 5);
+            }
+
+            // Theme indicator
+            ctx.fillStyle = '#00ffcc';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('MINECRAFT', 10, 20);
+        };
+
+        const draw = () => {
+            if (currentTheme === 'minecraft') {
+                drawMinecraftTheme();
+            } else {
+                drawDinoTheme();
+            }
         };
 
         const loop = () => {
@@ -516,7 +618,7 @@ const DinoGame = () => {
             window.removeEventListener('keyup', handleKeyUp);
             cancelAnimationFrame(animationFrameId);
         };
-    }, [isStarted, difficulty]);
+    }, [isStarted, difficulty, theme]);
 
     const DifficultySlider = ({ label, value, min, max, step, onChange, description }) => (
         <div className="mb-3">
@@ -544,9 +646,39 @@ const DinoGame = () => {
                 <div className="mb-6 p-4 bg-gray-900/80 rounded-lg border border-cyan-500/30 w-full max-w-md">
                     <h3 className="text-cyan-400 font-mono mb-4 text-center text-lg">GAME SETTINGS</h3>
 
+                    {/* Theme Selection */}
+                    <div className="mb-4">
+                        <p className="text-gray-400 text-sm mb-2">Theme:</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                onClick={() => setTheme('dino')}
+                                className={`px-3 py-2 font-mono text-sm rounded transition-all flex items-center justify-center gap-2 ${
+                                    theme === 'dino'
+                                        ? 'bg-green-500 text-black'
+                                        : 'bg-gray-800 text-green-400 hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>🦖</span> T-Rex
+                            </button>
+                            <button
+                                onClick={() => setTheme('minecraft')}
+                                className={`px-3 py-2 font-mono text-sm rounded transition-all flex items-center justify-center gap-2 ${
+                                    theme === 'minecraft'
+                                        ? 'bg-green-500 text-black'
+                                        : 'bg-gray-800 text-green-400 hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>💥</span> Creeper
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 text-center">
+                            {theme === 'dino' ? 'Chrome-style with day/night cycle' : 'Minecraft-style with TNT & Ghasts'}
+                        </p>
+                    </div>
+
                     {/* Preset Buttons */}
                     <div className="mb-4">
-                        <p className="text-gray-400 text-sm mb-2">Quick Presets:</p>
+                        <p className="text-gray-400 text-sm mb-2">Difficulty:</p>
                         <div className="grid grid-cols-4 gap-2">
                             {Object.entries(presets).map(([name, preset]) => (
                                 <button
@@ -603,13 +735,13 @@ const DinoGame = () => {
                                 description="How often obstacles appear"
                             />
                             <DifficultySlider
-                                label="Pterodactyl Threshold"
+                                label="Flying Enemy Threshold"
                                 value={difficulty.pterodactylScore}
                                 min={100}
                                 max={500}
                                 step={50}
                                 onChange={(v) => setDifficulty(d => ({ ...d, pterodactylScore: v }))}
-                                description="Score when birds start appearing"
+                                description="Score when flying enemies appear"
                             />
                         </div>
                     )}
@@ -629,7 +761,7 @@ const DinoGame = () => {
                     width={800}
                     height={300}
                     className={`rounded-lg shadow-lg transition-all duration-500 ${
-                        isNight
+                        theme === 'minecraft' || isNight
                             ? 'border-4 border-cyan-500 shadow-[0_0_20px_rgba(0,255,255,0.3)]'
                             : 'border-4 border-gray-400 shadow-[0_0_10px_rgba(0,0,0,0.2)]'
                     }`}
@@ -640,15 +772,16 @@ const DinoGame = () => {
                 {!isStarted && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
                         <div className="text-center font-mono">
-                            <h2 className="text-4xl font-bold mb-4 text-cyan-400" style={{ textShadow: '0 0 10px cyan' }}>
-                                DINO RUN
+                            <h2 className="text-4xl font-bold mb-2 text-cyan-400" style={{ textShadow: '0 0 10px cyan' }}>
+                                {theme === 'dino' ? 'DINO RUN' : 'CREEPER RUN'}
                             </h2>
+                            <p className="text-2xl mb-4">{theme === 'dino' ? '🦖' : '💥'}</p>
                             <p className="text-gray-400 text-sm">Configure settings above</p>
                         </div>
                     </div>
                 )}
 
-                {/* Game over overlay */}
+                {/* Game over */}
                 {isGameOver && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg backdrop-blur-sm">
                         <div className="text-white text-center font-mono">
@@ -661,12 +794,12 @@ const DinoGame = () => {
                     </div>
                 )}
 
-                {/* Score display */}
+                {/* Score */}
                 {isStarted && (
                     <div className={`absolute top-4 right-4 font-mono font-bold text-xl tracking-widest transition-colors duration-500 ${
-                        isNight ? 'text-cyan-400' : 'text-gray-700'
+                        theme === 'minecraft' || isNight ? 'text-cyan-400' : 'text-gray-700'
                     }`}>
-                        <div className={isNight ? 'text-cyan-600' : 'text-gray-500'}>
+                        <div className={theme === 'minecraft' || isNight ? 'text-cyan-600' : 'text-gray-500'}>
                             HI: {highScore.toString().padStart(5, '0')}
                         </div>
                         <div>SCORE: {score.toString().padStart(5, '0')}</div>
@@ -676,11 +809,15 @@ const DinoGame = () => {
 
             {/* Controls */}
             <div className={`mt-6 font-mono text-sm space-y-1 text-center transition-colors duration-500 ${
-                isNight ? 'text-cyan-400' : 'text-gray-600'
+                theme === 'minecraft' || isNight ? 'text-cyan-400' : 'text-gray-600'
             }`}>
                 <p>[↑] or [SPACE] - JUMP</p>
                 <p>[↓] - DUCK (hold to stay down)</p>
-                <p className="text-xs mt-2 opacity-60">Day/Night changes every 500 points - Night is harder!</p>
+                <p className="text-xs mt-2 opacity-60">
+                    {theme === 'dino'
+                        ? 'Day/Night changes every 500 points - Night is harder!'
+                        : 'Avoid TNT blocks and Ghasts!'}
+                </p>
             </div>
         </div>
     );
