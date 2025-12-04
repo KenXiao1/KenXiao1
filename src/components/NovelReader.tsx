@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface FileWithContent {
   name: string;
@@ -30,22 +30,22 @@ const themeColors: Record<ThemeColor, {
   white: {
     bg: 'bg-[#ffffff]',
     text: 'text-gray-800',
-    name: '默认',
-    toolbarBg: 'bg-white/90',
-    buttonBg: 'bg-gray-100',
-    buttonHover: 'hover:bg-gray-200',
+    name: 'Default',
+    toolbarBg: 'bg-white/80',
+    buttonBg: 'bg-gray-100/50',
+    buttonHover: 'hover:bg-gray-100',
     border: 'border-gray-200',
     secondaryText: 'text-gray-500',
-    accent: 'text-blue-600',
-    selection: 'selection:bg-blue-100 selection:text-blue-900'
+    accent: 'text-purple-600',
+    selection: 'selection:bg-purple-100 selection:text-purple-900'
   },
   sepia: {
     bg: 'bg-[#f6f1e1]',
     text: 'text-[#5f4b32]',
-    name: '护眼',
-    toolbarBg: 'bg-[#f6f1e1]/90',
-    buttonBg: 'bg-[#e8e0cc]',
-    buttonHover: 'hover:bg-[#dcd3bc]',
+    name: 'Sepia',
+    toolbarBg: 'bg-[#f6f1e1]/80',
+    buttonBg: 'bg-[#e8e0cc]/50',
+    buttonHover: 'hover:bg-[#e8e0cc]',
     border: 'border-[#dcd3bc]',
     secondaryText: 'text-[#8c7b66]',
     accent: 'text-[#8c7b66]',
@@ -54,10 +54,10 @@ const themeColors: Record<ThemeColor, {
   night: {
     bg: 'bg-[#1A1A1A]',
     text: 'text-[#D0D0D0]',
-    name: '夜间',
-    toolbarBg: 'bg-[#1A1A1A]/90',
-    buttonBg: 'bg-[#2A2A2A]',
-    buttonHover: 'hover:bg-[#333333]',
+    name: 'Night',
+    toolbarBg: 'bg-[#1A1A1A]/80',
+    buttonBg: 'bg-[#2A2A2A]/50',
+    buttonHover: 'hover:bg-[#2A2A2A]',
     border: 'border-[#333333]',
     secondaryText: 'text-[#909090]',
     accent: 'text-[#D0D0D0]',
@@ -66,10 +66,10 @@ const themeColors: Record<ThemeColor, {
   green: {
     bg: 'bg-[#e3edcd]',
     text: 'text-[#3d5a40]',
-    name: '绿色',
-    toolbarBg: 'bg-[#e3edcd]/90',
-    buttonBg: 'bg-[#d1e0b5]',
-    buttonHover: 'hover:bg-[#c2d6a0]',
+    name: 'Eye Care',
+    toolbarBg: 'bg-[#e3edcd]/80',
+    buttonBg: 'bg-[#d1e0b5]/50',
+    buttonHover: 'hover:bg-[#d1e0b5]',
     border: 'border-[#c2d6a0]',
     secondaryText: 'text-[#6a8a6d]',
     accent: 'text-[#3d5a40]',
@@ -92,44 +92,44 @@ const nightVariants: Record<NightVariant, {
   classic: {
     bg: 'bg-[#1A1A1A]',
     text: 'text-[#D0D0D0]',
-    name: '经典',
-    toolbarBg: 'bg-[#1A1A1A]/90',
-    buttonBg: 'bg-[#2A2A2A]',
-    buttonHover: 'hover:bg-[#333333]',
+    name: 'Classic',
+    toolbarBg: 'bg-[#1A1A1A]/80',
+    buttonBg: 'bg-[#2A2A2A]/50',
+    buttonHover: 'hover:bg-[#2A2A2A]',
     border: 'border-[#333333]',
     secondaryText: 'text-[#909090]',
     accent: 'text-[#D0D0D0]',
     selection: 'selection:bg-[#333333] selection:text-[#E0E0E0]'
   },
   midnight: {
-    bg: 'bg-[#11161D]',
-    text: 'text-[#A0AABB]',
-    name: '深海',
-    toolbarBg: 'bg-[#11161D]/90',
-    buttonBg: 'bg-[#1A2229]',
-    buttonHover: 'hover:bg-[#222D36]',
-    border: 'border-[#222D36]',
-    secondaryText: 'text-[#6A7585]',
-    accent: 'text-[#A0AABB]',
-    selection: 'selection:bg-[#1A2229] selection:text-[#B0BACC]'
+    bg: 'bg-[#0f172a]',
+    text: 'text-[#cbd5e1]',
+    name: 'Midnight',
+    toolbarBg: 'bg-[#0f172a]/80',
+    buttonBg: 'bg-[#1e293b]/50',
+    buttonHover: 'hover:bg-[#1e293b]',
+    border: 'border-[#1e293b]',
+    secondaryText: 'text-[#64748b]',
+    accent: 'text-[#cbd5e1]',
+    selection: 'selection:bg-[#1e293b] selection:text-[#e2e8f0]'
   },
   solarized: {
-    bg: 'bg-[#002B36]',
-    text: 'text-[#A8B4B6]',
-    name: '极客',
-    toolbarBg: 'bg-[#002B36]/90',
-    buttonBg: 'bg-[#073642]',
-    buttonHover: 'hover:bg-[#0D4250]',
+    bg: 'bg-[#002b36]',
+    text: 'text-[#839496]',
+    name: 'Solarized',
+    toolbarBg: 'bg-[#002b36]/80',
+    buttonBg: 'bg-[#073642]/50',
+    buttonHover: 'hover:bg-[#073642]',
     border: 'border-[#073642]',
-    secondaryText: 'text-[#708E95]',
-    accent: 'text-[#2AA198]',
-    selection: 'selection:bg-[#073642] selection:text-[#B8C4C6]'
+    secondaryText: 'text-[#586e75]',
+    accent: 'text-[#2aa198]',
+    selection: 'selection:bg-[#073642] selection:text-[#93a1a1]'
   }
 };
 
 const fontFamilies: Record<FontFamily, { name: string; class: string }> = {
-  serif: { name: '宋体', class: 'font-serif' },
-  sans: { name: '黑体', class: 'font-sans' }
+  serif: { name: 'Serif', class: 'font-serif' },
+  sans: { name: 'Sans', class: 'font-sans' }
 };
 
 export default function NovelReader({ folder, files }: NovelReaderProps) {
@@ -142,9 +142,12 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
   const [showToolbar, setShowToolbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [nightVariant, setNightVariant] = useState<NightVariant>('classic');
-  const [textBrightness, setTextBrightness] = useState(100); // 30-200 范围
+  const [textBrightness, setTextBrightness] = useState(100);
+  const [progress, setProgress] = useState(0);
 
-  // 从 localStorage 加载设置
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Load settings
   useEffect(() => {
     const savedFontSize = localStorage.getItem('reader-font-size');
     const savedTheme = localStorage.getItem('reader-theme');
@@ -161,7 +164,7 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
     if (savedTextBrightness) setTextBrightness(Number(savedTextBrightness));
   }, []);
 
-  // 保存设置到 localStorage
+  // Save settings
   useEffect(() => {
     localStorage.setItem('reader-font-size', fontSize.toString());
     localStorage.setItem('reader-theme', theme);
@@ -171,10 +174,15 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
     localStorage.setItem('reader-text-brightness', textBrightness.toString());
   }, [fontSize, theme, lineHeight, fontFamily, nightVariant, textBrightness]);
 
-  // 自动隐藏工具栏
+  // Scroll handler for toolbar and progress
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const currentProgress = totalHeight > 0 ? (currentScrollY / totalHeight) * 100 : 0;
+
+      setProgress(currentProgress);
+
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setShowToolbar(false);
       } else {
@@ -212,7 +220,6 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentFileIndex, files.length]);
 
-  // 获取当前主题颜色(夜间模式应用变体)
   const getCurrentTheme = () => {
     if (theme === 'night') {
       return nightVariants[nightVariant];
@@ -220,160 +227,165 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
     return themeColors[theme];
   };
 
-  // 计算文字颜色的亮度调整
   const getTextColorStyle = () => {
     if (textBrightness === 100) return {};
-    const filter = textBrightness > 100
-      ? `brightness(${textBrightness / 100})`
-      : `brightness(${textBrightness / 100})`;
+    const filter = `brightness(${textBrightness / 100})`;
     return { filter };
   };
 
   const t = getCurrentTheme();
   const currentFile = files[currentFileIndex];
 
-
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${t.bg} ${t.text} ${t.selection} ${fontFamilies[fontFamily].class}`}>
-      {/* 顶部工具栏 */}
+    <div className={`min-h-screen transition-colors duration-500 ease-in-out ${t.bg} ${t.text} ${t.selection} ${fontFamilies[fontFamily].class}`}>
+
+      {/* Reading Progress Bar */}
+      <div className="fixed top-0 left-0 h-1 z-[60] transition-all duration-300 ease-out"
+        style={{ width: `${progress}%`, backgroundColor: theme === 'night' ? '#60a5fa' : '#8b5cf6', opacity: showToolbar ? 1 : 0.5 }} />
+
+      {/* Floating Toolbar */}
       <div
-        className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${showToolbar ? 'translate-y-0' : '-translate-y-full'
+        className={`fixed top-6 left-0 right-0 z-50 flex justify-center transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${showToolbar ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0 pointer-events-none'
           }`}
       >
-        <div className={`${t.toolbarBg} backdrop-blur-md border-b ${t.border} shadow-sm`}>
-          <div className="max-w-5xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-between gap-4">
-              {/* 左侧：返回和目录 */}
-              <div className="flex items-center gap-2">
-                <a
-                  href="/recommendations"
-                  className={`p-2 rounded-lg transition-colors ${t.buttonHover}`}
-                  title="返回"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </a>
+        <div className={`${t.toolbarBg} backdrop-blur-xl border ${t.border} shadow-2xl rounded-2xl px-6 py-3 max-w-5xl w-[95%] sm:w-auto mx-4 transition-colors duration-300`}>
+          <div className="flex items-center justify-between gap-6 sm:gap-8">
+
+            {/* Left: Navigation */}
+            <div className="flex items-center gap-3">
+              <a
+                href="/recommendations"
+                className={`p-2 rounded-xl transition-all duration-200 ${t.buttonHover} hover:scale-105 active:scale-95`}
+                title="Back to List"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </a>
+              <button
+                onClick={() => setShowToc(!showToc)}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium ${t.buttonBg} ${t.buttonHover} rounded-xl transition-all duration-200 hover:scale-105 active:scale-95`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span className="hidden sm:inline">Contents</span>
+              </button>
+              <h2 className="text-sm font-medium opacity-60 hidden md:block truncate max-w-[150px] border-l border-gray-400/20 pl-4">
+                {currentFile?.name}
+              </h2>
+            </div>
+
+            {/* Right: Settings */}
+            <div className="flex items-center gap-4">
+
+              {/* Font Controls */}
+              <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-1">
                 <button
-                  onClick={() => setShowToc(!showToc)}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium ${t.buttonBg} ${t.buttonHover} rounded-lg transition-colors`}
+                  onClick={() => setFontFamily(fontFamily === 'serif' ? 'sans' : 'serif')}
+                  className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${t.buttonHover}`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                  <span className="hidden sm:inline">目录</span>
+                  {fontFamilies[fontFamily].name}
                 </button>
-                <h2 className="text-sm font-medium opacity-70 hidden md:block truncate max-w-[200px] ml-2">
-                  {currentFile?.name}
-                </h2>
+                <div className="w-px h-4 bg-gray-400/20"></div>
+                <div className="flex items-center">
+                  <button
+                    onClick={() => setFontSize(Math.max(14, fontSize - 2))}
+                    className={`px-2 py-1 ${t.buttonHover} rounded-lg text-sm transition-colors`}
+                  >
+                    A-
+                  </button>
+                  <span className="px-2 text-xs font-mono opacity-70 min-w-[2rem] text-center">
+                    {fontSize}
+                  </span>
+                  <button
+                    onClick={() => setFontSize(Math.min(32, fontSize + 2))}
+                    className={`px-2 py-1 ${t.buttonHover} rounded-lg text-sm transition-colors`}
+                  >
+                    A+
+                  </button>
+                </div>
               </div>
 
-              {/* 右侧：控制按钮组 */}
-              <div className="flex items-center gap-2 sm:gap-4">
-                {/* 字体设置 */}
-                <div className="flex items-center gap-2">
+              {/* Brightness (Desktop) */}
+              <div className="hidden lg:flex items-center gap-2 group">
+                <svg className="w-4 h-4 opacity-40 group-hover:opacity-80 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <input
+                  type="range"
+                  min="30"
+                  max="150"
+                  step="5"
+                  value={textBrightness}
+                  onChange={(e) => setTextBrightness(Number(e.target.value))}
+                  className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-500 hover:accent-gray-700 dark:bg-gray-700"
+                />
+              </div>
+
+              {/* Theme Toggles */}
+              <div className="flex gap-2 items-center pl-2 border-l border-gray-400/20">
+                {Object.entries(themeColors).map(([key, value]) => (
                   <button
-                    onClick={() => setFontFamily(fontFamily === 'serif' ? 'sans' : 'serif')}
-                    className={`px-2 py-1 text-xs rounded border ${t.border} ${t.buttonHover}`}
-                  >
-                    {fontFamilies[fontFamily].name}
-                  </button>
-                  <div className={`flex items-center rounded-lg border ${t.border} overflow-hidden`}>
-                    <button
-                      onClick={() => setFontSize(Math.max(14, fontSize - 2))}
-                      className={`px-2 py-1 ${t.buttonHover} text-sm`}
-                    >
-                      A-
-                    </button>
-                    <span className={`px-2 text-xs border-l border-r ${t.border} min-w-[2.5rem] text-center`}>
-                      {fontSize}
-                    </span>
-                    <button
-                      onClick={() => setFontSize(Math.min(32, fontSize + 2))}
-                      className={`px-2 py-1 ${t.buttonHover} text-sm`}
-                    >
-                      A+
-                    </button>
-                  </div>
-                </div>
-
-                {/* 字体亮度调节 */}
-                <div className="hidden sm:flex items-center gap-1">
-                  <svg className="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                  <input
-                    type="range"
-                    min="30"
-                    max="200"
-                    step="10"
-                    value={textBrightness}
-                    onChange={(e) => setTextBrightness(Number(e.target.value))}
-                    className="w-16 h-1 accent-current cursor-pointer"
-                    title={`亮度: ${textBrightness}%`}
+                    key={key}
+                    onClick={() => setTheme(key as ThemeColor)}
+                    className={`w-6 h-6 rounded-full border shadow-sm transition-all duration-200 ${theme === key ? 'scale-125 ring-2 ring-offset-2 ring-purple-400 z-10' : 'hover:scale-110 opacity-70 hover:opacity-100'
+                      } ${key === 'white' ? 'bg-white border-gray-200' : ''} 
+                      ${key === 'sepia' ? 'bg-[#f6f1e1] border-[#dcd3bc]' : ''}
+                      ${key === 'night' ? 'bg-[#1A1A1A] border-[#333333]' : ''}
+                      ${key === 'green' ? 'bg-[#e3edcd] border-[#c2d6a0]' : ''}`}
+                    title={value.name}
                   />
-                </div>
+                ))}
 
-                {/* 主题切换 */}
-                <div className="flex gap-2 items-center">
-                  <div className="flex gap-1">
-                    {Object.entries(themeColors).map(([key, value]) => (
-                      <button
-                        key={key}
-                        onClick={() => setTheme(key as ThemeColor)}
-                        className={`w-6 h-6 rounded-full border transition-transform ${theme === key ? 'scale-110 ring-2 ring-offset-2 ring-blue-400' : 'hover:scale-105'
-                          } ${key === 'white' ? 'bg-white border-gray-300' : ''} 
-                          ${key === 'sepia' ? 'bg-[#f6f1e1] border-[#dcd3bc]' : ''}
-                          ${key === 'night' ? 'bg-[#1A1A1A] border-[#333333]' : ''}
-                          ${key === 'green' ? 'bg-[#e3edcd] border-[#c2d6a0]' : ''}`}
-                        title={value.name}
-                      />
-                    ))}
-                  </div>
-                  {/* 夜间模式变体选择器 */}
-                  {theme === 'night' && (
-                    <select
-                      value={nightVariant}
-                      onChange={(e) => setNightVariant(e.target.value as NightVariant)}
-                      className={`text-xs px-2 py-1 rounded border ${t.border} ${t.buttonBg} ${t.buttonHover} cursor-pointer`}
-                    >
+                {theme === 'night' && (
+                  <div className="relative group ml-1">
+                    <button className={`p-1 rounded-lg ${t.buttonHover}`}>
+                      <svg className="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    <div className="absolute top-full right-0 mt-2 py-1 w-32 bg-[#2A2A2A] border border-[#333333] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right">
                       {Object.entries(nightVariants).map(([key, value]) => (
-                        <option key={key} value={key}>
+                        <button
+                          key={key}
+                          onClick={() => setNightVariant(key as NightVariant)}
+                          className={`block w-full text-left px-4 py-2 text-xs ${nightVariant === key ? 'text-blue-400 bg-white/5' : 'text-gray-400 hover:bg-white/5'}`}
+                        >
                           {value.name}
-                        </option>
+                        </button>
                       ))}
-                    </select>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 目录侧边栏 - 遮罩 */}
-      {showToc && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity"
-          onClick={() => setShowToc(false)}
-        />
-      )}
+      {/* TOC Sidebar Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${showToc ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        onClick={() => setShowToc(false)}
+      />
 
-      {/* 目录侧边栏 */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] ${t.bg} border-r ${t.border} shadow-2xl transform transition-transform duration-300 ease-out ${showToc ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* TOC Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] ${t.toolbarBg} backdrop-blur-xl border-r ${t.border} shadow-2xl transform transition-transform duration-300 cubic-bezier(0.4, 0, 0.2, 1) ${showToc ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex flex-col h-full">
-          <div className={`p-4 border-b ${t.border} flex items-center justify-between`}>
-            <h3 className="text-lg font-bold">目录</h3>
+          <div className={`p-6 border-b ${t.border} flex items-center justify-between`}>
+            <h3 className="text-xl font-serif font-bold tracking-wide">Contents</h3>
             <button
               onClick={() => setShowToc(false)}
-              className={`p-2 rounded-full ${t.buttonHover}`}
+              className={`p-2 rounded-full ${t.buttonHover} transition-transform hover:rotate-90 duration-300`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-2">
+          <div className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
             {files.map((file, index) => (
               <button
                 key={index}
@@ -382,16 +394,16 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
                   setShowToc(false);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-all mb-1 ${index === currentFileIndex
-                  ? `${t.buttonBg} font-medium ${t.accent}`
-                  : `${t.buttonHover} opacity-80 hover:opacity-100`
+                className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 group ${index === currentFileIndex
+                    ? `${t.buttonBg} font-medium ${t.accent} shadow-sm ring-1 ring-inset ring-current/10`
+                    : `${t.buttonHover} opacity-70 hover:opacity-100`
                   }`}
               >
                 <div className="flex items-baseline gap-3">
-                  <span className={`text-xs opacity-50 font-mono w-6 text-right`}>
-                    {index + 1}
+                  <span className={`text-xs font-mono w-6 text-right opacity-40 group-hover:opacity-70 transition-opacity`}>
+                    {(index + 1).toString().padStart(2, '0')}
                   </span>
-                  <span className="truncate">{file.name}</span>
+                  <span className="truncate text-sm leading-relaxed">{file.name}</span>
                 </div>
               </button>
             ))}
@@ -399,18 +411,19 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
         </div>
       </div>
 
-      {/* 主内容区域 */}
+      {/* Main Content */}
       <div
-        className="max-w-3xl mx-auto px-6 py-20 sm:py-24 transition-all duration-300"
+        className="max-w-3xl mx-auto px-6 py-32 sm:py-40 transition-all duration-300 min-h-screen flex flex-col"
         onClick={() => setShowToolbar(!showToolbar)}
       >
-        <header className="mb-12 text-center" style={getTextColorStyle()}>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">{currentFile?.name}</h1>
-          <div className={`h-1 w-20 mx-auto rounded-full opacity-20 ${theme.startsWith('night') ? 'bg-white' : 'bg-black'}`} />
+        <header className="mb-16 text-center animate-fade-in" style={getTextColorStyle()}>
+          <h1 className="text-3xl sm:text-5xl font-bold mb-6 leading-tight tracking-tight">{currentFile?.name}</h1>
+          <div className={`h-1 w-24 mx-auto rounded-full opacity-20 ${theme.startsWith('night') ? 'bg-white' : 'bg-black'}`} />
         </header>
 
         <article
-          className="prose prose-lg max-w-none"
+          ref={contentRef}
+          className="prose prose-lg sm:prose-xl max-w-none flex-grow"
           style={{
             fontSize: `${fontSize}px`,
             lineHeight: lineHeight,
@@ -419,12 +432,12 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
         >
           {currentFile?.content?.split('\n').map((paragraph, index) => {
             const trimmed = paragraph.trim();
-            if (!trimmed) return <div key={index} className="h-6" />;
+            if (!trimmed) return <div key={index} className="h-4" />;
 
             return (
               <p
                 key={index}
-                className={`mb-6 text-justify break-words ${t.text}`}
+                className={`mb-6 text-justify break-words ${t.text} transition-colors duration-300`}
                 style={{
                   textIndent: '2em',
                   color: 'inherit'
@@ -436,26 +449,29 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
           })}
         </article>
 
-        {/* 底部导航 */}
-        <div className={`flex justify-between items-center mt-20 pt-8 border-t ${t.border}`}>
+        {/* Bottom Navigation */}
+        <div className={`flex justify-between items-center mt-24 pt-12 border-t ${t.border}`}>
           <button
             onClick={(e) => {
               e.stopPropagation();
               handlePrevious();
             }}
             disabled={currentFileIndex === 0}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${currentFileIndex === 0
-              ? 'opacity-30 cursor-not-allowed'
-              : `${t.buttonHover} hover:-translate-x-1`
+            className={`group flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-200 ${currentFileIndex === 0
+                ? 'opacity-30 cursor-not-allowed'
+                : `${t.buttonHover} hover:-translate-x-1 shadow-sm border border-transparent hover:border-current/10`
               }`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            上一篇
+            <div className="text-left">
+              <div className="text-xs opacity-50 uppercase tracking-wider">Previous</div>
+              <div className="font-medium">Chapter</div>
+            </div>
           </button>
 
-          <span className={`text-sm opacity-50 font-mono`}>
+          <span className={`text-sm opacity-40 font-mono hidden sm:block`}>
             {currentFileIndex + 1} / {files.length}
           </span>
 
@@ -465,13 +481,16 @@ export default function NovelReader({ folder, files }: NovelReaderProps) {
               handleNext();
             }}
             disabled={currentFileIndex === files.length - 1}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${currentFileIndex === files.length - 1
-              ? 'opacity-30 cursor-not-allowed'
-              : `${t.buttonHover} hover:translate-x-1`
+            className={`group flex items-center gap-3 px-6 py-3 rounded-xl transition-all duration-200 ${currentFileIndex === files.length - 1
+                ? 'opacity-30 cursor-not-allowed'
+                : `${t.buttonHover} hover:translate-x-1 shadow-sm border border-transparent hover:border-current/10`
               }`}
           >
-            下一篇
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-right">
+              <div className="text-xs opacity-50 uppercase tracking-wider">Next</div>
+              <div className="font-medium">Chapter</div>
+            </div>
+            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
