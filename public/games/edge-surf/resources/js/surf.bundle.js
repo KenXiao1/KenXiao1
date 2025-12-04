@@ -222,8 +222,8 @@
         const G = {
           ski: {
             gradient: {
-              start: [200, 235, 255],
-              end: [170, 210, 245],
+              start: [240, 250, 255],
+              end: [150, 200, 255],
             },
             hitbox: {
               crash: "#000000",
@@ -231,7 +231,7 @@
               avoid: "#FF0000",
             },
             boundary: [100, 150, 200, 0.15],
-            accent: [100, 200, 255],
+            accent: [0, 255, 255],
             folder: "resources/ski",
           },
           surf: {
@@ -250,8 +250,8 @@
           },
           lava: {
             gradient: {
-              start: [255, 120, 30],
-              end: [100, 20, 0],
+              start: [255, 80, 0],
+              end: [60, 0, 0],
             },
             hitbox: {
               crash: "#000000",
@@ -259,13 +259,13 @@
               avoid: "#FF0000",
             },
             boundary: [255, 100, 0, 0.25],
-            accent: [255, 200, 50],
+            accent: [255, 255, 0],
             folder: "resources/lava",
           },
           cyberpunk: {
             gradient: {
-              start: [40, 0, 80],
-              end: [10, 0, 25],
+              start: [20, 0, 40],
+              end: [5, 0, 10],
             },
             hitbox: {
               crash: "#000000",
@@ -273,7 +273,7 @@
               avoid: "#FF0000",
             },
             boundary: [255, 0, 255, 0.2],
-            accent: [0, 255, 255],
+            accent: [255, 0, 255],
             folder: "resources/cyberpunk",
           },
         };
