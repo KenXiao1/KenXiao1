@@ -222,16 +222,16 @@
         const G = {
           ski: {
             gradient: {
-              start: [244, 244, 244],
-              end: [222, 222, 222],
+              start: [200, 235, 255],
+              end: [170, 210, 245],
             },
             hitbox: {
               crash: "#000000",
               boost: "#00FF00",
               avoid: "#FF0000",
             },
-            boundary: [0, 0, 0, 0.1],
-            accent: [216, 140, 249],
+            boundary: [100, 150, 200, 0.15],
+            accent: [100, 200, 255],
             folder: "resources/ski",
           },
           surf: {
@@ -250,30 +250,30 @@
           },
           lava: {
             gradient: {
-              start: [255, 69, 0],
-              end: [139, 0, 0],
+              start: [255, 120, 30],
+              end: [100, 20, 0],
             },
             hitbox: {
               crash: "#000000",
               boost: "#00FF00",
               avoid: "#FF0000",
             },
-            boundary: [50, 0, 0, 0.2],
-            accent: [255, 215, 0],
+            boundary: [255, 100, 0, 0.25],
+            accent: [255, 200, 50],
             folder: "resources/lava",
           },
           cyberpunk: {
             gradient: {
-              start: [0, 0, 51],
-              end: [0, 0, 0],
+              start: [40, 0, 80],
+              end: [10, 0, 25],
             },
             hitbox: {
               crash: "#000000",
               boost: "#00FF00",
               avoid: "#FF0000",
             },
-            boundary: [0, 255, 255, 0.2],
-            accent: [0, 255, 0],
+            boundary: [255, 0, 255, 0.2],
+            accent: [0, 255, 255],
             folder: "resources/cyberpunk",
           },
         };
@@ -10445,12 +10445,7 @@
               at(this, "onNewGameClick", () => {
                 Ze.sys.changeGameState(Q.Menu);
               }),
-              at(this, "copyShareLinkToClipboard", () => {
-                $(Z.pz.getString("shareLink")),
-                  this.setState({
-                    shareLinkCopied: !0,
-                  });
-              }),
+
               at(this, "onHamburgerMenuClick", (e) => {
                 "function" == typeof this.props.onClick &&
                   this.props.onClick(e),
@@ -10462,14 +10457,12 @@
                   Ze.sys.changeGameState(Q.Pause),
                   this.setState({
                     menuOpen: !this.state.menuOpen,
-                    shareLinkCopied: !1,
                   }),
                   (te.sys.session.flyoutActive = !te.sys.session.flyoutActive);
               }),
               at(this, "dismissMenu", () => {
                 this.setState({
                   menuOpen: !1,
-                  shareLinkCopied: !1,
                 }),
                   (te.sys.session.flyoutActive = !1);
               }),
@@ -10551,7 +10544,6 @@
               }),
               (this.state = {
                 menuOpen: !1,
-                shareLinkCopied: !1,
               });
           }
           componentDidMount() {
@@ -10695,14 +10687,6 @@
                     .settingsHamburgerMenu_flyout_divider,
               }),
 
-              // share game section
-              this.renderShareSection(),
-              a.createElement(P.iz, {
-                className:
-                  this.props.managedClasses
-                    .settingsHamburgerMenu_flyout_divider,
-              }),
-
               // game settings toggles
               this.renderToggleSection(),
               a.createElement(P.iz, {
@@ -10824,12 +10808,12 @@
                 a.createElement(L.$m, {
                   id: "lava",
                   value: "lava",
-                  displayString: Z.pz.getString("lavaTheme"),
+                  displayString: "Lava",
                 }),
                 a.createElement(L.$m, {
                   id: "cyberpunk",
                   value: "cyberpunk",
-                  displayString: Z.pz.getString("cyberpunkTheme"),
+                  displayString: "Cyberpunk",
                 })
               )
             );
@@ -10889,35 +10873,7 @@
               )
             );
           }
-          renderShareSection() {
-            return a.createElement(
-              "div",
-              {
-                className:
-                  this.props.managedClasses
-                    .settingsHamburgerMenu_flyout_shareRow,
-              },
-              a.createElement(
-                E.__,
-                {
-                  htmlFor: "shareButton",
-                },
-                Z.pz.getString("share")
-              ),
-              a.createElement(
-                _.ER,
-                {
-                  id: "shareButton",
-                  jssStyleSheet: f,
-                  onClick: this.copyShareLinkToClipboard,
-                  beforeContent: this.state.shareLinkCopied ? B : V,
-                },
-                this.state.shareLinkCopied
-                  ? Z.pz.getString("shareLinkCopied")
-                  : Z.pz.getString("shareCopy")
-              )
-            );
-          }
+
           renderButtonSection() {
             return a.createElement(
               "div",
