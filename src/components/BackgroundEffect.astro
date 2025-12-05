@@ -6,7 +6,7 @@
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.4;
+    opacity: 0.25;
     pointer-events: none;
     transition: opacity 0.5s ease;
   }
@@ -28,6 +28,38 @@
     height: 1px;
   }
 </style>
+
+<!-- Saturn Settings Modal -->
+<div id="saturn-settings-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl w-80 border border-gray-200 dark:border-gray-700">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200">Saturn Settings</h3>
+      <button id="close-saturn-settings" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Particle Count</label>
+        <input type="range" id="saturn-particle-count" min="5000" max="50000" step="1000" value="18000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+        <div class="text-right text-xs text-gray-500" id="saturn-particle-count-val">18000</div>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Rotation Speed</label>
+        <input type="range" id="saturn-speed" min="0.1" max="2.0" step="0.1" value="1.0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+        <div class="text-right text-xs text-gray-500" id="saturn-speed-val">1.0x</div>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Chaos Intensity</label>
+        <input type="range" id="saturn-chaos" min="0.1" max="2.0" step="0.1" value="0.8" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+        <div class="text-right text-xs text-gray-500" id="saturn-chaos-val">0.8</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <canvas id="bg-canvas"></canvas>
 <canvas id="bg-canvas-3d" class="hidden"></canvas>
@@ -76,6 +108,13 @@
   let lastVideoTime = -1;
   let isCameraRunning = false;
   let handControlValue = 0.5; // Smoothed value
+  
+  // Saturn Settings
+  let saturnSettings = {
+    particleCount: 18000,
+    speedMultiplier: 1.0,
+    chaosMultiplier: 0.8
+  };
 
   function resize() {
     width = window.innerWidth;
@@ -417,10 +456,10 @@
         threeScene.remove(threeScene.children[0]); 
     }
 
-    const PARTICLE_COUNT = 40000;
-    const SATURN_RADIUS = 2;
-    const RING_INNER = 3;
-    const RING_OUTER = 8;
+    const PARTICLE_COUNT = saturnSettings.particleCount;
+    const SATURN_RADIUS = 1.8;
+    const RING_INNER = 2.8;
+    const RING_OUTER = 7;
 
     const geometry = new THREE.BufferGeometry();
     const positions = [];
@@ -434,7 +473,7 @@
     for (let i = 0; i < PARTICLE_COUNT; i++) {
         let x, y, z, r, isRingVal;
         
-        if (Math.random() < 0.4) {
+        if (Math.random() < 0.35) {
             // Core
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
@@ -449,7 +488,7 @@
             const theta = Math.random() * Math.PI * 2;
             const rad = RING_INNER + Math.random() * (RING_OUTER - RING_INNER);
             x = rad * Math.cos(theta);
-            y = (Math.random() - 0.5) * 0.2;
+            y = (Math.random() - 0.5) * 0.15;
             z = rad * Math.sin(theta);
             r = rad;
             isRingVal = 1.0;
@@ -457,8 +496,8 @@
 
         positions.push(x, y, z);
         initialPos.push(x, y, z);
-        sizes.push(Math.random() * 2.0 + 0.5);
-        speeds.push(Math.random() * 0.5 + 0.5);
+        sizes.push(Math.random() * 1.2 + 0.3);
+        speeds.push(Math.random() * 0.3 + 0.3);
         angleOffsets.push(Math.atan2(z, x));
         radii.push(r);
         isRings.push(isRingVal);
@@ -477,6 +516,7 @@
       uniform float time;
       uniform float handControl; 
       uniform float chaosLevel;
+      uniform float speedMultiplier;
       uniform vec3 colorCore;
       uniform vec3 colorRing;
       
@@ -500,9 +540,9 @@
         float scaleFactor = 0.5 + 1.5 * handControl; 
         currentRadius *= scaleFactor;
 
-        float w = speed * 0.5;
+        float w = speed * 0.5 * speedMultiplier;
         if (isRing > 0.5) {
-           w = 2.0 * pow(currentRadius, -1.5); 
+           w = 2.0 * pow(currentRadius, -1.5) * speedMultiplier; 
         }
         
         float currentAngle = angleOffset + w * time;
@@ -525,25 +565,27 @@
         }
 
         if (chaosLevel > 0.0) {
+            // Slower Brownian motion - use slower time frequency
+            float slowTime = time * 0.15; // Even slower time
             vec3 noise = vec3(
-                random(vec2(time, float(gl_VertexID))) - 0.5,
-                random(vec2(time + 1.0, float(gl_VertexID))) - 0.5,
-                random(vec2(time + 2.0, float(gl_VertexID))) - 0.5
+                random(vec2(slowTime, float(gl_VertexID))) - 0.5,
+                random(vec2(slowTime + 1.0, float(gl_VertexID))) - 0.5,
+                random(vec2(slowTime + 2.0, float(gl_VertexID))) - 0.5
             );
-            pos += noise * chaosLevel * 2.0;
+            pos += noise * chaosLevel;
         }
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         gl_Position = projectionMatrix * mvPosition;
-        gl_PointSize = size * (300.0 / -mvPosition.z);
+        gl_PointSize = size * (200.0 / -mvPosition.z);
 
-        // Color Logic
+        // Color Logic - Cosmic calm
         if (isRing > 0.5) {
             vColor = colorRing;
-            vAlpha = 0.6;
+            vAlpha = 0.6; // Increased from 0.35 for better visibility
         } else {
             vColor = colorCore;
-            vAlpha = 0.9;
+            vAlpha = 0.8; // Increased from 0.5
         }
         
         if (-mvPosition.z < 1.0) vAlpha = 0.0;
@@ -567,8 +609,9 @@
           time: { value: 0 },
           handControl: { value: 0.5 },
           chaosLevel: { value: 0.0 },
-          colorCore: { value: new THREE.Color(0x00aaff) }, // Default Blue
-          colorRing: { value: new THREE.Color(0x0055aa) }
+          speedMultiplier: { value: saturnSettings.speedMultiplier },
+          colorCore: { value: new THREE.Color(0x6080a0) }, 
+          colorRing: { value: new THREE.Color(0x405060) }  
         },
         vertexShader,
         fragmentShader,
@@ -635,23 +678,30 @@
 
     // Chaos
     if (handControlValue > 0.85) {
-        threeMaterial.uniforms.chaosLevel.value = (handControlValue - 0.85) * 6.0;
+        threeMaterial.uniforms.chaosLevel.value = (handControlValue - 0.85) * 6.0 * saturnSettings.chaosMultiplier;
     } else {
         threeMaterial.uniforms.chaosLevel.value = 0.0;
     }
     
     // Update colors based on customColor
     // Parse rgba string to THREE.Color
-    // We use a helper since THREE.Color(string) supports CSS colors
     const isDark = document.documentElement.classList.contains('dark');
     const colorStr = isDark ? customColor.dark : customColor.light;
     
-    // Use the theme color for the Core, and a dimmer version for the Ring
+    // Use a desaturated, cooler version of the theme color
     const baseColor = new THREE.Color(colorStr);
-    threeMaterial.uniforms.colorCore.value.lerp(baseColor, 0.1);
+    // Desaturate and cool down the color for cosmic feel
+    const h = baseColor.getHSL({}).h;
     
-    const ringColor = baseColor.clone().multiplyScalar(0.5); // Dimmer
-    threeMaterial.uniforms.colorRing.value.lerp(ringColor, 0.1);
+    // Brighter in dark mode
+    const lCore = isDark ? 0.6 : 0.4;
+    const lRing = isDark ? 0.4 : 0.25;
+    
+    const coreColor = new THREE.Color().setHSL(h, 0.4, lCore); // Increased saturation and lightness
+    const ringColor = new THREE.Color().setHSL(h, 0.3, lRing); 
+    
+    threeMaterial.uniforms.colorCore.value.lerp(coreColor, 0.05);
+    threeMaterial.uniforms.colorRing.value.lerp(ringColor, 0.05);
 
     threeRenderer.render(threeScene, threeCamera);
   }
@@ -731,5 +781,59 @@
   if (document.addEventListener) {
     document.addEventListener('astro:page-load', updateCanvasPosition);
   }
+
+  // Saturn Settings Logic
+  const saturnModal = document.getElementById('saturn-settings-modal');
+  const closeSaturnBtn = document.getElementById('close-saturn-settings');
+  const pCountInput = document.getElementById('saturn-particle-count');
+  const speedInput = document.getElementById('saturn-speed');
+  const chaosInput = document.getElementById('saturn-chaos');
+  
+  // Load settings
+  const savedSaturnSettings = localStorage.getItem('saturnSettings');
+  if (savedSaturnSettings) {
+    saturnSettings = JSON.parse(savedSaturnSettings);
+    if(pCountInput) pCountInput.value = saturnSettings.particleCount;
+    if(speedInput) speedInput.value = saturnSettings.speedMultiplier;
+    if(chaosInput) chaosInput.value = saturnSettings.chaosMultiplier;
+    updateLabels();
+  }
+
+  function updateLabels() {
+    if(pCountInput) document.getElementById('saturn-particle-count-val').innerText = pCountInput.value;
+    if(speedInput) document.getElementById('saturn-speed-val').innerText = speedInput.value + 'x';
+    if(chaosInput) document.getElementById('saturn-chaos-val').innerText = chaosInput.value;
+  }
+
+  window.addEventListener('saturn-settings-open', () => {
+    saturnModal?.classList.remove('hidden');
+    saturnModal?.classList.add('flex');
+  });
+
+  closeSaturnBtn?.addEventListener('click', () => {
+    saturnModal?.classList.add('hidden');
+    saturnModal?.classList.remove('flex');
+  });
+
+  pCountInput?.addEventListener('input', (e) => {
+    saturnSettings.particleCount = parseInt(e.target.value);
+    updateLabels();
+    localStorage.setItem('saturnSettings', JSON.stringify(saturnSettings));
+    // Re-init to apply particle count change
+    if (currentTheme === 'saturn') initSaturn();
+  });
+
+  speedInput?.addEventListener('input', (e) => {
+    saturnSettings.speedMultiplier = parseFloat(e.target.value);
+    updateLabels();
+    localStorage.setItem('saturnSettings', JSON.stringify(saturnSettings));
+    if (threeMaterial) threeMaterial.uniforms.speedMultiplier.value = saturnSettings.speedMultiplier;
+  });
+
+  chaosInput?.addEventListener('input', (e) => {
+    saturnSettings.chaosMultiplier = parseFloat(e.target.value);
+    updateLabels();
+    localStorage.setItem('saturnSettings', JSON.stringify(saturnSettings));
+  });
 
 </script>
