@@ -20,6 +20,7 @@
     "@fontsource/noto-serif-sc": "^5.2.8",
     "@keystatic/astro": "^5.0.6",
     "@keystatic/core": "^0.5.48",
+    "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
     "@supabase/supabase-js": "^2.86.0",
     "@tailwindcss/typography": "^0.5.19",
     "astro": "^5.16.0",
@@ -32,6 +33,7 @@
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "remark-wiki-link": "^2.0.1",
+    "three": "^0.181.2",
     "typescript": "^5.9.3",
     "unist-util-visit": "^5.0.0"
   },

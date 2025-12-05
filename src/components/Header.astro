@@ -30,6 +30,7 @@ const links = [
         <option value="cellular-automata">Cellular Automata</option>
         <option value="turbulence">Turbulence</option>
         <option value="differential-equation">Equation</option>
+        <option value="saturn">Saturn</option>
         <option value="none">No Background</option>
       </select>
 
@@ -79,10 +80,14 @@ const links = [
     
     // Hide/show canvas based on theme
     const canvas = document.getElementById('bg-canvas');
+    const canvas3d = document.getElementById('bg-canvas-3d');
+    
     if (theme === 'none') {
       if (canvas) canvas.style.display = 'none';
+      if (canvas3d) canvas3d.style.display = 'none';
     } else {
       if (canvas) canvas.style.display = 'block';
+      if (canvas3d) canvas3d.style.display = 'block';
       
       // Open equation modal if equation theme is selected
       if (theme === 'differential-equation') {

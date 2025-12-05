@@ -1,5 +1,5 @@
 <style>
-  #bg-canvas {
+  #bg-canvas, #bg-canvas-3d {
     position: fixed;
     top: 0;
     left: 0;
@@ -8,25 +8,46 @@
     z-index: -1;
     opacity: 0.4;
     pointer-events: none;
-    transition: transform 0.3s ease;
+    transition: opacity 0.5s ease;
   }
   
-  #bg-canvas.right-positioned {
+  #bg-canvas.hidden, #bg-canvas-3d.hidden {
+    opacity: 0;
+  }
+  
+  #bg-canvas.right-positioned, #bg-canvas-3d.right-positioned {
     transform: translateX(35%);
+  }
+  
+  /* Hidden video for MediaPipe */
+  #webcam {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
   }
 </style>
 
 <canvas id="bg-canvas"></canvas>
+<canvas id="bg-canvas-3d" class="hidden"></canvas>
+<video id="webcam" playsinline></video>
 
 <script>
+  import * as THREE from 'three';
+  import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
+
   const canvas = document.getElementById('bg-canvas');
-  if (!canvas) throw new Error('Canvas not found');
+  const canvas3d = document.getElementById('bg-canvas-3d');
+  const video = document.getElementById('webcam');
+  
+  if (!canvas || !canvas3d || !video) throw new Error('Elements not found');
   
   const ctx = canvas.getContext('2d');
 
   let width, height;
   let animationId;
-  let currentTheme = 'cellular-automata'; // 'cellular-automata', 'turbulence', or 'differential-equation'
+  let currentTheme = 'cellular-automata'; 
   
   // Color customization
   let customColor = { light: 'rgba(45,45,45,0.8)', dark: 'rgba(201,169,97,0.8)' };
@@ -39,34 +60,65 @@
   // Turbulence State
   let particles = [];
   const particleCount = 500;
-  let mouseX = width / 2;
-  let mouseY = height / 2;
+  let mouseX = 0;
+  let mouseY = 0;
   let mouseInfluence = 0;
   
   // Differential Equation State
   let deParticles = [];
   const deParticleCount = 300;
   let time = 0;
-  let selectedEquationTemplate = null; // Current equation template (lorenz, vanderpol, pendulum)
+  let selectedEquationTemplate = null;
+
+  // Saturn State (Three.js & MediaPipe)
+  let threeRenderer, threeScene, threeCamera, threeMaterial, threePoints;
+  let handLandmarker = null;
+  let lastVideoTime = -1;
+  let isCameraRunning = false;
+  let handControlValue = 0.5; // Smoothed value
 
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
+    
+    if (threeRenderer && threeCamera) {
+        threeCamera.aspect = width / height;
+        threeCamera.updateProjectionMatrix();
+        threeRenderer.setSize(width, height);
+    }
+    
     initTheme();
   }
 
   function initTheme() {
-    // Clear canvas on theme init to prevent ghosting
+    // Clear 2D canvas
     if (ctx) ctx.clearRect(0, 0, width, height);
 
-    if (currentTheme === 'cellular-automata') {
-      initCA();
-    } else if (currentTheme === 'turbulence') {
-      initTurbulence();
+    // Toggle Canvases & Camera
+    if (currentTheme === 'saturn') {
+        canvas.classList.add('hidden');
+        canvas3d.classList.remove('hidden');
+        initSaturn();
+        startCamera();
     } else {
-      initDifferentialEquation();
+        canvas.classList.remove('hidden');
+        canvas3d.classList.add('hidden');
+        stopCamera();
+        
+        // Cleanup Three.js if switching away
+        if (threeRenderer) {
+            // Optional: dispose resources
+        }
+
+        if (currentTheme === 'cellular-automata') {
+            initCA();
+        } else if (currentTheme === 'turbulence') {
+            initTurbulence();
+        } else {
+            initDifferentialEquation();
+        }
     }
   }
 
@@ -129,30 +181,26 @@
         y: Math.random() * height,
         vx: 0,
         vy: 0,
-        size: Math.random() * 3 + 0.5, // Varied sizes
-        opacity: Math.random() * 0.5 + 0.5 // Varied opacity
+        size: Math.random() * 3 + 0.5, 
+        opacity: Math.random() * 0.5 + 0.5
       });
     }
   }
 
   function drawTurbulence() {
     const isDark = document.documentElement.classList.contains('dark');
-    // Use semi-transparent fill for trail effect
     ctx.fillStyle = isDark ? 'rgba(26,26,26,0.05)' : 'rgba(254,254,254,0.05)';
     ctx.fillRect(0, 0, width, height);
     
-    // Simple noise-like flow
     const time = Date.now() * 0.0003;
     
     for(let p of particles) {
-      // More complex flow field
       const angle = (
         Math.sin(p.x * 0.003 + time) + 
         Math.cos(p.y * 0.003 + time) +
         Math.sin((p.x + p.y) * 0.002 + time * 0.5)
       ) * Math.PI;
       
-      // Mouse attraction force
       const dx = mouseX - p.x;
       const dy = mouseY - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -161,21 +209,17 @@
       p.vx += Math.cos(angle) * 0.15 + (dx / dist) * mouseForce * 0.1;
       p.vy += Math.sin(angle) * 0.15 + (dy / dist) * mouseForce * 0.1;
       
-      // Friction
       p.vx *= 0.96;
       p.vy *= 0.96;
       
       p.x += p.vx;
       p.y += p.vy;
       
-      // Wrap around
       if(p.x < 0) p.x = width;
       if(p.x > width) p.x = 0;
       if(p.y < 0) p.y = height;
       if(p.y > height) p.y = 0;
       
-      // Draw particle with glow effect
-      const isDark = document.documentElement.classList.contains('dark');
       ctx.fillStyle = isDark ? customColor.dark.replace('0.8', p.opacity) : customColor.light.replace('0.8', p.opacity);
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -183,22 +227,18 @@
     }
   }
   
-  // --- Differential Equation (Customizable) ---
+  // --- Differential Equation ---
   let customFunctions = null;
 
   function initDifferentialEquation() {
-    // Clear canvas immediately to remove "ghosts" of previous state
     if (ctx) ctx.clearRect(0, 0, width, height);
-    
     deParticles = [];
     time = 0;
     
-    // Default to Lorenz if no template selected or invalid
     if (!selectedEquationTemplate || (selectedEquationTemplate !== 'lorenz' && selectedEquationTemplate !== 'custom')) {
       selectedEquationTemplate = 'lorenz';
     }
 
-    // Initialize particles (same for both modes for now, can be customized later)
     for(let i=0; i<deParticleCount; i++) {
       deParticles.push({
         x: (Math.random() - 0.5) * 20,
@@ -213,15 +253,7 @@
       try {
         const savedCustom = JSON.parse(localStorage.getItem('customEquationData'));
         if (savedCustom) {
-          // Create functions from strings
-          // Variables: x, y, z, t, sigma, rho, beta
-          // We allow standard Math functions
           const createFunc = (str) => {
-            // Replace common math functions to be accessible directly if needed, 
-            // or just rely on Math.sin etc. 
-            // For better UX, we might want to allow 'sin(x)' instead of 'Math.sin(x)'
-            // But for safety and simplicity in this iteration, let's assume standard JS math or pre-process.
-            // Let's do a simple pre-process to allow sin, cos, etc.
             let body = 'return ' + str
               .replace(/\bsin\b/g, 'Math.sin')
               .replace(/\bcos\b/g, 'Math.cos')
@@ -230,21 +262,17 @@
               .replace(/\bsqrt\b/g, 'Math.sqrt')
               .replace(/\bpow\b/g, 'Math.pow')
               .replace(/\bPI\b/g, 'Math.PI');
-              
             return new Function('x', 'y', 'z', 't', body);
           };
-
           customFunctions = {
             dx: createFunc(savedCustom.dx),
             dy: createFunc(savedCustom.dy),
             dz: createFunc(savedCustom.dz)
           };
         } else {
-          // Fallback to Lorenz if custom data missing
           selectedEquationTemplate = 'lorenz';
         }
       } catch (e) {
-        console.error('Error parsing custom equation:', e);
         selectedEquationTemplate = 'lorenz';
       }
     }
@@ -258,7 +286,6 @@
     const dt = 0.005;
     
     if (selectedEquationTemplate === 'lorenz') {
-      // Lorenz Attractor
       const sigma = 10;
       const rho = 28;
       const beta = 8/3;
@@ -288,7 +315,6 @@
         }
       }
     } else if (selectedEquationTemplate === 'custom' && customFunctions) {
-      // Custom Equation
       for(let p of deParticles) {
         try {
           const dx = customFunctions.dx(p.x, p.y, p.z, time) * dt;
@@ -299,8 +325,6 @@
           p.y += dy;
           p.z += dz;
           
-          // Auto-scaling might be tricky for custom equations, sticking to Lorenz-ish scale for now
-          // or maybe slightly smaller scale to be safe
           const scale = 8; 
           const screenX = width / 2 + p.x * scale;
           const screenY = height / 2 + p.y * scale;
@@ -310,22 +334,326 @@
           ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
           ctx.fill();
           
-          // Generic bounds check - if it explodes, reset
           if (Math.abs(p.x) > 50 || Math.abs(p.y) > 50 || Math.abs(p.z) > 100 || isNaN(p.x)) {
              p.x = (Math.random() - 0.5) * 20;
              p.y = (Math.random() - 0.5) * 20;
              p.z = Math.random() * 40;
           }
         } catch (e) {
-          // If equation fails at runtime, stop drawing to prevent console spam
           selectedEquationTemplate = 'lorenz'; 
           initDifferentialEquation();
           break;
         }
       }
     }
-    
     time += dt;
+  }
+
+  // --- MediaPipe & Camera ---
+  async function initMediaPipe() {
+    if (handLandmarker) return;
+    
+    try {
+        const vision = await FilesetResolver.forVisionTasks(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+        );
+        handLandmarker = await HandLandmarker.createFromOptions(vision, {
+            baseOptions: {
+                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+                delegate: "GPU"
+            },
+            runningMode: "VIDEO",
+            numHands: 2
+        });
+    } catch (e) {
+        console.error("Failed to init MediaPipe:", e);
+    }
+  }
+
+  async function startCamera() {
+    if (isCameraRunning) return;
+    
+    await initMediaPipe();
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.addEventListener("loadeddata", () => {
+            isCameraRunning = true;
+            video.play();
+        });
+    } catch (err) {
+        console.warn("Camera access denied or not available. Falling back to mouse.", err);
+    }
+  }
+
+  function stopCamera() {
+    if (!isCameraRunning) return;
+    
+    if (video.srcObject) {
+        const tracks = video.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        video.srcObject = null;
+    }
+    isCameraRunning = false;
+  }
+
+  // --- Saturn (Three.js) ---
+  function initSaturn() {
+    if (!threeRenderer) {
+        threeScene = new THREE.Scene();
+        threeCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        threeCamera.position.z = 15;
+        threeCamera.position.y = 5;
+        threeCamera.lookAt(0, 0, 0);
+
+        threeRenderer = new THREE.WebGLRenderer({ canvas: canvas3d, alpha: true, antialias: true });
+        threeRenderer.setSize(width, height);
+        threeRenderer.setPixelRatio(window.devicePixelRatio);
+    }
+    
+    // Clear existing children
+    while(threeScene.children.length > 0){ 
+        threeScene.remove(threeScene.children[0]); 
+    }
+
+    const PARTICLE_COUNT = 40000;
+    const SATURN_RADIUS = 2;
+    const RING_INNER = 3;
+    const RING_OUTER = 8;
+
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    const sizes = [];
+    const speeds = [];
+    const angleOffsets = [];
+    const radii = [];
+    const isRings = [];
+    const initialPos = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        let x, y, z, r, isRingVal;
+        
+        if (Math.random() < 0.4) {
+            // Core
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const rad = Math.pow(Math.random(), 1/3) * SATURN_RADIUS;
+            x = rad * Math.sin(phi) * Math.cos(theta);
+            y = rad * Math.sin(phi) * Math.sin(theta);
+            z = rad * Math.cos(phi);
+            r = Math.sqrt(x*x + z*z);
+            isRingVal = 0.0;
+        } else {
+            // Ring
+            const theta = Math.random() * Math.PI * 2;
+            const rad = RING_INNER + Math.random() * (RING_OUTER - RING_INNER);
+            x = rad * Math.cos(theta);
+            y = (Math.random() - 0.5) * 0.2;
+            z = rad * Math.sin(theta);
+            r = rad;
+            isRingVal = 1.0;
+        }
+
+        positions.push(x, y, z);
+        initialPos.push(x, y, z);
+        sizes.push(Math.random() * 2.0 + 0.5);
+        speeds.push(Math.random() * 0.5 + 0.5);
+        angleOffsets.push(Math.atan2(z, x));
+        radii.push(r);
+        isRings.push(isRingVal);
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('initialPos', new THREE.Float32BufferAttribute(initialPos, 3));
+    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+    geometry.setAttribute('speed', new THREE.Float32BufferAttribute(speeds, 1));
+    geometry.setAttribute('angleOffset', new THREE.Float32BufferAttribute(angleOffsets, 1));
+    geometry.setAttribute('radius', new THREE.Float32BufferAttribute(radii, 1));
+    geometry.setAttribute('isRing', new THREE.Float32BufferAttribute(isRings, 1));
+
+    // Shader
+    const vertexShader = `
+      uniform float time;
+      uniform float handControl; 
+      uniform float chaosLevel;
+      uniform vec3 colorCore;
+      uniform vec3 colorRing;
+      
+      attribute float size;
+      attribute float speed;
+      attribute float angleOffset;
+      attribute float radius;
+      attribute vec3 initialPos;
+      attribute float isRing;
+
+      varying vec3 vColor;
+      varying float vAlpha;
+
+      float random(vec2 st) {
+          return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+      }
+
+      void main() {
+        float currentRadius = radius;
+        // Hand control affects scale: 0.5 (closed) to 2.0 (open)
+        float scaleFactor = 0.5 + 1.5 * handControl; 
+        currentRadius *= scaleFactor;
+
+        float w = speed * 0.5;
+        if (isRing > 0.5) {
+           w = 2.0 * pow(currentRadius, -1.5); 
+        }
+        
+        float currentAngle = angleOffset + w * time;
+
+        vec3 pos;
+        if (isRing > 0.5) {
+            pos = vec3(
+                currentRadius * cos(currentAngle),
+                (random(vec2(radius, angleOffset)) - 0.5) * 0.2 * scaleFactor,
+                currentRadius * sin(currentAngle)
+            );
+        } else {
+            float c = cos(time * 0.5);
+            float s = sin(time * 0.5);
+            pos = vec3(
+                initialPos.x * c - initialPos.z * s,
+                initialPos.y,
+                initialPos.x * s + initialPos.z * c
+            ) * scaleFactor;
+        }
+
+        if (chaosLevel > 0.0) {
+            vec3 noise = vec3(
+                random(vec2(time, float(gl_VertexID))) - 0.5,
+                random(vec2(time + 1.0, float(gl_VertexID))) - 0.5,
+                random(vec2(time + 2.0, float(gl_VertexID))) - 0.5
+            );
+            pos += noise * chaosLevel * 2.0;
+        }
+
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        gl_PointSize = size * (300.0 / -mvPosition.z);
+
+        // Color Logic
+        if (isRing > 0.5) {
+            vColor = colorRing;
+            vAlpha = 0.6;
+        } else {
+            vColor = colorCore;
+            vAlpha = 0.9;
+        }
+        
+        if (-mvPosition.z < 1.0) vAlpha = 0.0;
+      }
+    `;
+
+    const fragmentShader = `
+      varying vec3 vColor;
+      varying float vAlpha;
+      void main() {
+        vec2 coord = gl_PointCoord - vec2(0.5);
+        if(length(coord) > 0.5) discard;
+        float strength = 1.0 - (length(coord) * 2.0);
+        strength = pow(strength, 2.0);
+        gl_FragColor = vec4(vColor, vAlpha * strength);
+      }
+    `;
+
+    threeMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          handControl: { value: 0.5 },
+          chaosLevel: { value: 0.0 },
+          colorCore: { value: new THREE.Color(0x00aaff) }, // Default Blue
+          colorRing: { value: new THREE.Color(0x0055aa) }
+        },
+        vertexShader,
+        fragmentShader,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+
+    threePoints = new THREE.Points(geometry, threeMaterial);
+    threeScene.add(threePoints);
+  }
+
+  function drawSaturn() {
+    if (!threeRenderer || !threeMaterial) return;
+
+    const time = performance.now() * 0.001;
+    threeMaterial.uniforms.time.value = time;
+
+    // --- Hand Tracking Logic ---
+    let targetControl = 0.5;
+    let handsDetected = false;
+
+    if (isCameraRunning && handLandmarker && video.readyState >= 2) {
+         if (video.currentTime !== lastVideoTime) {
+             lastVideoTime = video.currentTime;
+             const detections = handLandmarker.detectForVideo(video, performance.now());
+             
+             if (detections.landmarks && detections.landmarks.length > 0) {
+                 handsDetected = true;
+                 
+                 // Calculate average "openness" of all detected hands
+                 let totalOpenness = 0;
+                 
+                 for (const landmarks of detections.landmarks) {
+                     // Simple openness: Distance between Thumb Tip (4) and Index Tip (8)
+                     // Normalized somewhat arbitrarily
+                     const thumb = landmarks[4];
+                     const index = landmarks[8];
+                     const dist = Math.sqrt(
+                         Math.pow(thumb.x - index.x, 2) + 
+                         Math.pow(thumb.y - index.y, 2) + 
+                         Math.pow(thumb.z - index.z, 2)
+                     );
+                     
+                     // Map 0.02 (closed) -> 0.2 (open) to 0..1
+                     let val = (dist - 0.02) / (0.15 - 0.02);
+                     val = Math.max(0, Math.min(1, val));
+                     totalOpenness += val;
+                 }
+                 
+                 targetControl = totalOpenness / detections.landmarks.length;
+             }
+         }
+    }
+
+    // Fallback to mouse if no hands detected
+    if (!handsDetected) {
+        targetControl = Math.max(0, Math.min(1, mouseX / width));
+    }
+    
+    // Smooth interpolation
+    handControlValue += (targetControl - handControlValue) * 0.1;
+    threeMaterial.uniforms.handControl.value = handControlValue;
+
+    // Chaos
+    if (handControlValue > 0.85) {
+        threeMaterial.uniforms.chaosLevel.value = (handControlValue - 0.85) * 6.0;
+    } else {
+        threeMaterial.uniforms.chaosLevel.value = 0.0;
+    }
+    
+    // Update colors based on customColor
+    // Parse rgba string to THREE.Color
+    // We use a helper since THREE.Color(string) supports CSS colors
+    const isDark = document.documentElement.classList.contains('dark');
+    const colorStr = isDark ? customColor.dark : customColor.light;
+    
+    // Use the theme color for the Core, and a dimmer version for the Ring
+    const baseColor = new THREE.Color(colorStr);
+    threeMaterial.uniforms.colorCore.value.lerp(baseColor, 0.1);
+    
+    const ringColor = baseColor.clone().multiplyScalar(0.5); // Dimmer
+    threeMaterial.uniforms.colorRing.value.lerp(ringColor, 0.1);
+
+    threeRenderer.render(threeScene, threeCamera);
   }
 
   function animate() {
@@ -333,8 +661,10 @@
       if (Date.now() % 100 < 20) drawCA(); 
     } else if (currentTheme === 'turbulence') {
       drawTurbulence();
-    } else {
+    } else if (currentTheme === 'differential-equation') {
       drawDifferentialEquation();
+    } else if (currentTheme === 'saturn') {
+      drawSaturn();
     }
     animationId = requestAnimationFrame(animate);
   }
@@ -343,33 +673,28 @@
   resize();
   animate();
   
-  // Mouse tracking for turbulence
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     mouseInfluence = 1;
   });
   
-  // Decay mouse influence over time
   setInterval(() => {
     mouseInfluence *= 0.95;
   }, 50);
 
-  // Listen for theme change event
   window.addEventListener('theme-change', (e) => {
     currentTheme = e.detail.theme;
     initTheme();
+    updateCanvasPosition();
   });
   
-  // Listen for color change event
   window.addEventListener('color-change', (e) => {
     customColor = e.detail;
   });
   
-  // Listen for equation selection event
   window.addEventListener('equation-selected', (e) => {
     const detail = e.detail;
-    
     if (detail.type === 'custom') {
       selectedEquationTemplate = 'custom';
       localStorage.setItem('selectedEquation', 'custom');
@@ -378,35 +703,31 @@
       selectedEquationTemplate = 'lorenz';
       localStorage.setItem('selectedEquation', 'lorenz');
     }
-    
-    // Re-initialize the differential equation with new template
     if (currentTheme === 'differential-equation') {
       initDifferentialEquation();
     }
   });
   
-  // Load saved equation template on page load
   const savedEquation = localStorage.getItem('selectedEquation');
   if (savedEquation) {
     selectedEquationTemplate = savedEquation;
   }
   
-  // Apply positioning based on current page
   function updateCanvasPosition() {
     const isHomepage = window.location.pathname === '/' || window.location.pathname === '/index.html';
     
     if (!isHomepage && currentTheme === 'differential-equation') {
       canvas.classList.add('right-positioned');
+      canvas3d.classList.add('right-positioned');
     } else {
       canvas.classList.remove('right-positioned');
+      canvas3d.classList.remove('right-positioned');
     }
   }
   
-  // Update position on load and when theme changes
   updateCanvasPosition();
   window.addEventListener('theme-change', updateCanvasPosition);
   
-  // Also listen for page navigation (for SPAs)
   if (document.addEventListener) {
     document.addEventListener('astro:page-load', updateCanvasPosition);
   }

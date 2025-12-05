@@ -30,18 +30,33 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         </article>
       </a>
 
-      <a href="/games/surf" class="group block">
-        <article class="glass-card rounded-xl p-8 h-full hover:border-accent transition-colors flex flex-col items-center text-center">
-          <div class="text-6xl mb-4">🏄</div>
-          <h2 class="text-3xl font-bold mb-2 group-hover:text-accent transition-colors">Edge Surf</h2>
-          <p class="text-gray-600 dark:text-gray-400">
-            A simplified version of the Edge surf game. Dodge obstacles and ride the waves!
+      <div class="flex flex-col gap-4">
+        <a href="/games/surf" class="group block h-full">
+          <article class="glass-card rounded-xl p-8 h-full hover:border-accent transition-colors flex flex-col items-center text-center">
+            <div class="text-6xl mb-4">🏄</div>
+            <h2 class="text-3xl font-bold mb-2 group-hover:text-accent transition-colors">Edge Surf</h2>
+            <p class="text-gray-600 dark:text-gray-400">
+              A simplified version of the Edge surf game. Dodge obstacles and ride the waves!
+            </p>
+            <div class="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium group-hover:opacity-80 transition-opacity">
+              Play Now
+            </div>
+          </article>
+        </a>
+
+        <div class="glass-card rounded-xl p-4 text-sm text-gray-600 dark:text-gray-400">
+          <p class="mb-3 font-medium text-amber-600 dark:text-amber-400">
+            ⚠️ 注：该游戏（lava，cyberpunk）模式为半成品
           </p>
-          <div class="mt-6 px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium group-hover:opacity-80 transition-opacity">
-            Play Now
+          <div class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+            <img 
+              src="/images/lava_concept.png" 
+              alt="Lava Mode Concept" 
+              class="w-full h-32 object-cover hover:scale-105 transition-transform duration-500"
+            />
           </div>
-        </article>
-      </a>
+        </div>
+      </div>
 
     </div>
   </section>
