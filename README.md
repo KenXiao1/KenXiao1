@@ -86,7 +86,7 @@
           <a href="https://github.com/KenXiao1/momentum" target="_blank">
             <img src="https://kenxiao1-stat.vercel.app/api/pin/?username=KenXiao1&repo=momentum&theme=tokyonight&hide_border=true&bg_color=1A1B27" alt="momentum"/>
           </a>
-          <p></strong><br>A self-control training tool based on CTDP theory</p>
+          <p></strong><br>A self-control web app based on CTDP theory</p>
           <p><a href="https://momentumctdp.netlify.app/" target="_blank">🔗 Live Demo</a> | <a href="https://github.com/KenXiao1/intro-momentum" target="_blank">📖 Introduction</a></p>
         </div>
       </td>
