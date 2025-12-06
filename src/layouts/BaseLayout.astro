@@ -104,5 +104,91 @@ const { title = "Ken Xiao" } = Astro.props;
       // Also run after view transitions (for SPA navigation)
       document.addEventListener('astro:page-load', addCopyButtons);
     </script>
+
+    <script>
+      // 🤫 Easter egg - shhh...
+      console.log('%cType \'aoqi\' to verify identity.', 'color: #888; font-size: 10px;');
+
+      let inputBuffer = '';
+      const secretWord = 'aoqi';
+
+      document.addEventListener('keydown', (e) => {
+        // Only track letter keys
+        if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+          inputBuffer += e.key.toLowerCase();
+          // Keep only last 4 characters
+          if (inputBuffer.length > secretWord.length) {
+            inputBuffer = inputBuffer.slice(-secretWord.length);
+          }
+          // Check for match
+          if (inputBuffer === secretWord) {
+            triggerHeartRain();
+            inputBuffer = '';
+          }
+        }
+      });
+
+      function triggerHeartRain() {
+        const hearts = ['❤️', '💕', '💖', '💗', '💓', '💘', '💝', '🩷', '🤍', '🩵'];
+        const container = document.createElement('div');
+        container.id = 'heart-rain';
+        container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;overflow:hidden;';
+        document.body.appendChild(container);
+
+        // Create 50 hearts
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.cssText = `
+              position: absolute;
+              top: -50px;
+              left: ${Math.random() * 100}%;
+              font-size: ${20 + Math.random() * 30}px;
+              animation: heartFall ${3 + Math.random() * 2}s linear forwards;
+              opacity: ${0.7 + Math.random() * 0.3};
+            `;
+            container.appendChild(heart);
+          }, i * 100);
+        }
+
+        // Show message
+        const msg = document.createElement('div');
+        msg.innerHTML = 'I Love You, Aoqi! 💕';
+        msg.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 2.5rem;
+          font-weight: bold;
+          color: #ff6b9d;
+          text-shadow: 0 0 20px rgba(255,107,157,0.5);
+          z-index: 100000;
+          animation: msgPulse 0.5s ease-in-out infinite alternate;
+        `;
+        container.appendChild(msg);
+
+        // Remove after animation
+        setTimeout(() => {
+          container.remove();
+        }, 8000);
+      }
+    </script>
+
+    <style is:global>
+      @keyframes heartFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+        }
+      }
+      @keyframes msgPulse {
+        0% { transform: translate(-50%, -50%) scale(1); }
+        100% { transform: translate(-50%, -50%) scale(1.1); }
+      }
+    </style>
   </body>
 </html>
