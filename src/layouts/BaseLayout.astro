@@ -122,72 +122,230 @@ const { title = "Ken Xiao" } = Astro.props;
           }
           // Check for match
           if (inputBuffer === secretWord) {
-            triggerHeartRain();
+            triggerFireworks();
             inputBuffer = '';
           }
         }
       });
 
-      function triggerHeartRain() {
-        const hearts = ['❤️', '💕', '💖', '💗', '💓', '💘', '💝', '🩷', '🤍', '🩵'];
-        const container = document.createElement('div');
-        container.id = 'heart-rain';
-        container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;overflow:hidden;';
-        document.body.appendChild(container);
+      function triggerFireworks() {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'firework-overlay';
+        overlay.innerHTML = `
+          <canvas id="firework-canvas"></canvas>
+          <div class="firework-message">
+            <div class="firework-text">I Love You, Aoqi</div>
+            <div class="firework-subtitle">some words are meant to be kept in heart</div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
 
-        // Create 50 hearts
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const heart = document.createElement('div');
-            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-            heart.style.cssText = `
-              position: absolute;
-              top: -50px;
-              left: ${Math.random() * 100}%;
-              font-size: ${20 + Math.random() * 30}px;
-              animation: heartFall ${3 + Math.random() * 2}s linear forwards;
-              opacity: ${0.7 + Math.random() * 0.3};
-            `;
-            container.appendChild(heart);
-          }, i * 100);
+        const canvas = document.getElementById('firework-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const fireworks = [];
+        const particles = [];
+        const floatingDots = [];
+
+        // Color palette - muted, melancholic tones
+        const colors = [
+          { r: 255, g: 182, b: 193, a: 0.8 },
+          { r: 176, g: 196, b: 222, a: 0.7 },
+          { r: 230, g: 230, b: 250, a: 0.6 },
+          { r: 255, g: 218, b: 185, a: 0.5 },
+          { r: 221, g: 160, b: 221, a: 0.4 },
+          { r: 173, g: 216, b: 230, a: 0.6 },
+        ];
+
+        class FloatingDot {
+          constructor() { this.reset(); }
+          reset() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedY = -Math.random() * 0.3 - 0.1;
+            this.speedX = (Math.random() - 0.5) * 0.2;
+            this.opacity = Math.random() * 0.3 + 0.1;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+          }
+          update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+            this.opacity -= 0.0005;
+            if (this.y < 0 || this.opacity <= 0) {
+              this.reset();
+              this.y = height + 10;
+            }
+          }
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.opacity})`;
+            ctx.fill();
+          }
         }
 
-        // Show message
-        const msg = document.createElement('div');
-        msg.innerHTML = 'I Love You, Aoqi! 💕';
-        msg.style.cssText = `
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 2.5rem;
-          font-weight: bold;
-          color: #ff6b9d;
-          text-shadow: 0 0 20px rgba(255,107,157,0.5);
-          z-index: 100000;
-          animation: msgPulse 0.5s ease-in-out infinite alternate;
-        `;
-        container.appendChild(msg);
+        class Firework {
+          constructor(x, y, targetY) {
+            this.x = x; this.y = y; this.targetY = targetY;
+            this.speed = 2 + Math.random();
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.trail = [];
+          }
+          update() {
+            this.trail.push({ x: this.x, y: this.y });
+            if (this.trail.length > 10) this.trail.shift();
+            this.y -= this.speed;
+            this.x += (Math.random() - 0.5) * 0.5;
+            if (this.y <= this.targetY) {
+              this.explode();
+              return false;
+            }
+            return true;
+          }
+          explode() {
+            const count = 30 + Math.floor(Math.random() * 20);
+            for (let i = 0; i < count; i++) {
+              const angle = (Math.PI * 2 / count) * i;
+              const speed = 1 + Math.random() * 2;
+              particles.push(new Particle(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, this.color));
+            }
+          }
+          draw() {
+            this.trail.forEach((p, i) => {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${(i / this.trail.length) * 0.3})`;
+              ctx.fill();
+            });
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
+            ctx.fill();
+          }
+        }
 
-        // Remove after animation
-        setTimeout(() => {
-          container.remove();
-        }, 8000);
+        class Particle {
+          constructor(x, y, vx, vy, color) {
+            this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+            this.color = color; this.life = 1;
+            this.decay = 0.008 + Math.random() * 0.008;
+            this.size = 1.5 + Math.random();
+          }
+          update() {
+            this.x += this.vx; this.y += this.vy;
+            this.vy += 0.02; this.vx *= 0.99; this.vy *= 0.99;
+            this.life -= this.decay;
+            return this.life > 0;
+          }
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.life * this.color.a})`;
+            ctx.fill();
+          }
+        }
+
+        for (let i = 0; i < 50; i++) floatingDots.push(new FloatingDot());
+
+        function launchFirework() {
+          const x = width * 0.2 + Math.random() * width * 0.6;
+          const targetY = height * 0.2 + Math.random() * height * 0.3;
+          fireworks.push(new Firework(x, height, targetY));
+        }
+
+        setTimeout(() => launchFirework(), 300);
+        setTimeout(() => launchFirework(), 800);
+        setTimeout(() => launchFirework(), 1500);
+        const interval = setInterval(() => { if (Math.random() > 0.3) launchFirework(); }, 2000);
+
+        let animationId;
+        function animate() {
+          ctx.fillStyle = 'rgba(12, 12, 30, 0.15)';
+          ctx.fillRect(0, 0, width, height);
+          floatingDots.forEach(d => { d.update(); d.draw(); });
+          for (let i = fireworks.length - 1; i >= 0; i--) {
+            fireworks[i].draw();
+            if (!fireworks[i].update()) fireworks.splice(i, 1);
+          }
+          for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].draw();
+            if (!particles[i].update()) particles.splice(i, 1);
+          }
+          animationId = requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Close on click or after 10 seconds
+        const closeOverlay = () => {
+          clearInterval(interval);
+          cancelAnimationFrame(animationId);
+          overlay.style.opacity = '0';
+          setTimeout(() => overlay.remove(), 500);
+        };
+
+        overlay.addEventListener('click', closeOverlay);
+        setTimeout(closeOverlay, 10000);
       }
     </script>
 
     <style is:global>
-      @keyframes heartFall {
-        0% {
-          transform: translateY(0) rotate(0deg);
-        }
-        100% {
-          transform: translateY(100vh) rotate(360deg);
-        }
+      #firework-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 99999;
+        background: linear-gradient(135deg, #0c0c1e 0%, #1a1a2e 50%, #16213e 100%);
+        transition: opacity 0.5s ease;
       }
-      @keyframes msgPulse {
-        0% { transform: translate(-50%, -50%) scale(1); }
-        100% { transform: translate(-50%, -50%) scale(1.1); }
+      #firework-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .firework-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 10;
+        opacity: 0;
+        animation: fireworkFadeIn 2s ease-out 0.5s forwards;
+      }
+      .firework-text {
+        font-size: clamp(1.5rem, 5vw, 3rem);
+        font-weight: 300;
+        font-family: Georgia, serif;
+        letter-spacing: 0.1em;
+        background: linear-gradient(135deg, #e8d5d5 0%, #f5e6e8 50%, #d4a5a5 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: fireworkBreathe 4s ease-in-out infinite;
+      }
+      .firework-subtitle {
+        margin-top: 1rem;
+        font-size: clamp(0.7rem, 2vw, 1rem);
+        color: rgba(255, 255, 255, 0.3);
+        font-style: italic;
+        font-family: Georgia, serif;
+        letter-spacing: 0.15em;
+      }
+      @keyframes fireworkFadeIn {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+      @keyframes fireworkBreathe {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
       }
     </style>
   </body>

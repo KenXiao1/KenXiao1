@@ -28,18 +28,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <script>
     const corner = document.getElementById('secret-corner');
     let clickCount = 0;
-    let clickTimer: ReturnType<typeof setTimeout>;
+    let clickTimer;
 
     corner?.addEventListener('click', () => {
       clickCount++;
       clearTimeout(clickTimer);
 
       if (clickCount >= 5) {
-        // Trigger the easter egg after 5 clicks
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'o' }));
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'i' }));
+        // Trigger the easter egg after 5 clicks - dispatch to document
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'o' }));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'i' }));
         clickCount = 0;
       } else {
         // Reset after 2 seconds of no clicks
