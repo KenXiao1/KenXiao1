@@ -16,37 +16,71 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </a>
   </div>
 
-  <!-- Hidden easter egg in the corner -->
-  <div
-    id="secret-corner"
-    class="fixed bottom-2 right-2 w-3 h-3 opacity-5 cursor-default select-none"
-    title=" "
-  >
-    <span class="text-[8px]">♡</span>
+  <!-- White Moonlight - 白月光 -->
+  <div id="moonlight" class="fixed top-8 right-8 cursor-pointer select-none transition-all duration-1000 hover:scale-110">
+    <div class="moon-glow"></div>
+    <div class="moon"></div>
   </div>
 
+  <style>
+    .moon {
+      width: 32px;
+      height: 32px;
+      background: radial-gradient(circle at 30% 30%, #fffef0 0%, #f5f5dc 50%, #e8e4d4 100%);
+      border-radius: 50%;
+      box-shadow:
+        0 0 20px rgba(255, 255, 240, 0.4),
+        0 0 40px rgba(255, 255, 240, 0.2),
+        0 0 60px rgba(255, 255, 240, 0.1);
+      position: relative;
+      z-index: 2;
+      animation: moonFloat 6s ease-in-out infinite;
+    }
+
+    .moon-glow {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255, 255, 240, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 1;
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes moonFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    :global(.dark) .moon {
+      box-shadow:
+        0 0 30px rgba(255, 255, 240, 0.5),
+        0 0 60px rgba(255, 255, 240, 0.3),
+        0 0 90px rgba(255, 255, 240, 0.15);
+    }
+
+    :global(.dark) .moon-glow {
+      background: radial-gradient(circle, rgba(255, 255, 240, 0.25) 0%, transparent 70%);
+    }
+  </style>
+
   <script>
-    const corner = document.getElementById('secret-corner');
-    let clickCount = 0;
-    let clickTimer;
+    const moon = document.getElementById('moonlight');
 
-    corner?.addEventListener('click', () => {
-      clickCount++;
-      clearTimeout(clickTimer);
-
-      if (clickCount >= 5) {
-        // Trigger the easter egg after 5 clicks - dispatch to document
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'o' }));
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'i' }));
-        clickCount = 0;
-      } else {
-        // Reset after 2 seconds of no clicks
-        clickTimer = setTimeout(() => {
-          clickCount = 0;
-        }, 2000);
-      }
+    moon?.addEventListener('click', () => {
+      // Trigger the firework easter egg
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'o' }));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'i' }));
     });
   </script>
 </BaseLayout>
