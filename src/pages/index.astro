@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import TypewriterSubtitle from '../components/TypewriterSubtitle.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog'))
@@ -18,9 +19,7 @@ const photos = (await getCollection('photos'))
       <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight">
         Ken Xiao
       </h1>
-      <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
-        Exploring Mathematics, AI, and History through code and lens.
-      </p>
+      <TypewriterSubtitle />
       <div class="mt-10 flex justify-center gap-4">
         <a href="/about" class="px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium hover:opacity-90 transition-opacity">
           About Me

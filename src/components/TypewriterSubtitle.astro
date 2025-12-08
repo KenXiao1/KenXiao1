@@ -1,0 +1,264 @@
+---
+// Typewriter animation for rotating subtitles
+---
+
+<div class="typewriter-container text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+  <span class="prefix">Exploring </span>
+  <span id="typewriter-text" class="typewriter-text font-medium text-gray-800 dark:text-gray-200"></span>
+  <span class="cursor">|</span>
+  <span class="suffix"> through code and lens.</span>
+</div>
+
+<style>
+  .typewriter-container {
+    min-height: 2em;
+  }
+
+  .typewriter-text {
+    display: inline;
+  }
+
+  .cursor {
+    display: inline-block;
+    animation: blink 0.7s infinite;
+    margin-left: 1px;
+    font-weight: 300;
+    color: var(--accent, #6366f1);
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Special styling for wallet address */
+  .wallet-char {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+  }
+
+  /* Glitch effect for wallet */
+  .glitch {
+    animation: glitch 0.3s ease;
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+  }
+</style>
+
+<script>
+  // Define the 5 groups with their sequences
+  const groups = [
+    {
+      // Group 1: Biology series
+      sequences: ['Mathematics.', 'Biology.', 'Mathematical Biology.', 'Computational Biology.'],
+      style: 'normal'
+    },
+    {
+      // Group 2: Motto
+      sequences: ['Logic, Light, Legacy.'],
+      style: 'reveal',
+      holdTime: 4000
+    },
+    {
+      // Group 3: Wallet address (special display)
+      sequences: ['4bRPXEkkS9JD5XPVoRFHiVLekfhvsNBA5ZGCegcqwBwE'],
+      style: 'matrix',
+      holdTime: 3500
+    },
+    {
+      // Group 4: Core topics
+      sequences: ['Mathematics.', 'AI.', 'History.'],
+      style: 'normal'
+    },
+    {
+      // Group 5: Greetings
+      sequences: ['你好.', 'Hello.', 'こんにちは.', 'Bonsoir.'],
+      style: 'fade'
+    }
+  ];
+
+  const typewriter = document.getElementById('typewriter-text');
+  if (!typewriter) throw new Error('Typewriter element not found');
+
+  // Typing speeds (with randomization)
+  const baseTypeSpeed = 80;
+  const baseDeleteSpeed = 40;
+  const pauseAfterType = 1500;
+  const pauseAfterDelete = 300;
+
+  function randomSpeed(base: number): number {
+    return base + Math.random() * 60 - 30; // ±30ms variation
+  }
+
+  function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Normal typewriter effect
+  async function typeText(text: string): Promise<void> {
+    for (let i = 0; i <= text.length; i++) {
+      typewriter.textContent = text.slice(0, i);
+      await sleep(randomSpeed(baseTypeSpeed));
+    }
+  }
+
+  async function deleteText(): Promise<void> {
+    const currentText = typewriter.textContent || '';
+    for (let i = currentText.length; i >= 0; i--) {
+      typewriter.textContent = currentText.slice(0, i);
+      await sleep(randomSpeed(baseDeleteSpeed));
+    }
+  }
+
+  // Matrix-style reveal for wallet address (characters scramble before settling)
+  async function matrixReveal(text: string): Promise<void> {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const iterations = 3;
+
+    typewriter.classList.add('wallet-char');
+
+    for (let i = 0; i <= text.length; i++) {
+      // Show scrambled characters for positions not yet revealed
+      let display = text.slice(0, i);
+
+      // Add scrambling effect for current position
+      if (i < text.length) {
+        for (let j = 0; j < iterations; j++) {
+          const scrambled = display + chars[Math.floor(Math.random() * chars.length)];
+          typewriter.textContent = scrambled;
+          await sleep(30);
+        }
+      }
+
+      typewriter.textContent = display;
+      await sleep(15);
+    }
+  }
+
+  async function matrixDelete(): Promise<void> {
+    const currentText = typewriter.textContent || '';
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+    for (let i = currentText.length; i >= 0; i--) {
+      // Scramble before deleting
+      if (i > 0) {
+        const scrambled = currentText.slice(0, i - 1) + chars[Math.floor(Math.random() * chars.length)];
+        typewriter.textContent = scrambled;
+        await sleep(15);
+      }
+      typewriter.textContent = currentText.slice(0, i);
+      await sleep(10);
+    }
+
+    typewriter.classList.remove('wallet-char');
+  }
+
+  // Fade-style reveal with slight delay between characters
+  async function fadeType(text: string): Promise<void> {
+    typewriter.innerHTML = '';
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.textContent = text[i];
+      span.style.opacity = '0';
+      span.style.transition = 'opacity 0.15s ease';
+      typewriter.appendChild(span);
+
+      await sleep(randomSpeed(60));
+      span.style.opacity = '1';
+    }
+  }
+
+  async function fadeDelete(): Promise<void> {
+    const spans = typewriter.querySelectorAll('span');
+    for (let i = spans.length - 1; i >= 0; i--) {
+      (spans[i] as HTMLElement).style.opacity = '0';
+      await sleep(30);
+      spans[i].remove();
+    }
+    typewriter.textContent = '';
+  }
+
+  // Reveal all at once with dramatic pause
+  async function revealText(text: string): Promise<void> {
+    typewriter.style.opacity = '0';
+    typewriter.textContent = text;
+    typewriter.style.transition = 'opacity 0.5s ease';
+    await sleep(100);
+    typewriter.style.opacity = '1';
+  }
+
+  async function hideText(): Promise<void> {
+    typewriter.style.transition = 'opacity 0.3s ease';
+    typewriter.style.opacity = '0';
+    await sleep(300);
+    typewriter.textContent = '';
+    typewriter.style.opacity = '1';
+  }
+
+  // Main animation loop
+  async function runTypewriter(): Promise<void> {
+    // Shuffle groups order (but keep some randomness)
+    const shuffledGroups = [...groups].sort(() => Math.random() - 0.5);
+
+    for (const group of shuffledGroups) {
+      for (let i = 0; i < group.sequences.length; i++) {
+        const text = group.sequences[i];
+        const isLast = i === group.sequences.length - 1;
+        const holdTime = group.holdTime || pauseAfterType;
+
+        // Type based on style
+        switch (group.style) {
+          case 'matrix':
+            await matrixReveal(text);
+            await sleep(holdTime);
+            if (!isLast || shuffledGroups.indexOf(group) !== shuffledGroups.length - 1) {
+              await matrixDelete();
+            }
+            break;
+          case 'fade':
+            await fadeType(text);
+            await sleep(holdTime);
+            if (!isLast || shuffledGroups.indexOf(group) !== shuffledGroups.length - 1) {
+              await fadeDelete();
+            }
+            break;
+          case 'reveal':
+            await revealText(text);
+            await sleep(holdTime);
+            if (!isLast || shuffledGroups.indexOf(group) !== shuffledGroups.length - 1) {
+              await hideText();
+            }
+            break;
+          default:
+            await typeText(text);
+            await sleep(holdTime);
+            if (!isLast || shuffledGroups.indexOf(group) !== shuffledGroups.length - 1) {
+              await deleteText();
+              await sleep(pauseAfterDelete);
+            }
+        }
+
+        await sleep(pauseAfterDelete);
+      }
+
+      // Small pause between groups
+      await sleep(500);
+    }
+
+    // Loop forever
+    await sleep(2000);
+    await deleteText();
+    await sleep(500);
+    runTypewriter();
+  }
+
+  // Start the animation
+  runTypewriter();
+</script>
