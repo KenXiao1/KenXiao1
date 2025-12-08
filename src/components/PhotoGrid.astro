@@ -18,7 +18,7 @@ const { photos } = Astro.props;
         <img
           src={(() => {
             const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
-            const transforms = 'w_800,f_auto,q_auto,a_auto';
+            const transforms = 'w_800,f_auto,q_auto,a_exif';
             return `${webpSeProxy}/image/upload/${transforms}/${photo.data.cloudinaryId}`;
           })()}
           alt={photo.data.title}

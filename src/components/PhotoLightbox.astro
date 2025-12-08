@@ -50,7 +50,7 @@ const { webpSeProxy } = Astro.props;
     const lightboxContent = document.getElementById('lightbox-content');
 
     function buildImageUrl(cloudinaryId, width) {
-      const transforms = `w_${width},f_auto,q_auto,a_auto`;
+      const transforms = `w_${width},f_auto,q_auto,a_exif`;
       return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
     }
 
