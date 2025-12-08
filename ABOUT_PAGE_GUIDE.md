@@ -1,44 +1,5 @@
 # About 页面修改指南
 
-## 已完成的修改
-
-### 1. 添加了 HiMCM 链接
-**位置**: `src/pages/about.astro` 第 25 行
-**修改**: 将 "2023 HiMCM" 转换为可点击链接，指向 PDF 文档
-**代码**:
-```html
-<a href="https://xfc12.github.io/Team14079.pdf" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">2023 HiMCM</a>
-```
-
-### 2. 添加了 Golem 6706 链接
-**位置**: `src/pages/about.astro` 第 30 行
-**修改**: 在小标题中将 "Golem 6706" 转换为可点击链接，指向 FIRST 官方团队页面
-**代码**:
-```html
-<h3>Robotics (FRC Team <a href="https://frc-events.firstinspires.org/team/6706" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Golem 6706</a>)</h3>
-```
-
-### 3. 添加了 Team GitHub 链接
-**位置**: `src/pages/about.astro` 第 37-40 行
-**修改**: 在 "View Team Website" 旁边添加了 "View Team GitHub" 链接
-**代码**:
-```html
-<div class="mt-2 space-x-4">
-  <a href="https://golem6706-shenzhen.github.io/golem6706-shenzhen/" class="text-accent hover:underline text-sm" target="_blank" rel="noopener noreferrer">View Team Website</a>
-  <a href="https://github.com/Shenzhen-Robotics-Alliance" class="text-accent hover:underline text-sm" target="_blank" rel="noopener noreferrer">View Team GitHub</a>
-</div>
-```
-
-### 4. 添加了数学俱乐部 B站链接
-**位置**: `src/pages/about.astro` 第 67-71 行
-**修改**: 将 "Founder of school math club" 转换为可点击链接，指向 B站视频页面
-**代码**:
-```html
-<a href="https://space.bilibili.com/1265514949" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">Founder of school math club</a>
-```
-
----
-
 ## 如何修改 About 页面
 
 About 页面的内容在 **`src/pages/about.astro`** 文件中。
