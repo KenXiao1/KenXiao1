@@ -49,15 +49,16 @@ const { webpSeProxy } = Astro.props;
     const likeButtonContainer = document.getElementById('lightbox-like-button');
     const lightboxContent = document.getElementById('lightbox-content');
 
-    function buildImageUrl(cloudinaryId, width) {
-      const transforms = `w_${width},f_auto,q_auto,a_exif`;
+    function buildImageUrl(cloudinaryId, width, rotation = 0) {
+      const rotationParam = rotation ? `,a_${rotation}` : '';
+      const transforms = `w_${width},f_auto,q_auto${rotationParam}`;
       return `${webpSeProxy}/image/upload/${transforms}/${cloudinaryId}`;
     }
 
     function preloadImage(index) {
       if (index < 0 || index >= allPhotos.length) return;
       const photo = allPhotos[index];
-      const url = buildImageUrl(photo.cloudinaryId, 1600);
+      const url = buildImageUrl(photo.cloudinaryId, 1600, photo.rotation);
 
       if (!imageCache.has(url)) {
         const img = new Image();
@@ -99,7 +100,7 @@ const { webpSeProxy } = Astro.props;
 
     function update() {
       const photo = allPhotos[currentIndex];
-      const newSrc = buildImageUrl(photo.cloudinaryId, 1600);
+      const newSrc = buildImageUrl(photo.cloudinaryId, 1600, photo.rotation);
 
       // Loading state
       lightboxImg.style.opacity = '0.5';
@@ -147,7 +148,8 @@ const { webpSeProxy } = Astro.props;
           id: el.dataset.photoId,
           cloudinaryId: el.dataset.cloudinaryId,
           title: el.dataset.title,
-          date: el.dataset.date
+          date: el.dataset.date,
+          rotation: parseInt(el.dataset.rotation) || 0
         });
       });
     }

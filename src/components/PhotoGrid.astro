@@ -13,12 +13,15 @@ const { photos } = Astro.props;
       data-cloudinary-id={photo.data.cloudinaryId}
       data-title={photo.data.title}
       data-date={photo.data.date.toISOString()}
+      data-rotation={photo.data.rotation || 0}
     >
       <div class="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
         <img
           src={(() => {
             const webpSeProxy = import.meta.env.PUBLIC_WEBP_SE_PROXY;
-            const transforms = 'w_800,f_auto,q_auto,a_exif';
+            const rotation = photo.data.rotation;
+            const rotationParam = rotation ? `,a_${rotation}` : '';
+            const transforms = `w_800,f_auto,q_auto${rotationParam}`;
             return `${webpSeProxy}/image/upload/${transforms}/${photo.data.cloudinaryId}`;
           })()}
           alt={photo.data.title}
