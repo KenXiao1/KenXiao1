@@ -48,4 +48,14 @@ const recommendations = defineCollection({
     }),
 });
 
-export const collections = { blog, photos, pdfs, recommendations };
+const friends = defineCollection({
+    type: 'data',
+    schema: z.object({
+        name: z.string(),
+        url: z.string().url(),
+        avatar: z.string().url().optional(),
+        description: z.string().optional(),
+    }),
+});
+
+export const collections = { blog, photos, pdfs, recommendations, friends };

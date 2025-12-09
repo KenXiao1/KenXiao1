@@ -82,5 +82,16 @@ export default config({
                 notes: fields.text({ label: 'Notes', multiline: true }),
             },
         }),
+        friends: collection({
+            label: 'Friends',
+            slugField: 'name',
+            path: 'src/content/friends/*',
+            schema: {
+                name: fields.slug({ name: { label: 'Name' } }),
+                url: fields.url({ label: 'Blog URL', validation: { isRequired: true } }),
+                avatar: fields.url({ label: 'Avatar URL' }),
+                description: fields.text({ label: 'Description' }),
+            },
+        }),
     },
 });

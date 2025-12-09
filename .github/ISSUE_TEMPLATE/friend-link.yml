@@ -1,0 +1,56 @@
+name: 友链申请 / Friend Link Request
+description: 申请添加友情链接 / Apply for a friend link
+title: "[友链申请] "
+labels: ["friend-link"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你申请友链！请填写以下信息。
+        Thanks for applying for a friend link! Please fill in the following information.
+
+  - type: input
+    id: name
+    attributes:
+      label: 博客名称 / Blog Name
+      description: 你的博客或网站名称
+      placeholder: "例如: Ken's Blog"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 博客地址 / Blog URL
+      description: 你的博客或网站地址
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: input
+    id: avatar
+    attributes:
+      label: 头像链接 / Avatar URL
+      description: 头像图片的 URL（可选，建议正方形图片）
+      placeholder: "https://example.com/avatar.png"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 一句话描述 / Description
+      description: 简单介绍一下你的博客（可选，建议不超过 50 字）
+      placeholder: "一个关于技术和生活的博客"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 确认 / Confirmation
+      options:
+        - label: 我的网站内容合法合规，无不良信息
+          required: true
+        - label: 我已在自己的网站添加了本站的友链（互换友链）
+          required: false
