@@ -4,47 +4,25 @@ export default config({
     storage: {
         kind: 'local',
     },
+    ui: {
+        brand: {
+            name: 'Ken\'s Blog CMS',
+        },
+        navigation: {
+            'Content': ['photos', 'pdfs', 'recommendations'],
+            'Social': ['friends'],
+        },
+    },
     collections: {
-        posts: collection({
-            label: 'Posts',
-            slugField: 'title',
-            path: 'src/content/blog/*',
-            format: { contentField: 'content' },
-            schema: {
-                title: fields.slug({ name: { label: 'Title' } }),
-                date: fields.date({ label: 'Date' }),
-                description: fields.text({ label: 'Description', multiline: true }),
-                tags: fields.array(fields.text({ label: 'Tag' }), { label: 'Tags' }),
-                category: fields.select({
-                    label: 'Category',
-                    options: [
-                        { label: 'Math', value: 'math' },
-                        { label: 'History', value: 'history' },
-                        { label: 'Translation', value: 'translation' },
-                        { label: 'Tech', value: 'tech' },
-                    ],
-                    defaultValue: 'tech',
-                }),
-                draft: fields.checkbox({ label: 'Draft' }),
-                mathjax: fields.checkbox({ label: 'Enable MathJax', defaultValue: true }),
-                content: fields.document({
-                    label: 'Content',
-                    formatting: true,
-                    dividers: true,
-                    links: true,
-                    images: {
-                        directory: 'public/images/posts',
-                        publicPath: '/images/posts/',
-                    },
-                }),
-            },
-        }),
+        // Posts are managed via Obsidian (pure Markdown for Zhihu compatibility)
+        // Edit posts directly in src/content/blog/*.md
         photos: collection({
             label: 'Photography',
             slugField: 'title',
             path: 'src/content/photos/*',
+            format: 'json',
             schema: {
-                title: fields.slug({ name: { label: 'Title' } }),
+                title: fields.text({ label: 'Title' }),
                 cloudinaryId: fields.text({ label: 'Cloudinary Public ID' }),
                 date: fields.date({ label: 'Date Taken' }),
                 location: fields.text({ label: 'Location' }),
@@ -56,8 +34,9 @@ export default config({
             label: 'PDFs',
             slugField: 'title',
             path: 'src/content/pdfs/*',
+            format: 'json',
             schema: {
-                title: fields.slug({ name: { label: 'Title' } }),
+                title: fields.text({ label: 'Title' }),
                 filename: fields.text({ label: 'Filename (in /public/pdfs/)' }),
                 description: fields.text({ label: 'Description', multiline: true }),
                 category: fields.text({ label: 'Category' }),
@@ -68,8 +47,9 @@ export default config({
             label: 'Recommendations',
             slugField: 'title',
             path: 'src/content/recommendations/*',
+            format: 'json',
             schema: {
-                title: fields.slug({ name: { label: 'Title' } }),
+                title: fields.text({ label: 'Title' }),
                 link: fields.url({ label: 'Link' }),
                 status: fields.select({
                     label: 'Status',
@@ -86,8 +66,9 @@ export default config({
             label: 'Friends',
             slugField: 'name',
             path: 'src/content/friends/*',
+            format: 'json',
             schema: {
-                name: fields.slug({ name: { label: 'Name' } }),
+                name: fields.text({ label: 'Name' }),
                 url: fields.url({ label: 'Blog URL', validation: { isRequired: true } }),
                 avatar: fields.url({ label: 'Avatar URL' }),
                 description: fields.text({ label: 'Description' }),
