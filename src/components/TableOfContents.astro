@@ -1,0 +1,297 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to only show h2 and h3 headings
+const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+{tocHeadings.length > 0 && (
+  <nav class="toc-container" aria-label="Table of Contents">
+    <!-- Mobile Toggle Button -->
+    <button
+      id="toc-toggle"
+      class="toc-toggle lg:hidden"
+      aria-expanded="false"
+      aria-controls="toc-content"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M4 12h16M4 18h7" />
+      </svg>
+      <span>目录</span>
+      <svg id="toc-chevron" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+    </button>
+
+    <!-- TOC Content -->
+    <div id="toc-content" class="toc-content">
+      <div class="toc-header hidden lg:block">
+        <span class="text-sm font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400">目录</span>
+      </div>
+      <ul class="toc-list custom-scrollbar">
+        {tocHeadings.map((heading) => (
+          <li class={`toc-item toc-depth-${heading.depth}`}>
+            <a
+              href={`#${heading.slug}`}
+              class="toc-link"
+              data-heading-slug={heading.slug}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+)}
+
+<style>
+  .toc-container {
+    position: fixed;
+    z-index: 40;
+  }
+
+  /* Mobile: Bottom positioned toggle */
+  @media (max-width: 1023px) {
+    .toc-container {
+      bottom: 1.5rem;
+      right: 1.5rem;
+    }
+
+    .toc-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 9999px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    :global(.dark) .toc-toggle {
+      background: rgba(40, 40, 40, 0.95);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #f5e6d3;
+    }
+
+    .toc-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-content {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 0.75rem;
+      width: 280px;
+      max-height: 60vh;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 1rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    :global(.dark) .toc-content {
+      background: rgba(30, 30, 30, 0.98);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .toc-content.open {
+      display: block;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .toc-toggle[aria-expanded="true"] #toc-chevron {
+      transform: rotate(180deg);
+    }
+  }
+
+  /* Desktop: Sidebar positioned */
+  @media (min-width: 1024px) {
+    .toc-container {
+      top: 8rem;
+      right: max(1rem, calc((100vw - 48rem) / 2 - 14rem));
+      width: 12rem;
+    }
+
+    .toc-content {
+      display: block;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .toc-container {
+      right: max(2rem, calc((100vw - 48rem) / 2 - 16rem));
+      width: 14rem;
+    }
+  }
+
+  .toc-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  :global(.dark) .toc-header {
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0.75rem 0;
+    margin: 0;
+    max-height: calc(60vh - 3rem);
+    overflow-y: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .toc-list {
+      max-height: calc(100vh - 12rem);
+    }
+  }
+
+  .toc-item {
+    margin: 0;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 0.375rem 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s ease;
+  }
+
+  :global(.dark) .toc-link {
+    color: #9ca3af;
+  }
+
+  .toc-link:hover {
+    color: var(--color-accent);
+    background: rgba(201, 169, 97, 0.05);
+  }
+
+  .toc-link.active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    background: rgba(201, 169, 97, 0.1);
+    font-weight: 500;
+  }
+
+  .toc-depth-3 .toc-link {
+    padding-left: 1.75rem;
+    font-size: 0.75rem;
+  }
+</style>
+
+<script>
+  // Mobile toggle functionality
+  const toggle = document.getElementById('toc-toggle');
+  const content = document.getElementById('toc-content');
+
+  if (toggle && content) {
+    toggle.addEventListener('click', () => {
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', (!isExpanded).toString());
+      content.classList.toggle('open');
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!toggle.contains(e.target as Node) && !content.contains(e.target as Node)) {
+        toggle.setAttribute('aria-expanded', 'false');
+        content.classList.remove('open');
+      }
+    });
+
+    // Close on link click (mobile)
+    content.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        content.classList.remove('open');
+      });
+    });
+  }
+
+  // Active heading highlighting with Intersection Observer
+  const tocLinks = document.querySelectorAll('.toc-link');
+  const headings = document.querySelectorAll('article h2[id], article h3[id]');
+
+  if (headings.length > 0 && tocLinks.length > 0) {
+    const observerOptions = {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    };
+
+    let currentActive: Element | null = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          const correspondingLink = document.querySelector(`.toc-link[data-heading-slug="${id}"]`);
+
+          if (correspondingLink) {
+            if (currentActive) {
+              currentActive.classList.remove('active');
+            }
+            correspondingLink.classList.add('active');
+            currentActive = correspondingLink;
+          }
+        }
+      });
+    }, observerOptions);
+
+    headings.forEach(heading => observer.observe(heading));
+  }
+
+  // Smooth scroll for TOC links
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const slug = (link as HTMLAnchorElement).getAttribute('data-heading-slug');
+      const target = document.getElementById(slug || '');
+      if (target) {
+        const offset = 100;
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+        // Update URL hash without jumping
+        history.pushState(null, '', `#${slug}`);
+      }
+    });
+  });
+</script>

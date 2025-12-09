@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Comments from '../../components/Comments.astro';
 import LikeButton from '../../components/LikeButton.tsx';
+import TableOfContents from '../../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -13,10 +14,13 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 ---
 
 <BaseLayout title={`${post.data.title} | Ken Xiao`}>
+  <!-- Table of Contents -->
+  <TableOfContents headings={headings} />
+
   <article class="max-w-3xl mx-auto">
     <header class="mb-10 text-center">
       <div class="text-sm text-accent font-mono uppercase tracking-wider mb-4">
