@@ -51,8 +51,11 @@
 </style>
 
 <script>
+  // Check if mobile device (screen width <= 768px)
+  const isMobile = window.innerWidth <= 768;
+
   // Define the 5 groups with their sequences
-  const groups = [
+  const allGroups = [
     {
       // Group 1: Biology series
       sequences: ['Mathematics.', 'Biology.', 'Mathematical Biology.', 'Computational Biology.'],
@@ -65,10 +68,11 @@
       holdTime: 4000
     },
     {
-      // Group 3: Wallet address (special display)
+      // Group 3: Wallet address (special display) - disabled on mobile
       sequences: ['4bRPXEkkS9JD5XPVoRFHiVLekfhvsNBA5ZGCegcqwBwE'],
       style: 'matrix',
-      holdTime: 3500
+      holdTime: 3500,
+      desktopOnly: true
     },
     {
       // Group 4: Core topics
@@ -81,6 +85,9 @@
       style: 'fade'
     }
   ];
+
+  // Filter out desktop-only groups on mobile
+  const groups = isMobile ? allGroups.filter(g => !g.desktopOnly) : allGroups;
 
   const typewriter = document.getElementById('typewriter-text');
   if (!typewriter) throw new Error('Typewriter element not found');
