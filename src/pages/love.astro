@@ -107,9 +107,21 @@
     <canvas id="canvas"></canvas>
 
     <div class="message-container">
-      <div class="message">I Love You, Aoqi</div>
-      <div class="subtitle">some words are meant to be kept in heart</div>
+      <div class="message" id="love-message">I Love You, Aoqi</div>
+      <div class="subtitle" id="love-subtitle">some words are meant to be kept in heart</div>
     </div>
+
+    <script>
+      // Randomize the name variant
+      const nameVariants = ['Ngaochi', 'Oke', 'Alchi', 'Aoki', 'Ochi', 'Au Kei', 'Aoqi', 'O Kei'];
+      const randomName = nameVariants[Math.floor(Math.random() * nameVariants.length)];
+      document.getElementById('love-message').textContent = `I Love You, ${randomName}`;
+
+      // Randomize the subtitle
+      const subtitleVariants = ['Sentir sans dire.', 'Moonlight', 'some words are meant to be kept in heart'];
+      const randomSubtitle = subtitleVariants[Math.floor(Math.random() * subtitleVariants.length)];
+      document.getElementById('love-subtitle').textContent = randomSubtitle;
+    </script>
 
     <script>
       const canvas = document.getElementById('canvas');

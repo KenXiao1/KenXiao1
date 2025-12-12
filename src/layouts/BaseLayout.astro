@@ -129,14 +129,22 @@ const { title = "Ken Xiao" } = Astro.props;
       });
 
       function triggerFireworks() {
+        // Randomize the name variant
+        const nameVariants = ['Ngaochi', 'Oke', 'Alchi', 'Aoki', 'Ochi', 'Au Kei', 'Aoqi', 'O Kei'];
+        const randomName = nameVariants[Math.floor(Math.random() * nameVariants.length)];
+
+        // Randomize the subtitle
+        const subtitleVariants = ['Sentir sans dire.', 'Moonlight', 'some words are meant to be kept in heart'];
+        const randomSubtitle = subtitleVariants[Math.floor(Math.random() * subtitleVariants.length)];
+
         // Create overlay
         const overlay = document.createElement('div');
         overlay.id = 'firework-overlay';
         overlay.innerHTML = `
           <canvas id="firework-canvas"></canvas>
           <div class="firework-message">
-            <div class="firework-text">I Love You, Aoqi</div>
-            <div class="firework-subtitle">some words are meant to be kept in heart</div>
+            <div class="firework-text">I Love You, ${randomName}</div>
+            <div class="firework-subtitle">${randomSubtitle}</div>
           </div>
         `;
         document.body.appendChild(overlay);
