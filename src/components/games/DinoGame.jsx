@@ -167,8 +167,71 @@ const DinoGame = () => {
             loop();
         };
 
+        // Touch controls
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isDucking = false;
+
+        const handleTouchStart = (e) => {
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        };
+
+        const handleTouchMove = (e) => {
+            if (!gameStateRef.current?.gameRunning) return;
+
+            const touchCurrentY = e.touches[0].clientY;
+            const deltaY = touchStartY - touchCurrentY;
+            const timeDelta = Date.now() - touchStartTime;
+
+            // Swipe up to jump (threshold: 30px within 300ms)
+            if (deltaY > 30 && timeDelta < 300 && dino.grounded && !dino.ducking) {
+                e.preventDefault();
+                dino.dy = JUMP_FORCE;
+                dino.grounded = false;
+                touchStartY = touchCurrentY; // Reset to prevent multiple jumps
+            }
+
+            // Swipe down to duck (threshold: 30px within 300ms)
+            if (deltaY < -30 && timeDelta < 300) {
+                e.preventDefault();
+                if (!isDucking) {
+                    isDucking = true;
+                    dino.ducking = true;
+                    dino.height = DINO_DUCK_HEIGHT;
+                    if (dino.grounded) {
+                        dino.y = canvas.height - GROUND_HEIGHT - DINO_DUCK_HEIGHT;
+                    }
+                    if (!dino.grounded) {
+                        dino.dy = Math.max(dino.dy, 10);
+                    }
+                }
+                touchStartY = touchCurrentY; // Reset
+            }
+        };
+
+        const handleTouchEnd = () => {
+            // Stop ducking when touch ends
+            if (isDucking && dino.ducking) {
+                isDucking = false;
+                dino.ducking = false;
+                dino.height = DINO_HEIGHT;
+                if (dino.grounded) {
+                    dino.y = canvas.height - GROUND_HEIGHT - DINO_HEIGHT;
+                }
+            }
+
+            // Allow restart on tap when game over
+            if (!gameStateRef.current?.gameRunning) {
+                restartGame();
+            }
+        };
+
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+        canvas.addEventListener('touchend', handleTouchEnd);
 
         const spawnObstacle = () => {
             if (frameCount < nextSpawnFrame) return;
@@ -616,6 +679,9 @@ const DinoGame = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            canvas.removeEventListener('touchstart', handleTouchStart);
+            canvas.removeEventListener('touchmove', handleTouchMove);
+            canvas.removeEventListener('touchend', handleTouchEnd);
             cancelAnimationFrame(animationFrameId);
         };
     }, [isStarted, difficulty, theme]);
@@ -811,8 +877,10 @@ const DinoGame = () => {
             <div className={`mt-6 font-mono text-sm space-y-1 text-center transition-colors duration-500 ${
                 theme === 'minecraft' || isNight ? 'text-cyan-400' : 'text-gray-600'
             }`}>
-                <p>[↑] or [SPACE] - JUMP</p>
-                <p>[↓] - DUCK (hold to stay down)</p>
+                <p className="hidden md:block">[↑] or [SPACE] - JUMP</p>
+                <p className="hidden md:block">[↓] - DUCK (hold to stay down)</p>
+                <p className="md:hidden">Swipe Up - JUMP</p>
+                <p className="md:hidden">Swipe Down - DUCK</p>
                 <p className="text-xs mt-2 opacity-60">
                     {theme === 'dino'
                         ? 'Day/Night changes every 500 points - Night is harder!'
