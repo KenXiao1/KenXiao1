@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 const DinoGame = () => {
     const canvasRef = useRef(null);
+    const containerRef = useRef(null);
     const [isGameOver, setIsGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(0);
@@ -9,7 +10,11 @@ const DinoGame = () => {
     const [showSettings, setShowSettings] = useState(false);
     const [isNight, setIsNight] = useState(false);
     const [theme, setTheme] = useState('dino'); // 'dino' or 'minecraft'
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isDucking, setIsDucking] = useState(false);
     const gameStateRef = useRef(null);
+    const dinoRef = useRef(null);
+    const gameConstantsRef = useRef(null);
 
     // Difficulty settings
     const [difficulty, setDifficulty] = useState({
@@ -35,6 +40,89 @@ const DinoGame = () => {
         setShowSettings(false);
     }, []);
 
+    // Fullscreen toggle
+    const toggleFullscreen = useCallback(() => {
+        if (!containerRef.current) return;
+
+        if (!document.fullscreenElement) {
+            containerRef.current.requestFullscreen?.() ||
+            containerRef.current.webkitRequestFullscreen?.() ||
+            containerRef.current.msRequestFullscreen?.();
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen?.() ||
+            document.webkitExitFullscreen?.() ||
+            document.msExitFullscreen?.();
+            setIsFullscreen(false);
+        }
+    }, []);
+
+    // Listen for fullscreen changes
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    // Virtual button handlers
+    const handleJump = useCallback(() => {
+        const dino = dinoRef.current;
+        const constants = gameConstantsRef.current;
+        if (!dino || !constants || !gameStateRef.current?.gameRunning) return;
+
+        if (dino.grounded && !dino.ducking) {
+            dino.dy = constants.JUMP_FORCE;
+            dino.grounded = false;
+        }
+    }, []);
+
+    const handleDuckStart = useCallback(() => {
+        const dino = dinoRef.current;
+        const constants = gameConstantsRef.current;
+        const canvas = canvasRef.current;
+        if (!dino || !constants || !canvas || !gameStateRef.current?.gameRunning) return;
+
+        if (!dino.ducking) {
+            dino.ducking = true;
+            dino.height = constants.DINO_DUCK_HEIGHT;
+            if (dino.grounded) {
+                dino.y = canvas.height - constants.GROUND_HEIGHT - constants.DINO_DUCK_HEIGHT;
+            }
+            if (!dino.grounded) {
+                dino.dy = Math.max(dino.dy, 10);
+            }
+            setIsDucking(true);
+        }
+    }, []);
+
+    const handleDuckEnd = useCallback(() => {
+        const dino = dinoRef.current;
+        const constants = gameConstantsRef.current;
+        const canvas = canvasRef.current;
+        if (!dino || !constants || !canvas) return;
+
+        if (dino.ducking) {
+            dino.ducking = false;
+            dino.height = constants.DINO_HEIGHT;
+            if (dino.grounded) {
+                dino.y = canvas.height - constants.GROUND_HEIGHT - constants.DINO_HEIGHT;
+            }
+            setIsDucking(false);
+        }
+    }, []);
+
+    const handleRestart = useCallback(() => {
+        if (!gameStateRef.current?.gameRunning && gameStateRef.current?.restartGame) {
+            gameStateRef.current.restartGame();
+        }
+    }, []);
+
     useEffect(() => {
         if (!isStarted) return;
 
@@ -54,6 +142,12 @@ const DinoGame = () => {
         const PTERODACTYL_HEIGHT = 40;
         const DAY_NIGHT_CYCLE = 500;
 
+        // Store constants in ref for virtual button access
+        gameConstantsRef.current = {
+            GRAVITY, JUMP_FORCE, GROUND_HEIGHT, DINO_WIDTH, DINO_HEIGHT,
+            DINO_DUCK_HEIGHT, PTERODACTYL_WIDTH, PTERODACTYL_HEIGHT, DAY_NIGHT_CYCLE
+        };
+
         // Game state
         let dino = {
             x: 60,
@@ -65,6 +159,9 @@ const DinoGame = () => {
             height: DINO_HEIGHT,
             legFrame: 0,
         };
+
+        // Store dino in ref for virtual button access
+        dinoRef.current = dino;
 
         let obstacles = [];
         let clouds = [];
@@ -151,6 +248,7 @@ const DinoGame = () => {
                 height: DINO_HEIGHT,
                 legFrame: 0,
             };
+            dinoRef.current = dino;
             obstacles = [];
             frameCount = 0;
             currentGameSpeed = difficulty.initialSpeed;
@@ -160,78 +258,19 @@ const DinoGame = () => {
             nightMode = currentTheme === 'minecraft';
             transitionProgress = currentTheme === 'minecraft' ? 1 : 0;
             lastCycleScore = 0;
-            gameStateRef.current = { gameRunning };
+            gameStateRef.current = { gameRunning, restartGame };
             setIsGameOver(false);
             setScore(0);
             setIsNight(currentTheme === 'minecraft');
+            setIsDucking(false);
             loop();
         };
 
-        // Touch controls
-        let touchStartY = 0;
-        let touchStartTime = 0;
-        let isDucking = false;
-
-        const handleTouchStart = (e) => {
-            touchStartY = e.touches[0].clientY;
-            touchStartTime = Date.now();
-        };
-
-        const handleTouchMove = (e) => {
-            if (!gameStateRef.current?.gameRunning) return;
-
-            const touchCurrentY = e.touches[0].clientY;
-            const deltaY = touchStartY - touchCurrentY;
-            const timeDelta = Date.now() - touchStartTime;
-
-            // Swipe up to jump (threshold: 30px within 300ms)
-            if (deltaY > 30 && timeDelta < 300 && dino.grounded && !dino.ducking) {
-                e.preventDefault();
-                dino.dy = JUMP_FORCE;
-                dino.grounded = false;
-                touchStartY = touchCurrentY; // Reset to prevent multiple jumps
-            }
-
-            // Swipe down to duck (threshold: 30px within 300ms)
-            if (deltaY < -30 && timeDelta < 300) {
-                e.preventDefault();
-                if (!isDucking) {
-                    isDucking = true;
-                    dino.ducking = true;
-                    dino.height = DINO_DUCK_HEIGHT;
-                    if (dino.grounded) {
-                        dino.y = canvas.height - GROUND_HEIGHT - DINO_DUCK_HEIGHT;
-                    }
-                    if (!dino.grounded) {
-                        dino.dy = Math.max(dino.dy, 10);
-                    }
-                }
-                touchStartY = touchCurrentY; // Reset
-            }
-        };
-
-        const handleTouchEnd = () => {
-            // Stop ducking when touch ends
-            if (isDucking && dino.ducking) {
-                isDucking = false;
-                dino.ducking = false;
-                dino.height = DINO_HEIGHT;
-                if (dino.grounded) {
-                    dino.y = canvas.height - GROUND_HEIGHT - DINO_HEIGHT;
-                }
-            }
-
-            // Allow restart on tap when game over
-            if (!gameStateRef.current?.gameRunning) {
-                restartGame();
-            }
-        };
+        // Store restartGame in gameStateRef
+        gameStateRef.current = { gameRunning, restartGame };
 
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
-        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-        canvas.addEventListener('touchend', handleTouchEnd);
 
         const spawnObstacle = () => {
             if (frameCount < nextSpawnFrame) return;
@@ -679,9 +718,6 @@ const DinoGame = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            canvas.removeEventListener('touchstart', handleTouchStart);
-            canvas.removeEventListener('touchmove', handleTouchMove);
-            canvas.removeEventListener('touchend', handleTouchEnd);
             cancelAnimationFrame(animationFrameId);
         };
     }, [isStarted, difficulty, theme]);
@@ -706,7 +742,7 @@ const DinoGame = () => {
     );
 
     return (
-        <div className="flex flex-col items-center justify-center p-4">
+        <div ref={containerRef} className={`flex flex-col items-center justify-center p-4 ${isFullscreen ? 'bg-gray-900 min-h-screen' : ''}`}>
             {/* Settings Panel */}
             {!isStarted && (
                 <div className="mb-6 p-4 bg-gray-900/80 rounded-lg border border-cyan-500/30 w-full max-w-md">
@@ -826,13 +862,36 @@ const DinoGame = () => {
                     ref={canvasRef}
                     width={800}
                     height={300}
-                    className={`rounded-lg shadow-lg transition-all duration-500 ${
+                    className={`rounded-lg shadow-lg transition-all duration-500 max-w-full ${
                         theme === 'minecraft' || isNight
                             ? 'border-4 border-cyan-500 shadow-[0_0_20px_rgba(0,255,255,0.3)]'
                             : 'border-4 border-gray-400 shadow-[0_0_10px_rgba(0,0,0,0.2)]'
                     }`}
                     style={{ imageRendering: 'pixelated' }}
                 />
+
+                {/* Fullscreen button */}
+                {isStarted && (
+                    <button
+                        onClick={toggleFullscreen}
+                        className={`absolute top-4 left-4 p-2 rounded transition-all ${
+                            theme === 'minecraft' || isNight
+                                ? 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/40'
+                                : 'bg-gray-500/20 text-gray-600 hover:bg-gray-500/40'
+                        }`}
+                        title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                    >
+                        {isFullscreen ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            </svg>
+                        )}
+                    </button>
+                )}
 
                 {/* Start overlay */}
                 {!isStarted && (
@@ -855,7 +914,13 @@ const DinoGame = () => {
                                 GAME OVER
                             </h2>
                             <p className="text-2xl mb-4 text-cyan-400">SCORE: {score}</p>
-                            <p className="text-sm text-gray-300 animate-bounce">Press Space to Restart</p>
+                            <p className="hidden md:block text-sm text-gray-300 animate-bounce">Press Space to Restart</p>
+                            <button
+                                onClick={handleRestart}
+                                className="md:hidden mt-4 px-6 py-2 bg-cyan-500 text-black font-mono font-bold rounded hover:bg-cyan-400 transition-all"
+                            >
+                                TAP TO RESTART
+                            </button>
                         </div>
                     </div>
                 )}
@@ -873,14 +938,46 @@ const DinoGame = () => {
                 )}
             </div>
 
+            {/* Mobile Virtual Controls */}
+            {isStarted && !isGameOver && (
+                <div className="md:hidden mt-4 flex gap-6 select-none">
+                    <button
+                        onTouchStart={(e) => { e.preventDefault(); handleJump(); }}
+                        onMouseDown={handleJump}
+                        className={`w-20 h-20 rounded-full font-mono font-bold text-lg transition-all active:scale-95 ${
+                            theme === 'minecraft' || isNight
+                                ? 'bg-green-500/80 text-black shadow-[0_0_15px_rgba(74,222,128,0.5)]'
+                                : 'bg-gray-700 text-white shadow-lg'
+                        }`}
+                    >
+                        JUMP
+                    </button>
+                    <button
+                        onTouchStart={(e) => { e.preventDefault(); handleDuckStart(); }}
+                        onTouchEnd={(e) => { e.preventDefault(); handleDuckEnd(); }}
+                        onMouseDown={handleDuckStart}
+                        onMouseUp={handleDuckEnd}
+                        onMouseLeave={handleDuckEnd}
+                        className={`w-20 h-20 rounded-full font-mono font-bold text-lg transition-all active:scale-95 ${
+                            isDucking
+                                ? 'bg-yellow-500 text-black'
+                                : theme === 'minecraft' || isNight
+                                    ? 'bg-yellow-500/80 text-black shadow-[0_0_15px_rgba(250,204,21,0.5)]'
+                                    : 'bg-gray-700 text-white shadow-lg'
+                        }`}
+                    >
+                        DUCK
+                    </button>
+                </div>
+            )}
+
             {/* Controls */}
             <div className={`mt-6 font-mono text-sm space-y-1 text-center transition-colors duration-500 ${
                 theme === 'minecraft' || isNight ? 'text-cyan-400' : 'text-gray-600'
             }`}>
                 <p className="hidden md:block">[↑] or [SPACE] - JUMP</p>
                 <p className="hidden md:block">[↓] - DUCK (hold to stay down)</p>
-                <p className="md:hidden">Swipe Up - JUMP</p>
-                <p className="md:hidden">Swipe Down - DUCK</p>
+                <p className="md:hidden">Use buttons below to control</p>
                 <p className="text-xs mt-2 opacity-60">
                     {theme === 'dino'
                         ? 'Day/Night changes every 500 points - Night is harder!'
