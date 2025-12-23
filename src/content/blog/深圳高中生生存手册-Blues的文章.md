@@ -1,7 +1,9 @@
 ---
 title: "深圳高中生生存手册-Blues的文章"
+titleEn: "Survival Guide for Shenzhen High School Students"
 date: 2025-11-21T12:02:53.907Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/21068851124 --- ![To Run or To Lie, This is a question](https://pic1.zhimg.com/v2-5b0..."
+description: "深圳高中生生存手册"
+descriptionEn: "Life strategies for high school students: emigrating, grinding through the system, or taking it easy"
 category: "tech"
 tags: []
 mathjax: true

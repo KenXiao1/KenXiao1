@@ -1,7 +1,9 @@
 ---
 title: "Models of Magic by Frater U.'.D.'. 翻译-Blues的文章"
+titleEn: "Models of Magic by Frater U.'.D.'. (Translation)"
 date: 2025-11-21T12:02:53.880Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/30050871129 --- ## 魔法模型  作者：Frater U.'.D.'.  在探索魔法新的、更高效技术的可能性过程中，我发现结构主义视角下审视魔法历史可能会..."
+description: "魔法模型 - Frater U.'.D.'."
+descriptionEn: "A structuralist examination of magic history, categorizing magic into five models"
 category: "translation"
 tags: []
 mathjax: true

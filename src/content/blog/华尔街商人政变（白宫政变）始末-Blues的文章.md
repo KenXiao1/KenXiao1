@@ -1,7 +1,9 @@
 ---
 title: "华尔街商人政变（白宫政变）始末-Blues的文章"
+titleEn: "The Business Plot (White House Putsch): A Complete Account"
 date: 2025-11-21T12:02:53.892Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/21283918631 --- ![](https://pic4.zhimg.com/v2-94052f9309ccd26298388236ec9c5fe5_1440w...."
+description: "华尔街商人政变（白宫政变）始末"
+descriptionEn: "The 1933 Business Plot - a political conspiracy to overthrow President Roosevelt"
 category: "translation"
 tags: []
 mathjax: true

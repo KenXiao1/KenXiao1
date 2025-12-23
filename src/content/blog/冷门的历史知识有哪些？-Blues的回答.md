@@ -1,7 +1,9 @@
 ---
 title: "冷门的历史知识有哪些？-Blues的回答"
+titleEn: "Obscure Historical Facts"
 date: 2025-11-21T12:02:53.890Z
-description: "--- tags: zhihu-answer zhihu-link: https://www.zhihu.com/question/63444070/answer/1908248215293233080 --- ![](https://picx.zhimg.com/50/v2-b1c87bc9483..."
+description: "冷门的历史知识有哪些"
+descriptionEn: "The surprising affair between Edda Mussolini and Zhang Xueliang in 1930s Shanghai"
 category: "history"
 tags: []
 mathjax: true

@@ -1,7 +1,9 @@
 ---
 title: "基于markdown的万用文档编辑"
+titleEn: "Universal Document Editing with Markdown"
 date: 2025-11-21T12:02:53.898Z
-description: "**为什么使用markdown** 1.markdown作为一种轻量级标记语言允许人们使用易读易写的纯文本编写文档。你可以在任何设备上修改它而不用担心像word一样出现格式问题。 2.markdown对LaTex的支持非常好，方便你输入公式 3.通过pandoc，markdown可以转换为几乎所有的..."
+description: "基于markdown的万用文档编辑"
+descriptionEn: "Why use Markdown: cross-device compatibility, LaTeX support, and Pandoc conversion"
 category: "tech"
 tags: []
 mathjax: true

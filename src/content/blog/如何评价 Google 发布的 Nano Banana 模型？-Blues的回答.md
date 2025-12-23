@@ -1,7 +1,9 @@
 ---
 title: "如何评价 Google 发布的 Nano Banana 模型？-Blues的回答"
+titleEn: "Review: Google's Nano Banana Model"
 date: 2025-11-21T12:02:53.899Z
-description: "--- tags: zhihu-answer zhihu-link: https://www.zhihu.com/question/1943833450151912321/answer/1947642827308795066 --- 梗图催化剂      冲浪里系列  ![](https://pic..."
+description: "如何评价 Google 发布的 Nano Banana 模型"
+descriptionEn: "Meme catalyst - Surfing series memes inspired by Google's Nano Banana model"
 category: "tech"
 tags: []
 mathjax: true

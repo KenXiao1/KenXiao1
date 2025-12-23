@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import PDFThumbnail from '../../components/PDFThumbnail';
 import LikeButton from '../../components/LikeButton';
+import LanguageToggle from '../../components/LanguageToggle';
 
 const pdfs = (await getCollection('pdfs'))
   .sort((a, b) => b.data.uploadDate.valueOf() - a.data.uploadDate.valueOf());
@@ -13,8 +14,11 @@ const categories = [...new Set(pdfs.map(pdf => pdf.data.category))];
 <BaseLayout title="Ken Xiao | PDF Library">
   <div class="max-w-5xl mx-auto">
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-4xl font-serif font-bold">PDF Library</h1>
-      
+      <div class="flex items-center gap-4">
+        <h1 class="text-4xl font-serif font-bold">PDF Library</h1>
+        <LanguageToggle client:load />
+      </div>
+
       <div class="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
         <a href="/blog" class="px-4 py-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 rounded-md text-sm font-medium transition-all">Articles</a>
         <a href="/blog/pdfs" class="px-4 py-2 bg-white dark:bg-gray-800 shadow-sm rounded-md text-sm font-medium transition-all">PDF Library</a>
@@ -28,8 +32,18 @@ const categories = [...new Set(pdfs.map(pdf => pdf.data.category))];
 
           <div class="p-4">
             <div class="text-xs text-accent uppercase tracking-wider font-bold mb-1">{pdf.data.category}</div>
-            <h3 class="font-bold text-lg mb-2 line-clamp-1" title={pdf.data.title}>{pdf.data.title}</h3>
-            <p class="text-sm text-gray-500 line-clamp-2 mb-4">{pdf.data.description}</p>
+            <h3 class="font-bold text-lg mb-1">
+              <span class="title-cn line-clamp-1" title={pdf.data.title}>{pdf.data.title}</span>
+              {pdf.data.titleEn && (
+                <span class="title-en text-sm text-gray-500 dark:text-gray-400 block font-normal line-clamp-1" title={pdf.data.titleEn}>{pdf.data.titleEn}</span>
+              )}
+            </h3>
+            <div class="description-wrapper mb-4">
+              <p class="description-cn text-sm text-gray-500 line-clamp-2">{pdf.data.description}</p>
+              {pdf.data.descriptionEn && (
+                <p class="description-en text-xs text-gray-400 italic line-clamp-2 mt-1">{pdf.data.descriptionEn}</p>
+              )}
+            </div>
 
             <div class="flex items-center justify-between">
               <div class="text-xs text-gray-400 font-mono">
@@ -46,4 +60,22 @@ const categories = [...new Set(pdfs.map(pdf => pdf.data.category))];
       ))}
     </div>
   </div>
+
+  <style>
+    /* Hide English content when bilingual mode is off */
+    :global(html[data-bilingual="false"]) .title-en,
+    :global(html[data-bilingual="false"]) .description-en {
+      display: none !important;
+    }
+  </style>
+
+  <script>
+    // Initialize bilingual mode on page load
+    const savedBilingual = localStorage.getItem('showBilingual');
+    if (savedBilingual !== null) {
+      document.documentElement.setAttribute('data-bilingual', savedBilingual);
+    } else {
+      document.documentElement.setAttribute('data-bilingual', 'true');
+    }
+  </script>
 </BaseLayout>

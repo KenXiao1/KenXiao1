@@ -1,7 +1,9 @@
 ---
 title: "SEP翻译-物理学中的结构主义-Blues的文章"
+titleEn: "SEP Translation: Structuralism in Physics"
 date: 2025-11-21T12:02:53.884Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/15874941641 --- [Structuralism in Physics (Stanford Encyclopedia of Philosophy)](http..."
+description: "SEP翻译-物理学中的结构主义"
+descriptionEn: "Translation of Stanford Encyclopedia of Philosophy article on Structuralism in Physics"
 category: "translation"
 tags: []
 mathjax: true

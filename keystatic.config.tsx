@@ -37,8 +37,10 @@ export default config({
             format: 'json',
             schema: {
                 title: fields.text({ label: 'Title' }),
+                titleEn: fields.text({ label: 'Title (English)' }),
                 filename: fields.text({ label: 'Filename (in /public/pdfs/)' }),
                 description: fields.text({ label: 'Description', multiline: true }),
+                descriptionEn: fields.text({ label: 'Description (English)', multiline: true }),
                 category: fields.text({ label: 'Category' }),
                 uploadDate: fields.date({ label: 'Upload Date' }),
             },

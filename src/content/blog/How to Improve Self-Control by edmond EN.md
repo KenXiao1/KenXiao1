@@ -1,7 +1,9 @@
 ---
 title: "How to Improve Self-Control by edmond EN"
+titleEn: "How to Improve Self-Control"
 date: 2025-11-21T12:02:53.878Z
-description: "zhihu-link: https://www.zhihu.com/question/19888447/answer/1930799480401293785  ### **I hope this article becomes the most hardcore technical discussi..."
+description: "如何提高自制力"
+descriptionEn: "CTDP and RSIP protocols - mathematical methods to solve procrastination from first principles"
 category: "tech"
 tags: []
 mathjax: true

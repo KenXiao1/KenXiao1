@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import LanguageToggle from '../../components/LanguageToggle';
 
 const posts = (await getCollection('blog'))
   .filter(post => !post.data.draft)
@@ -13,7 +14,10 @@ const categories = [...new Set(posts.map(post => post.data.category))];
   <div class="max-w-4xl mx-auto">
     <div class="glass-card rounded-2xl px-8 py-12 mb-8">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-5xl font-serif font-bold">Blog</h1>
+        <div class="flex items-center gap-4">
+          <h1 class="text-5xl font-serif font-bold">Blog</h1>
+          <LanguageToggle client:load />
+        </div>
 
         <div class="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
           <a href="/blog" class="px-4 py-2 bg-white dark:bg-gray-800 shadow-sm rounded-md text-sm font-medium transition-all">Articles</a>
@@ -40,8 +44,18 @@ const categories = [...new Set(posts.map(post => post.data.category))];
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-grow">
               <div class="text-xs text-accent uppercase tracking-wider font-mono mb-2">{post.data.category}</div>
-              <h2 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors">{post.data.title}</h2>
-              <p class="text-gray-600 dark:text-gray-400 mb-4">{post.data.description}</p>
+              <h2 class="text-2xl font-bold mb-2 group-hover:text-accent transition-colors">
+                <span class="title-cn">{post.data.title}</span>
+                {post.data.titleEn && (
+                  <span class="title-en text-lg text-gray-500 dark:text-gray-400 block mt-1 font-normal">{post.data.titleEn}</span>
+                )}
+              </h2>
+              <div class="description-wrapper">
+                <p class="description-cn text-gray-600 dark:text-gray-400 mb-2">{post.data.description}</p>
+                {post.data.descriptionEn && (
+                  <p class="description-en text-gray-500 dark:text-gray-500 text-sm italic mb-2">{post.data.descriptionEn}</p>
+                )}
+              </div>
               <div class="text-sm text-gray-500 font-mono">
                 {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </div>
@@ -52,6 +66,14 @@ const categories = [...new Set(posts.map(post => post.data.category))];
     </div>
   </div>
 
+  <style>
+    /* Hide English content when bilingual mode is off */
+    :global(html[data-bilingual="false"]) .title-en,
+    :global(html[data-bilingual="false"]) .description-en {
+      display: none !important;
+    }
+  </style>
+
   <script>
     // Category filter functionality
     const filterBtns = document.querySelectorAll('.category-filter');
@@ -60,11 +82,11 @@ const categories = [...new Set(posts.map(post => post.data.category))];
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const category = btn.dataset.category;
-        
+
         // Update active state
         filterBtns.forEach(b => b.classList.remove('active', 'bg-accent', 'text-white'));
         btn.classList.add('active', 'bg-accent', 'text-white');
-        
+
         // Filter posts
         postItems.forEach(post => {
           if (category === 'all' || post.dataset.category === category) {
@@ -75,5 +97,13 @@ const categories = [...new Set(posts.map(post => post.data.category))];
         });
       });
     });
+
+    // Initialize bilingual mode on page load
+    const savedBilingual = localStorage.getItem('showBilingual');
+    if (savedBilingual !== null) {
+      document.documentElement.setAttribute('data-bilingual', savedBilingual);
+    } else {
+      document.documentElement.setAttribute('data-bilingual', 'true');
+    }
   </script>
 </BaseLayout>

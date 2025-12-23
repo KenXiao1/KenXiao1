@@ -1,7 +1,9 @@
 ---
 title: "Applying Abstract Algebra to Romanology, with an Example of Teacher-Student Relationship"
+titleEn: "Applying Abstract Algebra to Romanology, with an Example of Teacher-Student Relationship"
 date: 2025-11-21T12:02:53.867Z
-description: "# 探讨师生与恋爱关系作为群结构的可能性  **摘要**  本文探讨了在特定设定下将师生关系和恋爱关系作为群结构的可行性。在传统群论中，群是一种满足封闭性、结合律、单位元和逆元存在性的代数结构。基于中国文化中“老师的老师也为老师”的传递性假设，以及学生在一定条件下能够扮演老师角色的设定，我们考察了在..."
+description: "探讨师生与恋爱关系作为群结构的可能性"
+descriptionEn: "Exploring teacher-student and romantic relationships as group structures using abstract algebra"
 category: "math"
 tags: []
 mathjax: true

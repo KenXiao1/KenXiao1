@@ -1,7 +1,9 @@
 ---
 title: "乡愁，我在懂得-Blues的文章"
+titleEn: "Nostalgia, Now I Understand"
 date: 2025-11-21T12:02:53.886Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/668817443 --- 一夜风雨，昨日盛开的桂花满地狼藉，零落的花瓣挥洒点点余香。料峭春风，只吹得子规鸣叫。乡愁，我在懂得。  ——题记  乡愁，是岑参“塞花飘落泪，..."
+description: "乡愁，我在懂得"
+descriptionEn: "A personal essay about returning to my hometown after two years"
 category: "tech"
 tags: []
 mathjax: true

@@ -4,8 +4,10 @@ const blog = defineCollection({
     type: 'content',
     schema: z.object({
         title: z.string(),
+        titleEn: z.string().optional(),
         date: z.date(),
         description: z.string().optional(),
+        descriptionEn: z.string().optional(),
         tags: z.array(z.string()).optional(),
         category: z.enum(['math', 'history', 'translation', 'tech']).default('tech'),
         draft: z.boolean().default(false),
@@ -31,8 +33,10 @@ const pdfs = defineCollection({
     type: 'data',
     schema: z.object({
         title: z.string(),
+        titleEn: z.string().optional(),
         filename: z.string(),
         description: z.string().optional(),
+        descriptionEn: z.string().optional(),
         category: z.string(),
         uploadDate: z.coerce.date(),
     }),

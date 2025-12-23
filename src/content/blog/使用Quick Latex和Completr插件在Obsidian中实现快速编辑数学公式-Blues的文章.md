@@ -1,7 +1,9 @@
 ---
 title: "使用Quick Latex和Completr插件在Obsidian中实现快速编辑数学公式-Blues的文章"
+titleEn: "Fast Math Formula Editing in Obsidian with Quick Latex and Completr Plugins"
 date: 2025-11-21T12:02:53.888Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/695723899 --- **引子**  Obsidian is the private and flexible writing app that adapts to..."
+description: "使用Quick Latex和Completr插件在Obsidian中实现快速编辑数学公式"
+descriptionEn: "A guide to quickly editing mathematical formulas in Obsidian using the Quick Latex and Completr plugins"
 category: "math"
 tags: []
 mathjax: true

@@ -1,7 +1,9 @@
 ---
 title: "生物学领域真的存在天才吗？-Blues的回答"
+titleEn: "Do Geniuses Exist in Biology?"
 date: 2025-11-21T12:02:53.908Z
-description: "--- tags: zhihu-answer zhihu-link: https://www.zhihu.com/question/3441599800/answer/109831963824 --- ![《神经科学：探索脑》（第4版）P113](https://picx.zhimg.com/50/..."
+description: "生物学领域真的存在天才吗"
+descriptionEn: "The story of Otto Loewi, who discovered chemical neurotransmission through a dream"
 category: "tech"
 tags: []
 mathjax: true

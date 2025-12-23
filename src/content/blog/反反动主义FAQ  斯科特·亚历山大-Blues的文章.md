@@ -1,7 +1,9 @@
 ---
 title: "反反动主义FAQ  斯科特·亚历山大-Blues的文章"
+titleEn: "The Anti-Reactionary FAQ by Scott Alexander"
 date: 2025-11-21T12:02:53.896Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/25607120774 --- 发布日期：2013年10月20日 作者：斯科特·亚历山大   \\[编辑 2014年3月：我不再完全认同本文档中的所有陈述。我认为许多结论仍..."
+description: "反反动主义FAQ - 斯科特·亚历山大"
+descriptionEn: "Translation of Scott Alexander's essay refuting Neoreactionary political movement beliefs"
 category: "translation"
 tags: []
 mathjax: true

@@ -1,7 +1,9 @@
 ---
 title: "所罗门遗训 简介-Blues的文章"
+titleEn: "Introduction to the Testament of Solomon"
 date: 2025-11-21T12:02:53.905Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/30039493766 --- 《所罗门遗训》（[Testament of Solomon](https://link.zhihu.com/?target=https%3..."
+description: "所罗门遗训 简介"
+descriptionEn: "Introduction to the Testament of Solomon - King Solomon using a magical ring to control demons"
 category: "translation"
 tags: []
 mathjax: true

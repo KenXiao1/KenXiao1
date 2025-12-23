@@ -1,7 +1,9 @@
 ---
 title: "宮下文書 简介-Blues的文章"
+titleEn: "Introduction to Miyashita Documents"
 date: 2025-11-21T12:02:53.901Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/30029971511 --- 宫下文书（みやしたもんじょ）是指流传于富士山北麓的山梨县富士吉田市大明见（旧称南都留郡明见村），原北东本宫小室浅间神社（旧称阿曾谷宫守神社..."
+description: "宮下文書 简介"
+descriptionEn: "Introduction to the Miyashita Documents - ancient records allegedly written by Xu Fu"
 category: "translation"
 tags: []
 mathjax: true

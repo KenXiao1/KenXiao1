@@ -1,7 +1,9 @@
 ---
 title: "马丁·德尔里奥 简介-Blues的文章"
+titleEn: "Introduction to Martin Delrio"
 date: 2025-11-21T12:02:53.913Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/30043107581 --- Martin Anton Delrio SJ（拉丁文：Martinus Antonius Delrio；西班牙文：Martín Anton..."
+description: "马丁·德尔里奥 简介"
+descriptionEn: "Biography of Martin Anton Delrio SJ, author of Disquisitiones Magicae"
 category: "translation"
 tags: []
 mathjax: true

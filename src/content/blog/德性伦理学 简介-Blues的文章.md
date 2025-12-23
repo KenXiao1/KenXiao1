@@ -1,7 +1,9 @@
 ---
 title: "德性伦理学 简介-Blues的文章"
+titleEn: "Introduction to Virtue Ethics"
 date: 2025-11-21T12:02:53.903Z
-description: "--- tags: zhihu-article zhihu-link: https://zhuanlan.zhihu.com/p/1903915407682827083 --- **德性伦理学**（亦称“**美德伦理学**”\\[注a\\]\\[1\\]，源自希腊文 ἀρετή \\[aretḗ\\]）是一种哲..."
+description: "德性伦理学 简介"
+descriptionEn: "An introduction to virtue ethics, emphasizing virtue and character as the primary subject of ethics"
 category: "translation"
 tags: []
 mathjax: true

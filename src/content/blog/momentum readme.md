@@ -1,7 +1,9 @@
 ---
 title: "momentum readme"
+titleEn: "Momentum - Psychology-Driven Focus App"
 date: 2025-11-21T12:02:53.881Z
-description: "[EN README](./README_EN.md) # Momentum - 心理学驱动的专注力应用  基于链式时延协议（CTDP）理论的自控力训练工具，通过\"神圣座位原理\"、\"下必为例原理\"和\"线性时延原理\"帮助用户建立强大的习惯链条。 详情请见： https://www.zhihu.com/..."
+description: "Momentum - 心理学驱动的专注力应用"
+descriptionEn: "A self-control training tool based on CTDP theory"
 category: "tech"
 tags: []
 mathjax: true
