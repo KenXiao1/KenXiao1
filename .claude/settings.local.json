@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run build:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__firecrawl__firecrawl_scrape",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

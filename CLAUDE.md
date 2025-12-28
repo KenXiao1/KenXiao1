@@ -131,3 +131,48 @@ When copying posts from Obsidian vault:
 1. Copy `.md` file to `src/content/blog/`
 2. Copy any referenced images to `public/images/posts/`
 3. Add frontmatter if missing (or use Keystatic to edit)
+
+## AI Agent Blog Editing Workflow
+
+**IMPORTANT: When editing, translating, or creating blog posts, AI agents (Claude Code, Codex, Cursor, etc.) MUST follow this workflow:**
+
+### Primary Editing Location
+Always edit blog posts in `D:\KenXiao1 blog\blog obsidian\` directory first. This allows:
+- Local preview in Obsidian with working image paths
+- Consistent editing experience
+- Easy image management alongside content
+
+### Workflow Steps
+
+1. **Edit/Create in blog obsidian/**
+   - Create or edit `.md` file in `D:\KenXiao1 blog\blog obsidian\`
+   - Place all images in the same directory (flat structure)
+   - Use Obsidian syntax for images: `![[image-name.png]]`
+
+2. **Copy to production locations**
+   After editing is complete:
+   ```bash
+   # Copy markdown file
+   cp "D:/KenXiao1 blog/blog obsidian/Post Title.md" "D:/KenXiao1 blog/KenXiao1-KenXiao1/src/content/blog/"
+
+   # Create image folder (use slug based on post title)
+   mkdir -p "D:/KenXiao1 blog/KenXiao1-KenXiao1/public/images/posts/{post-slug}/"
+
+   # Copy images
+   cp "D:/KenXiao1 blog/blog obsidian/"*.png "D:/KenXiao1 blog/KenXiao1-KenXiao1/public/images/posts/{post-slug}/"
+   ```
+
+3. **Update image paths in production .md**
+   Convert `![[image.png]]` to `/images/posts/{post-slug}/image.png` format, OR rely on the remark plugin to auto-convert during build.
+
+### Image Path Handling
+- **In Obsidian (blog obsidian/)**: Use `![[image.png]]` - images in same directory
+- **In production (src/content/blog/)**: Use `/images/posts/{post-slug}/image.png`
+- The `remark-obsidian-images.mjs` plugin auto-converts Obsidian syntax during build
+
+### Example
+For a post titled "Claude 4.5 Opus的灵魂文档":
+- Edit: `blog obsidian/Claude 4.5 Opus的灵魂文档.md`
+- Images: `blog obsidian/01-screenshot.png`, etc.
+- Production md: `src/content/blog/Claude 4.5 Opus的灵魂文档.md`
+- Production images: `public/images/posts/claude-soul-document/*.png`
