@@ -27,11 +27,13 @@
   <tr>
     <td valign="top" width="60%">
 
-### 🚀 My Goals for 2025
+### 🚀 My Goals for 2026
 - Quant (especially in Polymarket & crypto)
 - Develop and open source a LLM application for writing fictions.
+- learn LLM memory
 - Develop https://momentumctdp.netlify.app/
 - [Personal blog](https://kenxiao.netlify.app/)
+- Vibe Coding Cleaning
 - Get prepared for my next stage of life
 - read more papers and books in computational biology and math (complete *Introduction to Linear Algebra* & *Artin Algebra*)
 - 平安喜乐
