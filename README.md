@@ -33,7 +33,7 @@
 - learn LLM memory
 - Develop https://momentumctdp.netlify.app/
 - [Personal blog](https://kenxiao.netlify.app/)
-- Vibe Coding Cleaning
+- Vibe Code Cleaning
 - Get prepared for my next stage of life
 - read more papers and books in computational biology and math (complete *Introduction to Linear Algebra* & *Artin Algebra*)
 - 平安喜乐
